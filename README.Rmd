@@ -1,0 +1,45 @@
+---
+output: github_document
+bibliography: [./inst/REFERENCES.bib]
+biblio-style: apalike
+link-citations: yes
+editor_options: 
+  canonical: true
+  markdown: 
+    wrap: 80
+    references: 
+      location: section
+---
+
+```{r setup, echo = FALSE, results = 'hide', message = FALSE, warning = FALSE}
+source(file.path(usethis::proj_get(), "vignettes",  "_common.R"))
+```
+
+# `github.explorer` <img src="https://raw.githubusercontent.com/harell/github.explorer/master/pkgdown/logo.png" align="right" height="75"/>
+
+<!-- badges: start -->
+[![CRAN
+status](https://www.r-pkg.org/badges/version/github.explorer)](https://CRAN.R-project.org/package=github.explorer)
+[![R build
+status](https://github.com/harell/github.explorer/workflows/R-CMD-check/badge.svg)](https://github.com/harell/github.explorer/actions)
+[![Codecov test coverage](https://codecov.io/gh/harell/github.explorer/branch/master/graph/badge.svg)](https://codecov.io/gh/harell/github.explorer?branch=master)
+<!-- badges: end -->
+
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("https://th-thumbnailer.cdn-si-edu.com/i_4iiCzNJ-R8Ow8LR3fMFWplBEU=/fit-in/1600x0/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/0c/eb/0ceb7b9c-36dc-40cf-b045-0b435a458434/gettyimages-1195887138.jpg")
+```
+
+## Overview
+
+`r read.dcf("DESCRIPTION", "Description")[[1]]`
+
+## Installation
+
+You can install `github.explorer` by using:
+
+```{r, eval=FALSE, echo=TRUE}
+install.packages("remotes")
+remotes::install_github("harell/github.explorer")
+```
+
