@@ -1,7 +1,5 @@
 ---
 output: github_document
-bibliography: [./inst/REFERENCES.bib]
-biblio-style: apalike
 link-citations: yes
 editor_options: 
   canonical: true
