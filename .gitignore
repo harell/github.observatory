@@ -1,0 +1,16 @@
+# Folders
+docs/
+man/
+renv/
+*_cache/
+
+# Files
+.Renviron
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.png
+CRAN-RELEASE
+cran-comments.md
+revdep/

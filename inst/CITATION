@@ -1,0 +1,23 @@
+bibentry("Manual",
+         title = "github.explorer: Explore the relationships between R packages and R users",
+         author = person("Harel", "Lustiger"),
+         organization = "Tidylab",
+         address      = "Auckland, New Zealand",
+         year         = version$year,
+         url          = "https://github.com/harell/github.explorer",
+
+         textVersion =
+         paste("Harel Lustiger (", version$year, "). ",
+               "github.explorer: Analytic Project Setup and Development. ",
+               "Tidylab, Auckland, New Zealand. ",
+               "URL https://github.com/harell/github.explorer.",
+               sep=""),
+
+         mheader = "To cite R in publications use:",
+
+	 mfooter =
+         paste("We have invested a lot of time and effort in creating github.explorer,",
+          "please cite it when using it for data analysis.",
+	  "See also", sQuote("citation(\"pkgname\")"),
+	  "for citing R packages.", sep = " ")
+	)
