@@ -27,3 +27,4 @@
 # pkgdown$
 ^docs$
 ^pkgdown$
+^\.github$
