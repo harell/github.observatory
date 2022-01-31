@@ -2,7 +2,7 @@
 #' @export
 #' @noRd
 Repository <- R6::R6Class(
-    classname = "Repository", public = list(
+    classname = "Repository", cloneable = FALSE, public = list(
         #' @param immediate (`logical`) Should queries be committed immediately?
         initialize = function(immediate = FALSE){
             private$immediate <- immediate
@@ -49,7 +49,7 @@ Repository <- R6::R6Class(
 #' @export
 #' @noRd
 Archive <- R6::R6Class(
-    classname = "Repository", public = list(
+    classname = "Repository", cloneable = FALSE, public = list(
         # Public Methods ----------------------------------------------------------
         #' @param path (`character`) A character denoting an existing directory of the Repository for which metadata will be aved and returned.
         initialize = function(path = usethis::proj_path("_cache")){
@@ -57,17 +57,31 @@ Archive <- R6::R6Class(
             suppressMessages(archivist::createLocalRepo(path))
         },
         save = function(artifact, tags = character()){
-            archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = c(paste0("date:", lubridate::format_ISO8601(Sys.Date())), tags))
+            tags <- c(paste0("date:", lubridate::format_ISO8601(Sys.Date())), tags)
+            archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = tags)
             invisible(self)
         },
         show = function() return(
             archivist::splitTagsLocal(repoDir = private$path)
             |> dplyr::select(-createdDate)
-            |> dplyr::distinct()
-            |> tidyr::pivot_wider(id_cols = artifact, names_from = tagKey, values_from = tagValue)
+            |> tidyr::pivot_wider(id_cols = artifact, names_from = tagKey, values_from = tagValue, values_fn = list)
+            |> tidyr::unnest(cols = -artifact)
             |> dplyr::select(-format)
+            |> dplyr::distinct()
             |> dplyr::mutate(date = as.Date(date))
-        )
+            |> dplyr::arrange(dplyr::across(-artifact))
+        ),
+        clean = function(){
+            invisible(
+                keep_artifact <-  archive$show()
+                |> dplyr::group_by(dplyr::across(-artifact))
+                |> dplyr::summarise(dplyr::across(artifact, dplyr::first), .groups = "drop")
+                |> dplyr::pull(artifact)
+            )
+            discard_artifact <- dplyr::setdiff(dplyr::pull(archive$show(), artifact), keep_artifact)
+            archivist::rmFromLocalRepo(discard_artifact, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
+            invisible(self)
+        }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         path = character()

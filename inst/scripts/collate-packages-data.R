@@ -1,6 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get())
-repo <- Repository$new()
+repository <- Repository$new()
+archive <- Archive$new()
 
 
 # Description -------------------------------------------------------------
@@ -17,19 +18,35 @@ pkg_desc <- tools::CRAN_package_db()
     |> dplyr::ungroup()
 )
 
-repo$write_package_description_table(tidy_pkg_desc)
+repository$write_package_description_table(tidy_pkg_desc)
 
 
 # Github Stats ------------------------------------------------------------
-archive <- Archive$new()
+## Download Packages Stats
+withr::with_seed(2212,(
+    packages <- repository$read_package_description_table()
+    |> dplyr::sample_n(size = 5)
+    |> dplyr::pull(package)
+))
 
-repo <- "dplyr"
-owner <- "tidyverse"
-artifact <- gh$package$get_stargazers(owner, repo)
-archive$save(artifact, tags = c("type:overview", paste0("owner:",owner), paste0("repo:",repo)))
+for(package in packages){
+    message(glue("Downloading information for `{package}` from GitHub"))
+    github_url <- repository$read_package_description_table() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_url)
+    owner <- ge$github$extract_owner(github_url)
+    repo <- ge$github$extract_repo(github_url)
+
+    artifact <- gh$package$get_overview(ge$github$extract_owner(github_url), repo)
+    archive$save(artifact, tags = c("type:overview", paste0("owner:",owner), paste0("repo:",repo)))
+
+    artifact <- gh$package$get_stargazers(owner, repo)
+    archive$save(artifact, tags = c("type:stargazers", paste0("owner:",owner), paste0("repo:",repo)))
+}
+
+## Process Packages Stats
 archive$show()
 
 
 # Teardown ----------------------------------------------------------------
+archive$clean()
 repo$commit()
 
