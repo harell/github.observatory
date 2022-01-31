@@ -22,7 +22,10 @@ Imports:
     snakecase,
     purrr,
     R6,
-    readr
+    readr,
+    archivist,
+    lubridate,
+    tidyr
 Suggests: 
     httr,
     testthat

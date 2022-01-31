@@ -44,3 +44,32 @@ Repository <- R6::R6Class(
         paths = list()
     )
 )
+
+#' @title Github Explorer Archive
+#' @export
+#' @noRd
+Archive <- R6::R6Class(
+    classname = "Repository", public = list(
+        # Public Methods ----------------------------------------------------------
+        #' @param path (`character`) A character denoting an existing directory of the Repository for which metadata will be aved and returned.
+        initialize = function(path = usethis::proj_path("_cache")){
+            private$path <- path
+            suppressMessages(archivist::createLocalRepo(path))
+        },
+        save = function(artifact, tags = character()){
+            archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = c(paste0("date:", lubridate::format_ISO8601(Sys.Date())), tags))
+            invisible(self)
+        },
+        show = function() return(
+            archivist::splitTagsLocal(repoDir = private$path)
+            |> dplyr::select(-createdDate)
+            |> dplyr::distinct()
+            |> tidyr::pivot_wider(id_cols = artifact, names_from = tagKey, values_from = tagValue)
+            |> dplyr::select(-format)
+            |> dplyr::mutate(date = as.Date(date))
+        )
+    ), private = list(
+        # Private Fields ----------------------------------------------------------
+        path = character()
+    )
+)
