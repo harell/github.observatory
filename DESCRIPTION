@@ -19,6 +19,7 @@ Imports:
     dplyr,
     gh,
     glue,
+    snakecase,
     purrr
 Suggests: 
     testthat
