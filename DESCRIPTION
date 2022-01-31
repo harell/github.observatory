@@ -20,7 +20,9 @@ Imports:
     gh,
     glue,
     snakecase,
-    purrr
+    purrr,
+    R6,
+    readr
 Suggests: 
     httr,
     testthat

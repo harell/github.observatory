@@ -1,5 +1,6 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get())
+repo <- Repository$new()
 
 
 # Package Description Table -----------------------------------------------
@@ -21,3 +22,6 @@ pkg_desc <- tools::CRAN_package_db()
     )
     |> dplyr::ungroup()
 )
+
+repo$write_package_description_table(tidy_pkg_desc)
+repo$commit()
