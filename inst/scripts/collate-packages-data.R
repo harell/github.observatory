@@ -21,18 +21,72 @@ repo$write_package_description_table(tidy_pkg_desc)
 
 
 # Github Stats ------------------------------------------------------------
-package <- "dplyr"
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+repo <- "dplyr"
+owner <- "tidyverse"
+
+gh$package$get_overview(owner, repo)
+a <- gh$package$get_stargazers(owner, repo)
+
+
+type <- "overview"
+date <- Sys.Date() |> lubridate::format_ISO8601()
+slug <- glue('{{type {type},repo {repo},date {date}}}')
+file <- usethis::proj_path("_cache", slug, ext = "json")
+dir.create(dirname(file), FALSE, TRUE)
+(
+    file_df <- tibble::tibble(file = file)
+    dplyr::mutate()
+)
+
+
+decode_file_name <- function(file) return(
+    file
+    |> fs::path_ext_remove()
+    |> basename()
+    |> stringr::str_remove_all("\\{|\\}")
+    |> stringr::str_split(",")
+    |> purrr::pluck(1)
+    |> tibble::as_tibble()
+    |> tidyr::separate(value, c("key", "value"), " ")
+    |> tidyr::pivot_wider(id_cols = NULL, names_from = key, values_from = value)
+    |> tibble::add_column(file = as.character(file), .before = 1)
+)
+
+
+
+tidyr::separate(data.frame(file = file), col = file, sep = " ")
 
 (
     tidy_pkg_github_stats <- repo$read_package_description_table()
     |> dplyr::filter(package %in% !!package)
+    |> dplyr::mutate(
+        github_owner = ge$github$extract_owner(github_url),
+        github_repo = ge$github$extract_repo(github_url)
+    )
     # |>
         # github_owner = github_slug |> stringr::str_split("/") |> purrr::pluck(1, 1),
     # github_repo  = github_slug |> stringr::str_split("/") |> purrr::pluck(1, 2)
 )
 
-result$package$meta <- gh::gh(glue("/repos/{owner}/{repo}"))
+result$package$meta <-
 
 
 repo$read_package_description_table()
