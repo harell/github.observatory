@@ -18,3 +18,5 @@ ge$github$parse_slug <- function(url) return(
     |> stringr::str_remove("^/")
     |> stringr::str_remove_all("/issues(|/)(|/new|new/)$")
 )
+
+ge$github$compose_cran_slug <- function(package) as.character(stringr::str_glue("https://github.com/cran/{package}/issues", package = package))
