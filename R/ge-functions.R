@@ -6,9 +6,22 @@ ge <- new.env()
 # Utility Functions -------------------------------------------------------
 ge$utils <- new.env()
 
-ge$github$is_valid_url <- function(url) return(
-    dplyr::if_else(is.na(url), "NA", url)
-    |> stringr::str_detect("github.com/.*/.*/.*")
+ge$github$extract_repo <- function(url) return(
+    url
+    |> ge$github$parse_slug()
+    |> stringr::str_split("/")
+    |> purrr::pluck(1, 2)
+)
+
+ge$github$extract_owner <- function(url) return(
+    url
+    |> ge$github$parse_slug()
+    |> stringr::str_split("/")
+    |> purrr::pluck(1, 1)
+)
+
+ge$github$extract_root <- function(url) return(
+    stringr::str_glue("https://github.com/{slug}", slug = ge$github$parse_slug(url))
 )
 
 ge$github$parse_slug <- function(url) return(
@@ -19,4 +32,9 @@ ge$github$parse_slug <- function(url) return(
     |> stringr::str_remove_all("/issues(|/)(|/new|new/)$")
 )
 
-ge$github$compose_cran_slug <- function(package) as.character(stringr::str_glue("https://github.com/cran/{package}/issues", package = package))
+ge$github$compose_cran_slug <- function(package) as.character(stringr::str_glue("https://github.com/cran/{package}", package = package))
+
+ge$github$is_valid_url <- function(url) return(
+    dplyr::if_else(is.na(url), "NA", url)
+    |> stringr::str_detect("github.com/.*/.*/.*")
+)

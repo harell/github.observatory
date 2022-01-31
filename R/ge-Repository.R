@@ -17,7 +17,6 @@ Repository <- R6::R6Class(
         },
         #' @description Store changes
         commit = function(){
-            browser()
             x <- private$cache$package$cran_package_description
             file <- private$paths$package$cran_package_description
             private$write_sheet(x, file)
@@ -35,7 +34,7 @@ Repository <- R6::R6Class(
             message("Saved ", basename(file))
         },
         read_sheet = function(file){
-            x <- if(file.exists(file)) readr::read_csv(file) else tibble::tibble()
+            x <- if(file.exists(file)) readr::read_csv(file, show_col_types = FALSE, lazy = FALSE) else tibble::tibble()
             message("Loaded ", basename(file))
             return(x)
         },
