@@ -19,8 +19,12 @@ Imports:
     dplyr,
     gh,
     glue,
-    purrr
+    snakecase,
+    purrr,
+    R6,
+    readr
 Suggests: 
+    httr,
     testthat
 Encoding: UTF-8
 Language: en-GB
