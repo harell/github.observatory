@@ -24,11 +24,12 @@ Imports:
     purrr,
     R6,
     readr,
-    tibble,
     snakecase,
+    tibble,
     tidyr
 Suggests: 
     httr,
+    progress,
     testthat,
     withr
 Encoding: UTF-8

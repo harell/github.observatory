@@ -30,7 +30,9 @@ withr::with_seed(2212, (
     |> sample()
 ))
 
+pb <- progress::progress_bar$new(format = "Quering Github [:bar] :current/:total (:percent) eta: :eta", total = length(packages), clear = FALSE)
 for(package in packages) tryCatch({
+    pb$tick(1)
     suppressMessages({
         github_url <- repository$read_pkg_desc() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_url)
         owner <- github$extract$owner(github_url)
@@ -42,9 +44,8 @@ for(package in packages) tryCatch({
 
     artifact <- query$package$stargazers(owner, repo)
     archive$save(artifact, tags = c("type:stargazers", paste0("owner:",owner), paste0("repo:",repo)))
-
-    message(glue("Retrieved {package} information"))
-}, error = function(e) message(glue("Failed to get {package} information")))
+    pb$message(glue("Retrieved {package} information"))
+}, error = function(e) pb$message(glue("Failed to get {package} information")))
 
 ## Process Packages Stats
 archive$show()
