@@ -1,4 +1,5 @@
 #' @title Github Explorer Repository
+#' @keywords internal
 #' @export
 #' @noRd
 Repository <- R6::R6Class(
@@ -46,6 +47,7 @@ Repository <- R6::R6Class(
 )
 
 #' @title Github Explorer Archive
+#' @keywords internal
 #' @export
 #' @noRd
 Archive <- R6::R6Class(
@@ -71,19 +73,21 @@ Archive <- R6::R6Class(
             |> dplyr::mutate(date = as.Date(date))
             |> dplyr::arrange(dplyr::across(-artifact))
         ),
-        clean = function(){
+        finalize = function(){.private$discard_duplicates(); invisible(self)}
+    ), private = list(
+        # Private Fields ----------------------------------------------------------
+        path = character(),
+
+        # Private Methods ---------------------------------------------------------
+        discard_duplicates = function(){
             invisible(
-                keep_artifact <-  archive$show()
+                keep_artifact <- archive$show()
                 |> dplyr::group_by(dplyr::across(-artifact))
                 |> dplyr::summarise(dplyr::across(artifact, dplyr::first), .groups = "drop")
                 |> dplyr::pull(artifact)
             )
             discard_artifact <- dplyr::setdiff(dplyr::pull(archive$show(), artifact), keep_artifact)
             archivist::rmFromLocalRepo(discard_artifact, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
-            invisible(self)
         }
-    ), private = list(
-        # Private Fields ----------------------------------------------------------
-        path = character()
-    )
-)
+    )# end private
+)# end Archive

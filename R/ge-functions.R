@@ -34,6 +34,8 @@ ge$github$parse_slug <- function(url) return(
 
 ge$github$compose_cran_slug <- function(package) as.character(stringr::str_glue("https://github.com/cran/{package}/issues", package = package))
 
+ge$github$rate_limit <- gh::gh_rate_limit
+
 ge$github$is_valid_url <- function(url) return(
     dplyr::if_else(is.na(url), "NA", url)
     |> stringr::str_detect("github.com/.*/.*/.*")
