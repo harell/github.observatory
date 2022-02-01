@@ -1,27 +1,55 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get())
-repo <- Repository$new()
+repository <- Repository$new()
+archive <- Archive$new()
 
 
-# Package Description Table -----------------------------------------------
+# Description -------------------------------------------------------------
 pkg_desc <- tools::CRAN_package_db()
 
 (
     tidy_pkg_desc <- pkg_desc
     |> standardise_col_names()
+    |> dplyr::rowwise()
     |> dplyr::transmute(
         package = as.character(package),
-        url = as.character(bug_reports)
-    )
-    |> dplyr::rowwise()
-    |> dplyr::mutate(
-        github_url   = dplyr::if_else(ge$github$is_valid_url(url), url, ge$github$compose_cran_slug(package)),
-        github_slug  = ge$github$parse_slug(github_url),
-        github_owner = github_slug |> stringr::str_split("/") |> purrr::pluck(1, 1),
-        github_repo  = github_slug |> stringr::str_split("/") |> purrr::pluck(1, 2)
+        github_url = dplyr::if_else(github$is_valid_url(bug_reports), github$extract$root(bug_reports), ge$compose_cran_slug(package))
     )
     |> dplyr::ungroup()
 )
 
-repo$write_package_description_table(tidy_pkg_desc)
+repository$write_pkg_desc(tidy_pkg_desc)
+
+
+# Github Stats ------------------------------------------------------------
+## Download Packages Stats
+withr::with_seed(2212, (
+    packages <- repository$read_pkg_desc()
+    |> dplyr::pull("package")
+    |> setdiff(archive$show()$repo)
+    |> sample()
+))
+
+for(package in packages) tryCatch({
+    suppressMessages({
+        github_url <- repository$read_pkg_desc() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_url)
+        owner <- github$extract$owner(github_url)
+        repo <- github$extract$repo(github_url)
+    })
+
+    artifact <- query$package$overview(github$extract$owner(github_url), repo)
+    archive$save(artifact, tags = c("type:overview", paste0("owner:",owner), paste0("repo:",repo)))
+
+    artifact <- query$package$stargazers(owner, repo)
+    archive$save(artifact, tags = c("type:stargazers", paste0("owner:",owner), paste0("repo:",repo)))
+
+    message(glue("Retrieved {package} information"))
+}, error = function(e) message(glue("Failed to get {package} information")))
+
+## Process Packages Stats
+archive$show()
+
+
+# Teardown ----------------------------------------------------------------
+archive$clean()
 repo$commit()

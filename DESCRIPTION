@@ -16,16 +16,21 @@ BugReports: https://github.com/harell/github.explorer/issues
 Depends: 
     R (>= 4.1)
 Imports: 
+    archivist,
     dplyr,
     gh,
     glue,
-    snakecase,
+    lubridate,
     purrr,
     R6,
-    readr
+    readr,
+    tibble,
+    snakecase,
+    tidyr
 Suggests: 
     httr,
-    testthat
+    testthat,
+    withr
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE, r6 = TRUE)

@@ -19,7 +19,7 @@ result$package$stargazers <- gh::gh(glue("/repos/{owner}/{repo}/stargazers"))
 
 # User Queries ------------------------------------------------------------
 result$user$meta <- gh::gh(glue("/users/{user}"))
-result$user$stars <- gh$user$get_starred(user)
+result$user$stars <- gh$user$starred(user)
 
 
 # Misc --------------------------------------------------------------------
