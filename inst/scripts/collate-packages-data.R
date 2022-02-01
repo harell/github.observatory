@@ -27,7 +27,7 @@ repository$write_pkg_desc(tidy_pkg_desc)
 
 # Github Stats ------------------------------------------------------------
 ## Download Packages Stats
-withr::with_seed(2212, (
+withr::with_seed(2212, suppressWarnings(
     packages <- repository$read_pkg_desc()
     |> dplyr::pull("package")
     |> setdiff(archive$show()$repo)
