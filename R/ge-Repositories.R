@@ -7,26 +7,36 @@ Repository <- R6::R6Class(
         #' @param immediate (`logical`) Should queries be committed immediately?
         initialize = function(immediate = FALSE){
             private$immediate <- immediate
-
             ## Configurations
             private$paths <- list(package = list())
-            private$paths$package <- list(cran_package_description = usethis::proj_path("_cache", "cran_package_description", ext = "csv"))
+            private$paths$package <- list(cran_desc = usethis::proj_path("_cache", "cran_package_description", ext = "csv"))
 
             ## Set Cache
-            private$cache <- new.env()
-            private$cache$package <- list(cran_package_description = self$read_package_description_table())
+            private$cache$package <- list()
+            private$cache$user <- list()
         },
         #' @description Store changes
         commit = function(){
-            x <- private$cache$package$cran_package_description
-            file <- private$paths$package$cran_package_description
+            x <- private$cache$package$cran_desc
+            file <- private$paths$package$cran_desc
             private$write_sheet(x, file)
-
             message("Commited data to database")
             invisible(self)
         },
-        write_package_description_table = function(x){private$cache$package$cran_package_description <- x; invisible(self)},
-        read_package_description_table = function(){private$read_sheet(private$paths$package$cran_package_description)}
+        unroll = function(){
+            private$cache <- new.env()
+            message("Unrolled changes to database")
+            invisible(self)
+        },
+        write_pkg_desc = function(x){
+            private$cache$package$cran_desc <- x
+            invisible(self)
+        },
+        read_pkg_desc = function(){
+            if(is.null(private$cache$package$cran_desc))
+                private$cache$package$cran_desc <- private$read_sheet(private$paths$package$cran_desc)
+            return(private$cache$package$cran_desc)
+        }
     ), private = list(
         # Private Methods ---------------------------------------------------------
         write_sheet = function(x, file){
@@ -63,7 +73,7 @@ Archive <- R6::R6Class(
             archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = tags)
             invisible(self)
         },
-        show = function() return(
+        show = function() tryCatch((
             archivist::splitTagsLocal(repoDir = private$path)
             |> dplyr::select(-createdDate)
             |> tidyr::pivot_wider(id_cols = artifact, names_from = tagKey, values_from = tagValue, values_fn = list)
@@ -72,21 +82,39 @@ Archive <- R6::R6Class(
             |> dplyr::distinct()
             |> dplyr::mutate(date = as.Date(date))
             |> dplyr::arrange(dplyr::across(-artifact))
-        ),
-        finalize = function(){private$discard_duplicates(); invisible(self)}
+        ), error = function(e) return(
+            tibble::tibble(artifact = NA_character_, date = Sys.Date())
+            |> tidyr::drop_na()
+        )),
+        clean = function(){
+            private$discard_duplicates()
+            # private$discard_outdated()
+            invisible(self)
+        },
+        finalize = function(){self$clean(); invisible(self)}
     ), private = list(
         # Private Fields ----------------------------------------------------------
         path = character(),
-
         # Private Methods ---------------------------------------------------------
         discard_duplicates = function(){
             invisible(
-                keep_artifact <- archive$show()
+                keep_artifact <- self$show()
                 |> dplyr::group_by(dplyr::across(-artifact))
                 |> dplyr::summarise(dplyr::across(artifact, dplyr::first), .groups = "drop")
                 |> dplyr::pull(artifact)
             )
-            discard_artifact <- dplyr::setdiff(dplyr::pull(archive$show(), artifact), keep_artifact)
+            discard_artifact <- dplyr::setdiff(dplyr::pull(self$show(), artifact), keep_artifact)
+            archivist::rmFromLocalRepo(discard_artifact, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
+        },
+        discard_outdated = function(){
+            invisible(
+                keep_artifact <- self$show()
+                |> dplyr::arrange(dplyr::desc(date))
+                |> dplyr::group_by(dplyr::across(c(-artifact, -date)))
+                |> dplyr::slice_head(n = 1)
+                |> dplyr::ungroup()
+            )
+            discard_artifact <- dplyr::setdiff(dplyr::pull(self$show(), artifact), keep_artifact)
             archivist::rmFromLocalRepo(discard_artifact, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
         }
     )# end private

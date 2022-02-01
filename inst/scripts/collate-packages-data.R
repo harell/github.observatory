@@ -18,20 +18,21 @@ pkg_desc <- tools::CRAN_package_db()
     |> dplyr::ungroup()
 )
 
-repository$write_package_description_table(tidy_pkg_desc)
+repository$write_pkg_desc(tidy_pkg_desc)
 
 
 # Github Stats ------------------------------------------------------------
 ## Download Packages Stats
-withr::with_seed(2212,(
-    packages <- repository$read_package_description_table()
-    |> dplyr::sample_n(size = 5)
-    |> dplyr::pull(package)
+withr::with_seed(2212, (
+    packages <- repository$read_pkg_desc()
+    |> dplyr::pull("package")
+    |> setdiff(archive$show()$repo)
+    |> sample()
 ))
 
 for(package in packages) tryCatch({
     suppressMessages({
-        github_url <- repository$read_package_description_table() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_url)
+        github_url <- repository$read_pkg_desc() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_url)
         owner <- github$extract$owner(github_url)
         repo <- github$extract$repo(github_url)
     })
@@ -44,7 +45,6 @@ for(package in packages) tryCatch({
 
     message(glue("Retrieved {package} information"))
 }, error = function(e) message(glue("Failed to get {package} information")))
-
 
 ## Process Packages Stats
 archive$show()
