@@ -88,7 +88,7 @@ Archive <- R6::R6Class(
         )),
         clean = function(){
             private$discard_duplicates()
-            # private$discard_outdated()
+            private$discard_outdated()
             invisible(self)
         },
         finalize = function(){self$clean(); invisible(self)}
@@ -113,6 +113,7 @@ Archive <- R6::R6Class(
                 |> dplyr::group_by(dplyr::across(c(-artifact, -date)))
                 |> dplyr::slice_head(n = 1)
                 |> dplyr::ungroup()
+                |> dplyr::pull(artifact)
             )
             discard_artifact <- dplyr::setdiff(dplyr::pull(self$show(), artifact), keep_artifact)
             archivist::rmFromLocalRepo(discard_artifact, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
