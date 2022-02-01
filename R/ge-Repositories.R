@@ -20,7 +20,7 @@ Repository <- R6::R6Class(
             x <- private$cache$package$cran_desc
             file <- private$paths$package$cran_desc
             private$write_sheet(x, file)
-            message("Commited data to database")
+            message("Commited changes to database")
             invisible(self)
         },
         unroll = function(){
