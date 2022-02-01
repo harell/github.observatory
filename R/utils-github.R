@@ -52,3 +52,6 @@ github$extract$slug <- function(url) return(
     |> stringr::str_remove("^/")
     |> stringr::str_remove_all("/issues(|/)(|/new|new/)$")
 )
+
+github$compose$slug <- function(owner, repo) as.character(stringr::str_glue("{owner}/{repo}", owner = tolower(owner), repo = tolower(repo)))
+
