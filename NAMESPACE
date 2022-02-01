@@ -3,6 +3,7 @@
 export(Archive)
 export(Repository)
 export(ge)
-export(gh)
+export(github)
+export(query)
 export(standardise_col_names)
 importFrom(glue,glue)

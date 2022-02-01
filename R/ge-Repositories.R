@@ -73,7 +73,7 @@ Archive <- R6::R6Class(
             |> dplyr::mutate(date = as.Date(date))
             |> dplyr::arrange(dplyr::across(-artifact))
         ),
-        finalize = function(){.private$discard_duplicates(); invisible(self)}
+        finalize = function(){private$discard_duplicates(); invisible(self)}
     ), private = list(
         # Private Fields ----------------------------------------------------------
         path = character(),

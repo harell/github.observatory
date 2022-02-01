@@ -13,7 +13,7 @@ pkg_desc <- tools::CRAN_package_db()
     |> dplyr::rowwise()
     |> dplyr::transmute(
         package = as.character(package),
-        github_url = dplyr::if_else(ge$github$is_valid_url(bug_reports), ge$github$extract_root(bug_reports), ge$github$compose_cran_slug(package))
+        github_url = dplyr::if_else(github$is_valid_url(bug_reports), github$extract$root(bug_reports), ge$compose_cran_slug(package))
     )
     |> dplyr::ungroup()
 )
@@ -25,27 +25,25 @@ repository$write_package_description_table(tidy_pkg_desc)
 ## Download Packages Stats
 withr::with_seed(2212,(
     packages <- repository$read_package_description_table()
-    # |> dplyr::sample_n(size = 5)
+    |> dplyr::sample_n(size = 5)
     |> dplyr::pull(package)
 ))
 
 for(package in packages) tryCatch({
     suppressMessages({
         github_url <- repository$read_package_description_table() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_url)
-        owner <- ge$github$extract_owner(github_url)
-        repo <- ge$github$extract_repo(github_url)
+        owner <- github$extract$owner(github_url)
+        repo <- github$extract$repo(github_url)
     })
 
-    artifact <- gh$package$get_overview(ge$github$extract_owner(github_url), repo)
+    artifact <- query$package$overview(github$extract$owner(github_url), repo)
     archive$save(artifact, tags = c("type:overview", paste0("owner:",owner), paste0("repo:",repo)))
 
-    artifact <- gh$package$get_stargazers(owner, repo)
+    artifact <- query$package$stargazers(owner, repo)
     archive$save(artifact, tags = c("type:stargazers", paste0("owner:",owner), paste0("repo:",repo)))
 
     message(glue("Retrieved {package} information"))
 }, error = function(e) message(glue("Failed to get {package} information")))
-
-
 
 
 ## Process Packages Stats
