@@ -36,18 +36,21 @@ withr::with_seed(2212, suppressWarnings(
 
 pb <- progress::progress_bar$new(format = "Quering Github [:bar] :current/:total (:percent) eta: :eta", total = length(packages), clear = FALSE)
 for(package in packages) tryCatch({
+    if(github$return_remaining_quote() < 10) {pb$message(glue("Reached GitHub API call limit")); break}
     pb$tick(1)
+
     suppressMessages({
         github_slug <- repository$read_pkg_desc() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_slug)
         owner <- github$extract$owner(github_slug)
         repo <- github$extract$repo(github_slug)
     })
 
-    artifact <- query$package$overview(github$extract$owner(github_slug), repo)
+    artifact <- query$package$overview(owner, repo)
     archive$save(artifact, tags = c("type:overview", paste0("owner:",owner), paste0("repo:",repo)))
 
     artifact <- query$package$stargazers(owner, repo)
     archive$save(artifact, tags = c("type:stargazers", paste0("owner:",owner), paste0("repo:",repo)))
+
     pb$message(glue("Retrieved {package} information"))
 }, error = function(e) pb$message(glue("Failed to get {package} information")))
 
@@ -57,4 +60,4 @@ archive$show()
 
 # Teardown ----------------------------------------------------------------
 archive$clean()
-repo$commit()
+repository$commit()
