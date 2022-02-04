@@ -73,6 +73,9 @@ Archive <- R6::R6Class(
             archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = tags)
             invisible(self)
         },
+        load = function(md5hash){
+            purrr::map(md5hash, archivist::loadFromLocalRepo, repoDir = private$path, value = TRUE)
+        },
         show = function() tryCatch((
             archivist::splitTagsLocal(repoDir = private$path)
             |> dplyr::select(-createdDate)

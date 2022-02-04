@@ -57,6 +57,7 @@ for(package in packages) tryCatch({
 ## Process Packages Stats
 archive$show()
 
+artifact <- archive$load()
 
 # Teardown ----------------------------------------------------------------
 archive$clean()
