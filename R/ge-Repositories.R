@@ -87,8 +87,11 @@ Archive <- R6::R6Class(
             |> tidyr::drop_na()
         )),
         clean = function(){
+            N1 <- nrow(self$show())
             private$discard_duplicates()
             private$discard_outdated()
+            N2 <- nrow(self$show())
+            if(N1>N2) message("Discarded ", N1-N2, " items")
             invisible(self)
         },
         finalize = function(){self$clean(); invisible(self)}
