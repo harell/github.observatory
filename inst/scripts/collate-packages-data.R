@@ -72,14 +72,16 @@ for(repo in tags$repo){
         new_entry <- artifacts
         |> purrr::pluck(repo)
         |> purrr::map_chr(~purrr::pluck(.x, "login"))
-        |> tibble::enframe("repo", "stargazers")
+        |> tibble::enframe("repo", "stargazer")
         |> dplyr::mutate(repo = !!repo)
-        |> dplyr::group_by(repo)
-        |> dplyr::summarise(stargazers = list(stargazers), .groups = "drop")
+        # |> dplyr::group_by(repo)
+        # |> dplyr::summarise(stargazer = list(stargazer), .groups = "drop")
     )
-    if(nrow(new_entry) == 0) new_entry <- tibble::tibble(repo = !!repo, stargazers = NULL)
+    if(nrow(new_entry) == 0) new_entry <- tibble::tibble(repo = !!repo, stargazer = NULL)
     entries <- dplyr::bind_rows(entries, new_entry)
 }
+
+entries |> dplyr::n_distinct("stargazer")
 
 
 # Teardown ----------------------------------------------------------------
