@@ -6,7 +6,7 @@ archive <- Archive$new()
 
 # Query Github ------------------------------------------------------------
 withr::with_seed(2212, suppressWarnings(
-    packages <- repository$read_pkg_desc()
+    packages <- repository$read_cran_desc()
     |> dplyr::pull("package")
     |> setdiff(archive$show()$repo)
     |> sample()
@@ -18,7 +18,7 @@ for(package in packages) tryCatch({
 
     pb$tick(1)
     suppressMessages({
-        github_slug <- repository$read_pkg_desc() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_slug)
+        github_slug <- repository$read_cran_desc() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_slug)
         owner <- github$extract$owner(github_slug)
         repo <- github$extract$repo(github_slug)
     })

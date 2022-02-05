@@ -21,7 +21,7 @@ invisible(
     |> dplyr::ungroup()
 )
 
-repository$write_pkg_desc(tidy_pkg_desc)
+repository$write_cran_desc(tidy_pkg_desc)
 
 
 # Teardown ----------------------------------------------------------------

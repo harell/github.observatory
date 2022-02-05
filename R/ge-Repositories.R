@@ -28,11 +28,11 @@ Repository <- R6::R6Class(
             message("Unrolled changes to database")
             invisible(self)
         },
-        write_pkg_desc = function(x){
+        write_cran_desc = function(x){
             private$cache$package$cran_desc <- x
             invisible(self)
         },
-        read_pkg_desc = function(){
+        read_cran_desc = function(){
             if(is.null(private$cache$package$cran_desc))
                 private$cache$package$cran_desc <- private$read_sheet(private$paths$package$cran_desc)
             return(private$cache$package$cran_desc)

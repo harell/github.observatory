@@ -19,8 +19,8 @@ for(repo in tags$repo){
         |> purrr::map_chr(~purrr::pluck(.x, "login"))
         |> tibble::enframe("repo", "stargazer")
         |> dplyr::mutate(repo = !!repo)
-        # |> dplyr::group_by(repo)
-        # |> dplyr::summarise(stargazer = list(stargazer), .groups = "drop")
+        |> dplyr::group_by(repo)
+        |> dplyr::summarise(stargazer = list(stargazer), .groups = "drop")
     )
     if(nrow(new_entry) == 0) new_entry <- tibble::tibble(repo = !!repo, stargazer = NULL)
     entries <- dplyr::bind_rows(entries, new_entry)
@@ -30,7 +30,7 @@ entries |> dplyr::n_distinct("stargazer")
 
 
 # Teardown ----------------------------------------------------------------
-archive$clean()
+repository$commit()
 
 
 
