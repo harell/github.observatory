@@ -3,7 +3,7 @@ pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 repository <- Repository$new()
 
 
-# Description -------------------------------------------------------------
+# Download CRAN packages list ---------------------------------------------
 pkg_desc <- tools::CRAN_package_db()
 
 invisible(
@@ -21,10 +21,9 @@ invisible(
     |> dplyr::ungroup()
 )
 
-repository$write_cran_desc(tidy_pkg_desc)
-
 
 # Teardown ----------------------------------------------------------------
+repository$write_cran_desc(tidy_pkg_desc)
 repository$commit()
 
 

@@ -53,6 +53,6 @@ github$extract$slug <- function(url) return(
     |> stringr::str_remove_all("/issues(|/)(|/new|new/)$")
 )
 
-github$compose$slug <- function(owner, repo) as.character(stringr::str_glue("{owner}/{repo}", owner = tolower(owner), repo = tolower(repo)))
+github$compose$slug <- function(owner, repo) as.character(stringr::str_glue("{owner}/{repo}", owner = owner, repo = repo))
 
 github$return_remaining_quote <- purrr::compose(~purrr::pluck(.x, "remaining"), gh::gh_rate_limit)

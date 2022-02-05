@@ -47,7 +47,7 @@ Repository <- R6::R6Class(
         },
         read_repo_desc = function(){
             if(is.null(private$cache$package$repo_desc))
-                private$cache$package$repo_desc <- private$read_obj(private$paths$package$repo_desc)
+                private$cache$package$repo_desc <- self$read_cran_desc() |> dplyr::select(github_slug)
             return(private$cache$package$repo_desc)
         }
     ), private = list(
