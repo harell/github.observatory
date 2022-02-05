@@ -20,9 +20,11 @@ github$query <- function(endpoint){
 
 github$has_next <- eval(parse(text = "gh:::gh_has_next"))
 
+
+# predicates --------------------------------------------------------------
 github$is_valid_url <- function(url) return(
     dplyr::if_else(is.na(url), "NA", url)
-    |> stringr::str_detect("github.com/.*/.*/.*")
+    |> stringr::str_detect("github.com/.*/.*")
 )
 
 
@@ -31,14 +33,14 @@ github$extract$owner <- function(url) return(
     url
     |> github$extract$slug()
     |> stringr::str_split("/")
-    |> purrr::pluck(1, 1)
+    |> purrr::map_chr(~.x[1])
 )
 
 github$extract$repo <- function(url) return(
     url
     |> github$extract$slug()
     |> stringr::str_split("/")
-    |> purrr::pluck(1, 2)
+    |> purrr::map_chr(~.x[2])
 )
 
 github$extract$root <- function(url) return(

@@ -15,6 +15,7 @@ names(artifacts) <- tags$repo
 
 pb <- progress::progress_bar$new(format = "Parsing Stargazers [:bar] :current/:total (:percent) eta: :eta", total = length(tags$repo), clear = FALSE)
 for(repo in tags$repo){
+    # use purrr::keep <https://purrr.tidyverse.org/reference/detect.html>
     pb$tick(1)
     invisible(
         new_entry <- artifacts
