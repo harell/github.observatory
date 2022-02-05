@@ -4,12 +4,11 @@
 #' @noRd
 Repository <- R6::R6Class(
     classname = "Repository", cloneable = FALSE, public = list(
-        #' @param immediate (`logical`) Should queries be committed immediately?
-        initialize = function(immediate = FALSE){
-            private$immediate <- immediate
+        initialize = function(){
             ## Configurations
             private$paths <- list(package = list())
-            private$paths$package <- list(cran_desc = usethis::proj_path("_cache", "cran_package_description", ext = "csv"))
+            private$paths$package$cran_desc <- usethis::proj_path("_cache", "cran_desc", ext = "csv")
+            private$paths$package$repo_desc <- usethis::proj_path("_cache", "repo_desc", ext = "rds")
 
             ## Set Cache
             private$cache$package <- list()
@@ -17,10 +16,16 @@ Repository <- R6::R6Class(
         },
         #' @description Store changes
         commit = function(){
-            x <- private$cache$package$cran_desc
-            file <- private$paths$package$cran_desc
-            private$write_sheet(x, file)
-            message("Commited data to database")
+            obj_names <- c("cran_desc", "repo_desc")
+
+            for(obj_name in obj_names){
+                x <- private$cache$package[[obj_name]]
+                if(is.null(x)) next
+                file <- private$paths$package[[obj_name]]
+                private$write_obj(x, file)
+            }
+
+            message("Commited changes to database")
             invisible(self)
         },
         unroll = function(){
@@ -28,29 +33,57 @@ Repository <- R6::R6Class(
             message("Unrolled changes to database")
             invisible(self)
         },
-        write_pkg_desc = function(x){
+        write_cran_desc = function(x){
             private$cache$package$cran_desc <- x
             invisible(self)
         },
-        read_pkg_desc = function(){
-            if(is.null(private$cache$package$cran_desc))
-                private$cache$package$cran_desc <- private$read_sheet(private$paths$package$cran_desc)
+        write_repo_desc = function(x){
+            private$cache$package$repo_desc <- x
+            invisible(self)
+        },
+        read_cran_desc = function(){
+            if(is.null(private$cache$package$cran_desc)) private$cache$package$cran_desc <- private$read_obj(private$paths$package$cran_desc)
             return(private$cache$package$cran_desc)
-        }
+        },
+        read_repo_desc = function(){
+            file_exists <- file.exists(private$paths$package$repo_desc)
+            file_loaded <- !is.null(private$cache$package$repo_desc)
+            if(!file_exists & !file_loaded) self$create_repo_desc() else if(file_exists) private$cache$package$repo_desc <- private$read_obj(private$paths$package$repo_desc)
+            return(private$cache$package$repo_desc)
+        },
+        create_repo_desc = function() suppressMessages(
+            self$read_cran_desc()
+            |> dplyr::transmute(owner = github$extract$owner(github_slug), repo = github$extract$repo(github_slug))
+            |> tibble::add_column(stargazers = list(NULL))
+            |> self$write_repo_desc()
+        )
     ), private = list(
         # Private Methods ---------------------------------------------------------
-        write_sheet = function(x, file){
-            dir.create(dirname(file), FALSE, TRUE)
-            readr::write_csv(x, file, na = "")
+        write_obj = function(x, file){
+            fs::dir_create(dirname(file), FALSE, TRUE)
+
+            switch(tolower(fs::path_ext(file)),
+                   csv = readr::write_csv(x, file, na = ""),
+                   rds = readr::write_rds(x, file)
+            )
+
             message("Saved ", basename(file))
         },
-        read_sheet = function(file){
-            x <- if(file.exists(file)) readr::read_csv(file, show_col_types = FALSE, lazy = FALSE) else tibble::tibble()
+        read_obj = function(file){
+            if(file.exists(file)) {
+                x <- switch(
+                    tolower(fs::path_ext(file)),
+                    csv = readr::read_csv(file, show_col_types = FALSE, lazy = FALSE),
+                    rds = readr::read_rds(file)
+                )
+            } else {
+                x <- tibble::tibble()
+            }
+
             message("Loaded ", basename(file))
             return(x)
         },
         # Private Fields ----------------------------------------------------------
-        immediate = NULL,
         cache = new.env(),
         paths = list()
     )
@@ -73,6 +106,9 @@ Archive <- R6::R6Class(
             archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = tags)
             invisible(self)
         },
+        load = function(md5hash){
+            purrr::map(md5hash, archivist::loadFromLocalRepo, repoDir = private$path, value = TRUE)
+        },
         show = function() tryCatch((
             archivist::splitTagsLocal(repoDir = private$path)
             |> dplyr::select(-createdDate)
@@ -87,8 +123,11 @@ Archive <- R6::R6Class(
             |> tidyr::drop_na()
         )),
         clean = function(){
+            N1 <- nrow(self$show())
             private$discard_duplicates()
             private$discard_outdated()
+            N2 <- nrow(self$show())
+            if(N1>N2) message("Discarded ", N1-N2, " items")
             invisible(self)
         },
         finalize = function(){self$clean(); invisible(self)}

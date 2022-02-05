@@ -2,7 +2,6 @@
 
 export(Archive)
 export(Repository)
-export(ge)
 export(github)
 export(query)
 export(standardise_col_names)

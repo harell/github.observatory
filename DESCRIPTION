@@ -17,6 +17,7 @@ Depends:
     R (>= 4.1)
 Imports: 
     archivist,
+    fs,
     dplyr,
     gh,
     glue,
@@ -24,11 +25,13 @@ Imports:
     purrr,
     R6,
     readr,
-    tibble,
     snakecase,
+    tibble,
     tidyr
 Suggests: 
+    bannerCommenter,
     httr,
+    progress,
     testthat,
     withr
 Encoding: UTF-8

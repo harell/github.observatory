@@ -14,3 +14,4 @@ renv/
 CRAN-RELEASE
 cran-comments.md
 revdep/
+*.csv

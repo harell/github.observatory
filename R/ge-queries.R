@@ -1,4 +1,4 @@
-#' @title Github Query Functions
+#' @title Github Explorer Query Functions
 #' @export
 query <- new.env()
 
