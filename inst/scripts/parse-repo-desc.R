@@ -14,24 +14,23 @@ artifacts <- archive$load(tags$artifact)
 names(artifacts) <- tags$repo
 
 pb <- progress::progress_bar$new(format = "Parsing Stargazers [:bar] :current/:total (:percent) eta: :eta", total = length(tags$repo), clear = FALSE)
-for(repo in tags$repo){
-    # use purrr::keep <https://purrr.tidyverse.org/reference/detect.html>
+for(repo in tags$repo) tryCatch({
     pb$tick(1)
     invisible(
-        new_entry <- artifacts
+        stargazers <- artifacts
         |> purrr::pluck(repo)
         |> purrr::map_chr(~purrr::pluck(.x, "login"))
         |> tibble::enframe("repo", "stargazer")
         |> dplyr::mutate(repo = !!repo)
         |> dplyr::group_by(repo)
-        |> dplyr::summarise(stargazer = list(stargazer), .groups = "drop")
+        |> dplyr::summarise(stargazers = list(stargazer), .groups = "drop")
+        |> dplyr::pull(stargazers)
     )
-    if(nrow(new_entry) == 0) new_entry <- tibble::tibble(repo = !!repo, stargazer = NULL)
-    entries <- dplyr::bind_rows(entries, new_entry)
-}
-entries |> dplyr::n_distinct("stargazer")
+    if(length(stargazers) == 0) next
+    tidy_repo_desc[tidy_repo_desc$repo %in% repo, "stargazers"][[1]] <- stargazers
+}, error = function(e) pb$message(glue("Failed to parse {repo} information")))
 
 
 # Teardown ----------------------------------------------------------------
-repository$write_repo_desc(tidy_pkg_desc)
+repository$write_repo_desc(tidy_repo_desc)
 repository$commit()

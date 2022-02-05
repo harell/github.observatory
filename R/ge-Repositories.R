@@ -20,6 +20,7 @@ Repository <- R6::R6Class(
 
             for(obj_name in obj_names){
                 x <- private$cache$package[[obj_name]]
+                if(is.null(x)) next
                 file <- private$paths$package[[obj_name]]
                 private$write_obj(x, file)
             }
@@ -41,15 +42,21 @@ Repository <- R6::R6Class(
             invisible(self)
         },
         read_cran_desc = function(){
-            if(is.null(private$cache$package$cran_desc))
-                private$cache$package$cran_desc <- private$read_obj(private$paths$package$cran_desc)
+            if(is.null(private$cache$package$cran_desc)) private$cache$package$cran_desc <- private$read_obj(private$paths$package$cran_desc)
             return(private$cache$package$cran_desc)
         },
         read_repo_desc = function(){
-            if(is.null(private$cache$package$repo_desc))
-                private$cache$package$repo_desc <- self$read_cran_desc() |> dplyr::transmute(owner = github$extract$owner(github_slug), repo = github$extract$repo(github_slug))
+            file_exists <- file.exists(private$paths$package$repo_desc)
+            file_loaded <- !is.null(private$cache$package$repo_desc)
+            if(!file_exists & !file_loaded) self$create_repo_desc() else if(file_exists) private$cache$package$repo_desc <- private$read_obj(private$paths$package$repo_desc)
             return(private$cache$package$repo_desc)
-        }
+        },
+        create_repo_desc = function() suppressMessages(
+            self$read_cran_desc()
+            |> dplyr::transmute(owner = github$extract$owner(github_slug), repo = github$extract$repo(github_slug))
+            |> tibble::add_column(stargazers = list(NULL))
+            |> self$write_repo_desc()
+        )
     ), private = list(
         # Private Methods ---------------------------------------------------------
         write_obj = function(x, file){

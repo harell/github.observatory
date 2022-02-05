@@ -16,7 +16,7 @@ pb <- progress::progress_bar$new(format = "Quering Github [:bar] :current/:total
 for(package in packages) tryCatch({
     if(which(packages %in% package) - 1 %% 10 == 0) if(github$return_remaining_quote() < 50) {pb$message(glue("Reached GitHub API call limit")); break}
 
-    pb$tick(1)
+    try(pb$tick(1), silent = TRUE)
     suppressMessages({
         github_slug <- repository$read_cran_desc() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_slug)
         owner <- github$extract$owner(github_slug)
