@@ -8,8 +8,8 @@ print_banner("Collate packages information from CRAN")
 source(system.file("scripts", "collate-cran-desc.R", package = "github.explorer", mustWork = TRUE))
 
 print_banner("Collate packages information from GitHub")
+# Repository$new()$create_repo_desc()$commit() # Reset cache (optional)
 source(system.file("scripts", "collate-repo-desc.R", package = "github.explorer", mustWork = TRUE))
 
 print_banner("Parse GitHub packages information")
 source(system.file("scripts", "parse-repo-desc.R", package = "github.explorer", mustWork = TRUE))
-

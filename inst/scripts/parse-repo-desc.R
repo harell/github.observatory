@@ -5,7 +5,7 @@ archive <- Archive$new()
 
 
 # Load cached data --------------------------------------------------------
-tidy_repo_desc <- repository$read_repo_desc()
+tidy_repo_desc <- repository$create_repo_desc()
 
 
 # Parse stargazers --------------------------------------------------------
@@ -19,7 +19,7 @@ for(repo in tags$repo) tryCatch({
     invisible(
         stargazers <- artifacts
         |> purrr::pluck(repo)
-        |> purrr::map_chr(~purrr::pluck(.x, "login"))
+        |> purrr::map_chr(~purrr::pluck(.x, "id"))
         |> tibble::enframe("repo", "stargazer")
         |> dplyr::mutate(repo = !!repo)
         |> dplyr::group_by(repo)
@@ -28,7 +28,7 @@ for(repo in tags$repo) tryCatch({
     )
     if(length(stargazers) == 0) next
     tidy_repo_desc[tidy_repo_desc$repo %in% repo, "stargazers"][[1]] <- stargazers
-}, error = function(e) pb$message(glue("Failed to parse {repo} information")))
+}, error = function(e) pb$message(glue("Failed to parse `{repo}` information")))
 
 
 # Teardown ----------------------------------------------------------------
