@@ -14,7 +14,6 @@ artifacts <- archive$load(tags$artifact)
 names(artifacts) <- tags$repo
 
 pb <- progress::progress_bar$new(format = "Parsing Stargazers [:bar] :current/:total (:percent) eta: :eta", total = length(tags$repo), clear = FALSE)
-entries <- tibble::tibble()
 for(repo in tags$repo){
     pb$tick(1)
     invisible(
@@ -30,7 +29,6 @@ for(repo in tags$repo){
     entries <- dplyr::bind_rows(entries, new_entry)
 }
 entries |> dplyr::n_distinct("stargazer")
-
 
 
 # Teardown ----------------------------------------------------------------

@@ -24,10 +24,10 @@ for(package in packages) tryCatch({
     })
 
     artifact <- query$package$overview(owner, repo)
-    archive$save(artifact, tags = c("type:overview", paste0("owner:",owner), paste0("repo:",repo)))
+    archive$save(artifact, tags = c("type:overview", paste0("owner:", owner), paste0("repo:", repo)))
 
     artifact <- query$package$stargazers(owner, repo)
-    archive$save(artifact, tags = c("type:stargazers", paste0("owner:",owner), paste0("repo:",repo)))
+    archive$save(artifact, tags = c("type:stargazers", paste0("owner:", owner), paste0("repo:", repo)))
 
     pb$message(glue("Retrieved {package} information"))
 }, error = function(e) pb$message(glue("Failed to get {package} information")))
