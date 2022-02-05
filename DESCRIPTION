@@ -17,6 +17,7 @@ Depends:
     R (>= 4.1)
 Imports: 
     archivist,
+    fs,
     dplyr,
     gh,
     glue,

@@ -4,12 +4,11 @@
 #' @noRd
 Repository <- R6::R6Class(
     classname = "Repository", cloneable = FALSE, public = list(
-        #' @param immediate (`logical`) Should queries be committed immediately?
-        initialize = function(immediate = FALSE){
-            private$immediate <- immediate
+        initialize = function(){
             ## Configurations
             private$paths <- list(package = list())
-            private$paths$package <- list(cran_desc = usethis::proj_path("_cache", "cran_package_description", ext = "csv"))
+            private$paths$package$cran_desc <- usethis::proj_path("_cache", "cran_desc", ext = "csv")
+            private$paths$package$repo_desc <- usethis::proj_path("_cache", "repo_desc", ext = "rds")
 
             ## Set Cache
             private$cache$package <- list()
@@ -17,9 +16,14 @@ Repository <- R6::R6Class(
         },
         #' @description Store changes
         commit = function(){
-            x <- private$cache$package$cran_desc
-            file <- private$paths$package$cran_desc
-            private$write_sheet(x, file)
+            obj_names <- c("cran_desc", "repo_desc")
+
+            for(obj_name in obj_names){
+                x <- private$cache$package[[obj_name]]
+                file <- private$paths$package[[obj_name]]
+                private$write_obj(x, file)
+            }
+
             message("Commited changes to database")
             invisible(self)
         },
@@ -32,25 +36,47 @@ Repository <- R6::R6Class(
             private$cache$package$cran_desc <- x
             invisible(self)
         },
+        write_repo_desc = function(x){
+            private$cache$package$repo_desc <- x
+            invisible(self)
+        },
         read_cran_desc = function(){
             if(is.null(private$cache$package$cran_desc))
-                private$cache$package$cran_desc <- private$read_sheet(private$paths$package$cran_desc)
+                private$cache$package$cran_desc <- private$read_obj(private$paths$package$cran_desc)
             return(private$cache$package$cran_desc)
+        },
+        read_repo_desc = function(){
+            if(is.null(private$cache$package$repo_desc))
+                private$cache$package$repo_desc <- private$read_obj(private$paths$package$repo_desc)
+            return(private$cache$package$repo_desc)
         }
     ), private = list(
         # Private Methods ---------------------------------------------------------
-        write_sheet = function(x, file){
-            dir.create(dirname(file), FALSE, TRUE)
-            readr::write_csv(x, file, na = "")
+        write_obj = function(x, file){
+            fs::dir_create(dirname(file), FALSE, TRUE)
+
+            switch(tolower(fs::path_ext(file)),
+                   csv = readr::write_csv(x, file, na = ""),
+                   rds = readr::write_rds(x, file)
+            )
+
             message("Saved ", basename(file))
         },
-        read_sheet = function(file){
-            x <- if(file.exists(file)) readr::read_csv(file, show_col_types = FALSE, lazy = FALSE) else tibble::tibble()
+        read_obj = function(file){
+            if(file.exists(file)) {
+                x <- switch(
+                    tolower(fs::path_ext(file)),
+                    csv = readr::read_csv(file, show_col_types = FALSE, lazy = FALSE),
+                    rds = readr::read_rds(file)
+                )
+            } else {
+                x <- tibble::tibble()
+            }
+
             message("Loaded ", basename(file))
             return(x)
         },
         # Private Fields ----------------------------------------------------------
-        immediate = NULL,
         cache = new.env(),
         paths = list()
     )

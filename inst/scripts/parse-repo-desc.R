@@ -4,7 +4,11 @@ repository <- Repository$new()
 archive <- Archive$new()
 
 
-# Parse Pacakges Information ----------------------------------------------
+# Load cached data --------------------------------------------------------
+tidy_repo_desc <- repository$read_repo_desc()
+
+
+# Parse packages information ----------------------------------------------
 tags <- archive$show() |> dplyr::filter(type %in% "stargazers")
 artifacts <- archive$load(tags$artifact)
 names(artifacts) <- tags$repo
@@ -25,6 +29,8 @@ for(repo in tags$repo){
     if(nrow(new_entry) == 0) new_entry <- tibble::tibble(repo = !!repo, stargazer = NULL)
     entries <- dplyr::bind_rows(entries, new_entry)
 }
+
+repository$read_repo_desc(tidy_pkg_desc)
 
 entries |> dplyr::n_distinct("stargazer")
 
