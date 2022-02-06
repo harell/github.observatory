@@ -11,7 +11,7 @@ tidy_repo_desc <- repository$create_repo_desc()$read_repo_desc()
 # Parse stargazers --------------------------------------------------------
 invisible(
     tags <- archive$show()
-    |> dplyr::filter(type %in% "stargazers")
+    |> dplyr::filter(entity %in% "package", type %in% "stargazers")
     |> dplyr::inner_join(repository$read_cran_desc(), by = c("repo" = "package"))
 )
 artifacts <- archive$load(tags$artifact)
@@ -32,7 +32,7 @@ for(repo in tags$repo) tryCatch({
     )
     if(length(stargazers) == 0) next
     tidy_repo_desc[tidy_repo_desc$repo %in% repo, "stargazers"][[1]] <- stargazers
-}, error = function(e) pb$message(glue("Failed to parse `{repo}` information")))
+}, error = function(e) pb$message(glue("Failed to parse `{repo}`")))
 
 
 # Teardown ----------------------------------------------------------------

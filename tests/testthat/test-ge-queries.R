@@ -1,3 +1,4 @@
-test_that("get user starred repos", {
-  expect_type(query$user$starred("nz-stefan"), "character")
+test_that("user qureis work", {
+    expect_type(query$user$starred("nz-stefan"), "character")
+    expect_identical(query$user$by_login("nz-stefan"), query$user$by_id(5642464))
 })
