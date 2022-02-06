@@ -31,7 +31,7 @@ for(package in packages) tryCatch({
     archive$save(artifact, tags = c("type:stargazers", paste0("owner:", owner), paste0("repo:", repo)))
 
     try(pb$message(glue("Retrieved `{package}` information"), silent = TRUE))
-}, error = function(e) try(pb$message(glue("Failed to get `{package}` information"))), silent = TRUE)
+}, error = function(e) try(pb$message(glue("Failed to get `{package}` information")), silent = TRUE))
 
 
 # Teardown ----------------------------------------------------------------
