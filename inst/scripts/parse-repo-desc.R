@@ -11,7 +11,7 @@ tidy_repo_desc <- repository$create_repo_desc()$read_repo_desc()
 # Parse stargazers --------------------------------------------------------
 invisible(
     tags <- archive$show()
-    |> dplyr::filter(entity %in% "package", type %in% "stargazers")
+    |> dplyr::filter(entity %in% "repo", type %in% "stargazers")
     |> dplyr::inner_join(repository$read_cran_desc(), by = c("repo" = "package"))
 )
 artifacts <- archive$load(tags$artifact)

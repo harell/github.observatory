@@ -14,8 +14,8 @@ withr::with_seed(2212, suppressWarnings(
 
 pb <- progress::progress_bar$new(format = "Quering Github Repos [:bar] :current/:total (:percent) eta: :eta", total = length(packages), clear = FALSE)
 for(package in packages) tryCatch({
-    if((which(packages %in% package) - 1) %% 10 == 0) if(github$return_remaining_quote() < 50) {pb$message(glue("Reached GitHub API call limit")); break}
-    # if((which(packages %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 50) Sys.sleep(60)
+    # if((which(packages %in% package) - 1) %% 10 == 0) if(github$return_remaining_quote() < 50) {pb$message(glue("Reached GitHub API call limit")); break}
+    if((which(packages %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 50) Sys.sleep(60)
 
     try(pb$tick(1), silent = TRUE)
     suppressMessages({
@@ -25,10 +25,11 @@ for(package in packages) tryCatch({
     })
 
     artifact <- query$package$overview(owner, repo)
-    archive$save(artifact, tags = c("entity:package", "type:overview", paste0("owner:", owner), paste0("repo:", repo)))
+    archive$save(artifact, tags = c("entity:repo", "type:overview", paste0("owner:", owner), paste0("repo:", repo)))
 
     artifact <- query$package$stargazers(owner, repo)
-    archive$save(artifact, tags = c("entity:package", "type:stargazers", paste0("owner:", owner), paste0("repo:", repo)))
+    artifact <- artifact |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
+    archive$save(artifact, tags = c("entity:repo", "type:stargazers", paste0("owner:", owner), paste0("repo:", repo)))
 
     try(pb$message(glue("Retrieved `{package}` information")), silent = TRUE)
 }, error = function(e) try(pb$message(glue("Failed to retrieve `{package}` information")), silent = TRUE))
