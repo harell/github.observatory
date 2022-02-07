@@ -97,13 +97,22 @@ Archive <- R6::R6Class(
     classname = "Repository", cloneable = FALSE, public = list(
         # Public Methods ----------------------------------------------------------
         #' @param path (`character`) A character denoting an existing directory of the Repository for which metadata will be aved and returned.
-        initialize = function(path = usethis::proj_path("_cache")){
+        #' @param immediate (`logical`) Should queries be committed immediately?
+        initialize = function(path = usethis::proj_path("_cache"), immediate = FALSE){
             private$path <- path
+            private$immediate <- immediate
             suppressMessages(archivist::createLocalRepo(path))
         },
         save = function(artifact, tags = character()){
             tags <- c(paste0("date:", lubridate::format_ISO8601(Sys.Date())), tags)
-            archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = tags)
+
+            if(private$immediate){
+                private$.save(artifact, tags = tags)
+            } else {
+                private$tags <- append(private$tags, list(tags))
+                private$artifact <- append(private$artifact, list(artifact))
+            }
+
             invisible(self)
         },
         load = function(md5hash){
@@ -122,6 +131,17 @@ Archive <- R6::R6Class(
             tibble::tibble(artifact = NA_character_, date = Sys.Date())
             |> tidyr::drop_na()
         )),
+        commit = function(){
+            purrr::walk2(private$artifact, private$tags, private$.save)
+            private$artifact <- private$tags <- list()
+            message("Commited artifacts to archive")
+            invisible(self)
+        },
+        rollback = function(){
+            private$artifact <- private$tags <- list()
+            message("Unrolled artifacts to archive")
+            invisible(self)
+        },
         clean = function(){
             N1 <- nrow(self$show())
             private$discard_duplicates()
@@ -130,11 +150,18 @@ Archive <- R6::R6Class(
             if(N1>N2) message("Discarded ", N1-N2, " items")
             invisible(self)
         },
-        finalize = function(){self$clean(); invisible(self)}
+        finalize = function(){
+            suppressMessages({self$rollback(); self$clean()})
+            invisible(self)
+        }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         path = character(),
+        immediate = logical(),
+        tags = list(),
+        artifact = list(),
         # Private Methods ---------------------------------------------------------
+        .save = function(artifact, tags = character()) archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = tags),
         discard_duplicates = function(){
             invisible(
                 keep_artifact <- self$show()
