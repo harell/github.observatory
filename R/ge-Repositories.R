@@ -99,6 +99,7 @@ Archive <- R6::R6Class(
         #' @param path (`character`) A character denoting an existing directory of the Repository for which metadata will be aved and returned.
         #' @param immediate (`logical`) Should queries be committed immediately?
         initialize = function(path = usethis::proj_path("_cache"), immediate = FALSE){
+            dir.create(path, F, T)
             private$path <- path
             private$immediate <- immediate
             suppressMessages(archivist::createLocalRepo(path))
@@ -186,3 +187,9 @@ Archive <- R6::R6Class(
         }
     )# end private
 )# end Archive
+
+
+# Archive Derivatives -----------------------------------------------------
+UserArchive <- RepoArchive <- new.env()
+UserArchive$new <- function(path = usethis::proj_path("_cache", "archive", "user"), immediate = FALSE) Archive$new(path, immediate)
+RepoArchive$new <- function(path = usethis::proj_path("_cache", "archive", "repo"), immediate = FALSE) Archive$new(path, immediate)

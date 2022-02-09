@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 repository <- Repository$new()
-archive <- Archive$new()
+repo_archive <- RepoArchive$new()
 
 
 # Load cached data --------------------------------------------------------
@@ -10,11 +10,11 @@ tidy_repo_desc <- repository$create_repo_desc()$read_repo_desc()
 
 # Parse stargazers --------------------------------------------------------
 invisible(
-    tags <- archive$show()
+    tags <- repo_archive$show()
     |> dplyr::filter(entity %in% "repo", type %in% "stargazers")
     |> dplyr::inner_join(repository$read_cran_desc(), by = c("repo" = "package"))
 )
-artifacts <- archive$load(tags$artifact)
+artifacts <- repo_archive$load(tags$artifact)
 names(artifacts) <- tags$repo
 
 pb <- progress::progress_bar$new(format = "Parsing Stargazers [:bar] :current/:total (:percent) eta: :eta", total = length(tags$repo), clear = FALSE)
