@@ -5,6 +5,7 @@ github <- new.env()
 
 # service -----------------------------------------------------------------
 github$query <- function(endpoint){
+    eval(parse(text = "httr::set_config(httr::timeout(60))"))
     output <- list()
     output[[1]] <- gh::gh(endpoint, .limit = 100)
 

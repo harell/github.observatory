@@ -17,40 +17,11 @@ invisible(
             github$compose$slug(owner = "cran", repo = package)
         )
     )
+    |> dplyr::distinct(package, .keep_all = TRUE)
 )
 
 
 # Teardown ----------------------------------------------------------------
 repository$write_cran_desc(tidy_pkg_desc)
 repository$commit()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
