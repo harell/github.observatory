@@ -1,7 +1,5 @@
 ---
 output: github_document
-bibliography: [./inst/REFERENCES.bib]
-biblio-style: apalike
 link-citations: yes
 editor_options: 
   canonical: true
@@ -23,6 +21,7 @@ status](https://www.r-pkg.org/badges/version/github.explorer)](https://CRAN.R-pr
 [![R build
 status](https://github.com/harell/github.explorer/workflows/R-CMD-check/badge.svg)](https://github.com/harell/github.explorer/actions)
 [![Codecov test coverage](https://codecov.io/gh/harell/github.explorer/branch/master/graph/badge.svg)](https://codecov.io/gh/harell/github.explorer?branch=master)
+[![R-CMD-check](https://github.com/harell/github.explorer/workflows/R-CMD-check/badge.svg)](https://github.com/harell/github.explorer/actions)
 <!-- badges: end -->
 
 

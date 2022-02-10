@@ -1,4 +1,3 @@
-
 # `github.explorer` <img src="https://raw.githubusercontent.com/harell/github.explorer/master/pkgdown/logo.png" align="right" height="75"/>
 
 <!-- badges: start -->
@@ -22,7 +21,5 @@ recommend them some R packages that they may like.
 
 You can install `github.explorer` by using:
 
-``` r
-install.packages("remotes")
-remotes::install_github("harell/github.explorer")
-```
+    install.packages("remotes")
+    remotes::install_github("harell/github.explorer")
