@@ -93,8 +93,7 @@ Repository <- R6::R6Class(
 #' @keywords internal
 #' @export
 #' @noRd
-Archive <- R6::R6Class(
-    classname = "Repository", cloneable = FALSE, public = list(
+Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = list(
         # Public Methods ----------------------------------------------------------
         #' @param path (`character`) A character denoting an existing directory of the Repository for which metadata will be aved and returned.
         #' @param immediate (`logical`) Should queries be committed immediately?
@@ -118,6 +117,10 @@ Archive <- R6::R6Class(
         },
         load = function(md5hash){
             purrr::map(md5hash, archivist::loadFromLocalRepo, repoDir = private$path, value = TRUE)
+        },
+        delete = function(md5hash){
+            private$.delete(md5hash)
+            invisible(self)
         },
         show = function() tryCatch((
             archivist::splitTagsLocal(repoDir = private$path)
@@ -163,6 +166,7 @@ Archive <- R6::R6Class(
         artifact = list(),
         # Private Methods ---------------------------------------------------------
         .save = function(artifact, tags = character()) archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = tags),
+        .delete = function(md5hash) archivist::rmFromLocalRepo(md5hash, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE),
         discard_duplicates = function(){
             invisible(
                 keep_artifact <- self$show()
@@ -190,6 +194,10 @@ Archive <- R6::R6Class(
 
 
 # Archive Derivatives -----------------------------------------------------
-UserArchive <- RepoArchive <- new.env()
+#' @describeIn Archive User Archive
+UserArchive <- new.env()
 UserArchive$new <- function(path = usethis::proj_path("_cache", "archive", "user"), immediate = FALSE) Archive$new(path, immediate)
+
+#' @describeIn Archive Repo Archive
+RepoArchive <- new.env()
 RepoArchive$new <- function(path = usethis::proj_path("_cache", "archive", "repo"), immediate = FALSE) Archive$new(path, immediate)
