@@ -35,5 +35,21 @@ for(repo in tags$repo) tryCatch({
 }, error = function(e) pb$message(glue("Failed to parse `{repo}`")))
 
 
+# Parse package metadata --------------------------------------------------
+invisible(
+    tags <- repo_archive$show()
+    |> dplyr::filter(entity %in% "repo", type %in% "overview")
+    |> dplyr::inner_join(repository$read_cran_desc(), by = c("repo" = "package"))
+)
+artifacts <- repo_archive$load(tags$artifact)
+names(artifacts) <- tags$repo
+
+pb <- progress::progress_bar$new(format = "Parsing Metadata [:bar] :current/:total (:percent) eta: :eta", total = length(tags$repo), clear = FALSE)
+for(repo in tags$repo) tryCatch({
+    pb$tick(1)
+    tidy_repo_desc[tidy_repo_desc$repo %in% repo, "repo_id"] <- artifacts |> purrr::pluck(repo, "id") |> as.integer()
+}, error = function(e) pb$message(glue("Failed to parse `{repo}`")))
+
+
 # Teardown ----------------------------------------------------------------
 repository$write_repo_desc(tidy_repo_desc)$commit()
