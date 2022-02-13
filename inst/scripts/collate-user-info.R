@@ -7,9 +7,9 @@ user_archive <- UserArchive$new()
 # Query Github ------------------------------------------------------------
 invisible(
     users <- repository$read_repo_desc()
-    |> tidyr::unnest(cols = stargazers)
-    |> dplyr::count(stargazers, sort = TRUE)
-    |> dplyr::pull("stargazers")
+    |> tidyr::unnest(cols = stargazers_id)
+    |> dplyr::count(stargazers_id, sort = TRUE)
+    |> dplyr::pull("stargazers_id")
     |> setdiff(tryCatch(user_archive$show() |> dplyr::filter(entity %in% "user") |> dplyr::pull("id"), error = function(e) return(0)))
 )
 
