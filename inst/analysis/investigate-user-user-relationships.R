@@ -10,6 +10,8 @@ invisible(
     |> tidyr::unnest(stargazers_login)
     |> dplyr::transmute(user = stargazers_login, item = repo)
     |> dplyr::distinct()
+    |> dplyr::add_count(user, name = "stargazed")
+    |> dplyr::filter(stargazed >= 3)
     |> dplyr::mutate(
         user_id = user |> factor() |> as.integer(),
         item_id = item |> factor() |> as.integer()
@@ -30,8 +32,18 @@ smatrix <- Matrix::sparseMatrix(
 dim(smatrix)
 
 
+# Statistics --------------------------------------------------------------
+# (
+#     repo_desc
+#     |> dplyr::distinct(user, stargazed)
+#     |> dplyr::pull(stargazed)
+#     |> table()
+#     |> cumsum() / 147963
+# )
+
+
 # Model data --------------------------------------------------------------
-system.time(user_user_sim_mat <- proxyC::simil(smatrix, margin = 1, method = "jaccard", min_simil = 0.1, diag = !TRUE))
+system.time(user_user_sim_mat <- proxyC::simil(smatrix, margin = 1, method = "jaccard", min_simil = 0.1, diag = FALSE))
 readr::write_rds(user_user_sim_mat, output_path)
 
 
