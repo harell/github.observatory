@@ -17,8 +17,8 @@ Depends:
     R (>= 4.1)
 Imports: 
     archivist,
-    fs,
     dplyr,
+    fs,
     gh,
     glue,
     lubridate,
@@ -31,8 +31,11 @@ Imports:
 Suggests: 
     bannerCommenter,
     httr,
+    Matrix,
     progress,
+    recommenderlab,
     testthat,
+    usethis,
     withr
 Encoding: UTF-8
 Language: en-GB
