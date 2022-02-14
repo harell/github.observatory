@@ -1,5 +1,4 @@
 # Setup -------------------------------------------------------------------
-# remotes::install_cran(c("recommenderlab", "arules"), quiet = TRUE)
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 repository <- Repository$new()
 
