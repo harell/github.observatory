@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 repository <- Repository$new()
-output_path <- usethis::proj_path("_cache", "user_user_matrix", ext = "rds")
+output_path <- usethis::proj_path("_cache", "user_user_sim_mat", ext = "rds")
 
 
 # Compose Stargazer-Package Matrix ----------------------------------------
@@ -15,11 +15,11 @@ invisible(
         item_id = item |> factor() |> as.integer()
     )
     ## Sample data for testing purposes
-    |> dplyr::filter(item_id %in% 1:100)
-    |> dplyr::mutate(
-        user_id = user |> factor() |> as.integer(),
-        item_id = item |> factor() |> as.integer()
-    )
+    # |> dplyr::filter(item_id %in% 1:100)
+    # |> dplyr::mutate(
+    #     user_id = user |> factor() |> as.integer(),
+    #     item_id = item |> factor() |> as.integer()
+    # )
 )
 
 smatrix <- Matrix::sparseMatrix(
