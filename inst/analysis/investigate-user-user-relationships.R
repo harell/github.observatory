@@ -11,7 +11,7 @@ invisible(
     |> dplyr::transmute(user = stargazers_login, item = repo)
     |> dplyr::distinct()
     |> dplyr::add_count(user, name = "stargazed")
-    |> dplyr::filter(stargazed >= 10)
+    |> dplyr::filter(stargazed >= 3)
     |> dplyr::mutate(
         user_id = user |> factor() |> as.integer(),
         item_id = item |> factor() |> as.integer()
