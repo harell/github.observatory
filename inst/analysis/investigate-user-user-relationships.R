@@ -11,7 +11,7 @@ invisible(
     |> dplyr::transmute(user = stargazers_login, item = repo)
     |> dplyr::distinct()
     |> dplyr::add_count(user, name = "stargazed")
-    |> dplyr::filter(stargazed >= 3)
+    |> dplyr::filter(stargazed >= 10)
     |> dplyr::mutate(
         user_id = user |> factor() |> as.integer(),
         item_id = item |> factor() |> as.integer()
@@ -33,13 +33,13 @@ dim(smatrix)
 
 
 # Statistics --------------------------------------------------------------
-# (
-#     repo_desc
-#     |> dplyr::distinct(user, stargazed)
-#     |> dplyr::pull(stargazed)
-#     |> table()
-#     |> cumsum() / 147963
-# )
+(
+    repo_desc
+    |> dplyr::distinct(user, stargazed)
+    |> dplyr::pull(stargazed)
+    |> table()
+    |> cumsum() / 147963
+)
 
 
 # Model data --------------------------------------------------------------
@@ -47,9 +47,15 @@ system.time(user_user_sim_mat <- proxyC::simil(smatrix, margin = 1, method = "ja
 readr::write_rds(user_user_sim_mat, output_path)
 
 
-# index <- which(user_dist@Dimnames[[1]] %in%  c("harell","nz-stefan")[1])
-# user_dist[,index] |> table()
-
 # Recommend users to users ------------------------------------------------
+index <- which(user_user_sim_mat@Dimnames[[1]] %in%  c("harell","nz-stefan")[1])
+
+(
+    user_user_sim_mat[,index]
+    |> sort(TRUE)
+    |> tibble::enframe("user", "rating")
+    |> dplyr::slice(-1)
+    |> dplyr::slice_head(n = 10)
+)
 
 

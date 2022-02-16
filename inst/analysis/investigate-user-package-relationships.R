@@ -27,40 +27,28 @@ imatrix <- imatrix |> as("itemMatrix") |> as("binaryRatingMatrix")
 # round(recommenderlab::rowCounts(imatrix) |> table() |> prop.table() * 100)
 
 
-# Evaluate models ---------------------------------------------------------
-# eval_sets <- recommenderlab::evaluationScheme(
-#     data = imatrix,
-#     method = "bootstrap",
-#     train = 0.687,
-#     k = 10,
-#     given = -1
-# )
-#
-# models_to_evaluate <- list()
-# models_to_evaluate[["UBCF Cosinus"]] <- list(name = "UBCF", param = list(method = "cosine"))
-# models_to_evaluate[["Baseline"]] <- list(name = "RANDOM", param = list(method = "cosine"))
-#
-# list_results <- recommenderlab::evaluate(
-#     x = eval_sets,
-#     method = models_to_evaluate,
-#     n = c(1, 5)
-# )
-#
-# recommenderlab::plot(list_results)
-
-
 # Model data --------------------------------------------------------------
 mdl <- recommenderlab::Recommender(data = imatrix, method = "UBCF")
 
 
 # Recommend packages to users ---------------------------------------------
 index <- which(dplyr::pull(imatrix@data@itemsetInfo, itemsetID) %in% c("harell","nz-stefan"))
-
-recommendations <- recommenderlab::predict(object = mdl, newdata = imatrix[index], n = 10, type = "topNList")
-
-user_pkg_df <- dplyr::bind_cols(
-    as(recommendations, "list") |> tibble::enframe("user", "item")|> tidyr::unnest(item),
-    recommendations@ratings |> tibble::enframe("user", "rating") |> tidyr::unnest(rating) |> dplyr::select(rating)
+system.time(recommendations <- recommenderlab::predict(object = mdl, newdata = imatrix[index], n = 100, type = "topNList"))
+withr::with_seed(
+    1928,
+    user_pkg_df <- dplyr::bind_cols(
+        as(recommendations, "list") |> tibble::enframe("user", "item")|> tidyr::unnest(item),
+        recommendations@ratings |> tibble::enframe("user", "rating") |> tidyr::unnest(rating) |> dplyr::select(rating)
+    )
+    |> purrr::modify(rating, round, 3)
+    |> dplyr::group_by(user, rating)
+    |> dplyr::sample_n(size = dplyr::n())
+    |> dplyr::ungroup()
+    |> dplyr::arrange(user, -rating)
+    |> dplyr::group_by(user)
+    |> dplyr::slice_head(n = 10)
+    |> dplyr::ungroup()
 )
+
 
 
