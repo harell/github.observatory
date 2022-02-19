@@ -24,11 +24,11 @@ for(package in packages) tryCatch({
     })
 
     artifact <- query$package$overview(owner, repo)
-    repo_archive$save(artifact, tags = c("entity:repo", "type:overview", paste0("owner:", owner), paste0("repo:", repo)))
+    repo_archive$save(artifact, tags = c("entity:repo", "type:overview", paste0("id:", repo)))
 
     artifact <- query$package$stargazers(owner, repo)
     artifact <- artifact |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
-    repo_archive$save(artifact, tags = c("entity:repo", "type:stargazers", paste0("owner:", owner), paste0("repo:", repo)))
+    repo_archive$save(artifact, tags = c("entity:repo", "type:stargazers", paste0("id:", repo)))
 
     suppressMessages(repo_archive$commit())
     try(pb$message(glue("Retrieved `{package}` information")), silent = TRUE)

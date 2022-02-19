@@ -2,6 +2,7 @@
 
 export(Archive)
 export(Repository)
+export(does_not_exist)
 export(github)
 export(query)
 export(standardise_col_names)

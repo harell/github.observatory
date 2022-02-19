@@ -15,3 +15,6 @@ source(system.file("scripts", "parse-repo-desc.R", package = "github.explorer", 
 
 print_banner("Collate users information from GitHub")
 source(system.file("scripts", "collate-user-info.R", package = "github.explorer", mustWork = TRUE))
+
+print_banner("Parse user following")
+source(system.file("scripts", "parse-user-following.R", package = "github.explorer", mustWork = TRUE))

@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-repository <- Repository$new()
-user_archive <- UserArchive$new()
+if(does_not_exist("repository")) repository <- Repository$new()
+if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
 
 
 # Query Github ------------------------------------------------------------
@@ -21,7 +21,7 @@ for(user in users) tryCatch({
     artifact <- query$user$by_id(user)
     user_archive$save(artifact, tags = c("entity:user", "type:overview", paste0("id:", user)))
 
-    artifact <- ifelse(artifact$following == 0, list(), query$user$following(artifact$login))
+    artifact <- if(artifact$following == 0) list() else query$user$following(artifact$login)
     artifact <- artifact |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
     user_archive$save(artifact, tags = c("entity:user", "type:following", paste0("id:", user)))
 
