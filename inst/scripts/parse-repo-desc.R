@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-repository <- Repository$new()
-repo_archive <- RepoArchive$new()
+if(does_not_exist("repository")) repository <- Repository$new()
+if(does_not_exist("repo_archive")) repo_archive <- RepoArchive$new()
 
 
 # Load cached data --------------------------------------------------------

@@ -94,9 +94,12 @@ Repository <- R6::R6Class(
 )
 
 #' @title Github Explorer Archive
-#' @keywords internal
+#'
+#' @param artifact (`?`) An arbitrary R artifact to be saved.
+#' @param tags (`character`) tags in "key:value" format. E.g. "entity:repo", "type:overview".
+#' @param md5hash (`character`) artifact md5 hash.
+#'
 #' @export
-#' @noRd
 Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = list(
     # Public Methods ----------------------------------------------------------
     #' @param path (`character`) A character denoting an existing directory of the Repository for which metadata will be aved and returned.
@@ -107,6 +110,7 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
         private$immediate <- immediate
         suppressMessages(archivist::createLocalRepo(path))
     },
+    #' @description store artifact in archive
     save = function(artifact, tags = character()){
         tags <- c(paste0("date:", lubridate::format_ISO8601(Sys.Date())), tags)
 
@@ -119,13 +123,16 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
 
         invisible(self)
     },
+    #' @description fetch artifact from archive
     load = function(md5hash){
         purrr::map(md5hash, archivist::loadFromLocalRepo, repoDir = private$path, value = TRUE)
     },
+    #' @description discard artifact from archive
     delete = function(md5hash){
         private$.delete(md5hash)
         invisible(self)
     },
+    #' @description show artifact within the archive
     show = function() tryCatch((
         archivist::splitTagsLocal(repoDir = private$path)
         |> dplyr::select(-createdDate)
@@ -139,17 +146,20 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
         tibble::tibble(artifact = NA_character_, date = Sys.Date())
         |> tidyr::drop_na()
     )),
+    #' @description commit artifacts to archive
     commit = function(){
         purrr::walk2(private$artifact, private$tags, private$.save)
         private$artifact <- private$tags <- list()
         message("Commited artifacts to archive")
         invisible(self)
     },
+    #' @description rollback changes from the archive
     rollback = function(){
         private$artifact <- private$tags <- list()
         message("Unrolled artifacts to archive")
         invisible(self)
     },
+    #' @description clean the archive
     clean = function(){
         N1 <- nrow(self$show())
         private$discard_duplicates()
@@ -158,6 +168,7 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
         if(N1>N2) message("Discarded ", N1-N2, " items")
         invisible(self)
     },
+    #' @description teardown archive object
     finalize = function(){
         suppressMessages({self$rollback(); self$clean()})
         invisible(self)
