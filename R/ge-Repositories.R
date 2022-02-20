@@ -133,19 +133,20 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
         invisible(self)
     },
     #' @description show artifact within the archive
-    show = function() tryCatch((
-        archivist::splitTagsLocal(repoDir = private$path)
-        |> dplyr::select(-createdDate)
-        |> tidyr::pivot_wider(id_cols = artifact, names_from = tagKey, values_from = tagValue, values_fn = list)
-        |> tidyr::unnest(cols = -artifact)
-        |> dplyr::select(-format)
-        |> dplyr::distinct()
-        |> dplyr::mutate(date = as.Date(date))
-        |> dplyr::arrange(dplyr::across(-artifact))
-    ), error = function(e) return(
-        tibble::tibble(artifact = NA_character_, date = Sys.Date())
-        |> tidyr::drop_na()
-    )),
+    show = function() if(private$is_empty_archive()){
+        return(tibble::tibble(artifact = NA_character_, date = Sys.Date()) |> tidyr::drop_na())
+    } else {
+        return(
+            archivist::splitTagsLocal(repoDir = private$path)
+            |> dplyr::select(-createdDate)
+            |> tidyr::pivot_wider(id_cols = artifact, names_from = tagKey, values_from = tagValue, values_fn = list)
+            |> tidyr::unnest(cols = -artifact)
+            |> dplyr::select(-format)
+            |> dplyr::distinct()
+            |> dplyr::mutate(date = as.Date(date))
+            |> dplyr::arrange(dplyr::across(-artifact))
+        )
+    },
     #' @description commit artifacts to archive
     commit = function(){
         purrr::walk2(private$artifact, private$tags, private$.save)
@@ -161,11 +162,9 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
     },
     #' @description clean the archive
     clean = function(){
-        N1 <- nrow(self$show())
+        private$discard_corrupted()
         private$discard_duplicates()
         private$discard_outdated()
-        N2 <- nrow(self$show())
-        if(N1>N2) message("Discarded ", N1-N2, " items")
         invisible(self)
     },
     #' @description teardown archive object
@@ -182,7 +181,9 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
     # Private Methods ---------------------------------------------------------
     .save = function(artifact, tags = character()) archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = tags),
     .delete = function(md5hash) archivist::rmFromLocalRepo(md5hash, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE),
+    is_empty_archive = function() nrow(archivist::showLocalRepo(repoDir = private$path, method = 'tags')) == 0,
     discard_duplicates = function(){
+        if(private$is_empty_archive()) return()
         invisible(
             keep_artifact <- self$show()
             |> dplyr::group_by(dplyr::across(-artifact))
@@ -193,6 +194,7 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
         archivist::rmFromLocalRepo(discard_artifact, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
     },
     discard_outdated = function(){
+        if(private$is_empty_archive()) return()
         invisible(
             keep_artifact <- self$show()
             |> dplyr::arrange(dplyr::desc(date))
@@ -203,6 +205,20 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
         )
         discard_artifact <- dplyr::setdiff(dplyr::pull(self$show(), artifact), keep_artifact)
         archivist::rmFromLocalRepo(discard_artifact, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
+    },
+    discard_corrupted = function(){
+        if(private$is_empty_archive()) return()
+        invisible(
+            corrupted_artifacts <- archivist::splitTagsLocal(repoDir = private$path)
+            |> dplyr::select(-createdDate)
+            |> dplyr::group_by(artifact, tagKey)
+            |> dplyr::summarise(n_instances = dplyr::n(), .groups = "drop")
+            |> dplyr::distinct(artifact, n_instances)
+            |> dplyr::count(artifact, name = "n_variants")
+            |> dplyr::filter(n_variants > 1)
+            |> dplyr::pull(artifact)
+        )
+        archivist::rmFromLocalRepo(corrupted_artifacts, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
     }
 )# end private
 )# end Archive
