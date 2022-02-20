@@ -21,6 +21,24 @@ github$query <- function(endpoint){
 
 github$has_next <- eval(parse(text = "gh:::gh_has_next"))
 
+github$alter_PAT <- function(){
+    invisible(
+        PAT <- Sys.getenv()
+        |> tibble::enframe()
+        |> dplyr::mutate(dplyr::across(.fns = as.character))
+        |> dplyr::filter(!name %in% "GITHUB_PAT")
+        |> dplyr::filter(stringr::str_detect(name, "^GITHUB_PAT"))
+        |> dplyr::pull(value)
+    )
+
+    if(length(PAT) >= 1){
+        PAT_index <- which.max(PAT %in% Sys.getenv("GITHUB_PAT"))
+        Sys.setenv(GITHUB_PAT = c(PAT, PAT)[PAT_index + 1])
+    }
+
+    return(invisible())
+}
+
 
 # predicates --------------------------------------------------------------
 github$is_valid_url <- function(url) return(

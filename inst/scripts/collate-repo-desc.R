@@ -14,6 +14,7 @@ withr::with_seed(2212, suppressWarnings(
 
 pb <- progress::progress_bar$new(format = "Quering Github Repos [:bar] :current/:total (:percent) eta: :eta", total = length(packages), clear = FALSE)
 for(package in packages) tryCatch({
+    github$alter_PAT()
     if((which(packages %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 50) Sys.sleep(60)
 
     try(pb$tick(1), silent = TRUE)
