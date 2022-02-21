@@ -5,12 +5,13 @@ if(does_not_exist("repo_archive")) repo_archive <- RepoArchive$new()
 
 
 # Query Github ------------------------------------------------------------
-invisible(
-    pkgs_to_skip <- repo_archive$show()
+pkgs_to_skip <- tryCatch(
+    repo_archive$show()
     |> dplyr::filter(type %in% "overview")
     |> dplyr::pull(artifact)
     |> repo_archive$load()
     |> purrr::map_chr(~purrr::pluck(.x, "name"))
+    , error = function(e) return(character())
 )
 
 withr::with_seed(2212, suppressWarnings(
