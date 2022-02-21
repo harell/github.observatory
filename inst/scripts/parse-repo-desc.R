@@ -29,7 +29,7 @@ names(artifacts) <- as.character(tags$id)
 
 pb <- progress::progress_bar$new(format = "Parsing Stargazers [:bar] :current/:total (:percent) eta: :eta", total = nrow(tidy_repo_desc), clear = FALSE)
 for(id in tags$id) tryCatch({
-    if((which(id %in% tags$id) - 1) %% 25 == 0) try(pb$tick(25), silent = TRUE)
+    if((which(id %in% tags$id) - 1) %% 100 == 0) try(pb$tick(100), silent = TRUE)
 
     invisible(
         stargazers <- artifacts
@@ -41,7 +41,7 @@ for(id in tags$id) tryCatch({
     if(nrow(stargazers) == 0) next
     tidy_repo_desc[tidy_repo_desc$id %in% id, "stargazers_id"][[1]] <- stargazers$id
     tidy_repo_desc[tidy_repo_desc$id %in% id, "stargazers_login"][[1]] <- stargazers$login
-}, error = function(e) pb$message(glue("Failed to parse `{repo}`")))
+}, error = function(e) pb$message(glue("Failed to parse `{repo}`", repo = tidy_repo_desc |> dplyr::filter(id == !!id) |> dplyr::pull(repo))))
 
 
 # Teardown ----------------------------------------------------------------
