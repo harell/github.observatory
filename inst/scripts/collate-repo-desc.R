@@ -5,10 +5,18 @@ if(does_not_exist("repo_archive")) repo_archive <- RepoArchive$new()
 
 
 # Query Github ------------------------------------------------------------
+invisible(
+    pkgs_to_skeep <- repo_archive$show()
+    |> dplyr::filter(type %in% "overview")
+    |> dplyr::pull(artifact)
+    |> repo_archive$load()
+    |> purrr::map_chr(~purrr::pluck(.x, "name"))
+)
+
 withr::with_seed(2212, suppressWarnings(
     packages <- repository$read_cran_desc()
     |> dplyr::pull("package")
-    |> setdiff(repo_archive$show()$repo)
+    |> setdiff(pkgs_to_skeep)
     |> sample()
 ))
 
