@@ -6,7 +6,7 @@ if(does_not_exist("repo_archive")) repo_archive <- RepoArchive$new()
 
 # Query Github ------------------------------------------------------------
 invisible(
-    pkgs_to_skeep <- repo_archive$show()
+    pkgs_to_skip <- repo_archive$show()
     |> dplyr::filter(type %in% "overview")
     |> dplyr::pull(artifact)
     |> repo_archive$load()
@@ -16,7 +16,7 @@ invisible(
 withr::with_seed(2212, suppressWarnings(
     packages <- repository$read_cran_desc()
     |> dplyr::pull("package")
-    |> setdiff(pkgs_to_skeep)
+    |> setdiff(pkgs_to_skip)
     |> sample()
 ))
 
@@ -46,10 +46,16 @@ for(package in packages){ try(pb$tick(1), silent = TRUE); tryCatch({
         |> repo_archive$save(tags = c("entity:repo", "type:stargazers", paste0("id:", repo_overview$id)))
     )
 
-    if(repo_overview$watchers_count > 0) (
+    if(repo_overview$subscribers_count > 0) (
         query$package$watchers(owner, repo)
         |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
         |> repo_archive$save(tags = c("entity:repo", "type:watchers", paste0("id:", repo_overview$id)))
+    )
+
+    if(repo_overview$forks_count > 0) (
+        query$package$forkers(owner, repo)
+        |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
+        |> repo_archive$save(tags = c("entity:repo", "type:forkers", paste0("id:", repo_overview$id)))
     )
 
     suppressMessages(repo_archive$commit())

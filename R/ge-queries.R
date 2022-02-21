@@ -36,3 +36,7 @@ query$package$contributors <- function(owner, repo){
 query$package$watchers <- function(owner, repo){
     github$query(glue("/repos/{owner}/{repo}/subscribers"))
 }
+
+query$package$forkers <- function(owner, repo){
+    github$query(glue("/repos/{owner}/{repo}/forks"))
+}

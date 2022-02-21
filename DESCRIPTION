@@ -16,6 +16,7 @@ BugReports: https://github.com/harell/github.explorer/issues
 Depends: 
     R (>= 4.1)
 Imports: 
+    assertthat,
     archivist,
     dplyr,
     fs,

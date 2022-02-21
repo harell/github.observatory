@@ -38,7 +38,8 @@ Repository <- R6::R6Class(
             invisible(self)
         },
         write_repo_desc = function(x){
-            private$cache$package$repo_desc <- x
+            assert$has_columns(x, colnames(private$null_repo_desc))
+            private$cache$package$repo_desc <- dplyr::select(x, colnames(private$null_repo_desc))
             invisible(self)
         },
         read_cran_desc = function(){
@@ -54,14 +55,17 @@ Repository <- R6::R6Class(
         create_repo_desc = function() suppressMessages(
             self$read_cran_desc()
             |> dplyr::transmute(owner = github$extract$owner(github_slug), repo = github$extract$repo(github_slug))
-            |> tibble::add_column(
-                repo_id = NA_integer_,
-                stargazers_id = list(NULL),
-                stargazers_login = list(NULL)
-            )
+            |> dplyr::full_join(private$null_repo_desc)
             |> self$write_repo_desc()
         )
     ), private = list(
+        null_repo_desc = tibble::tibble(
+            owner = NA_character_,
+            repo = NA_character_,
+            id = NA_integer_,
+            stargazers_id = list(NULL),
+            stargazers_login = list(NULL)
+        )[0,],
         # Private Methods ---------------------------------------------------------
         write_obj = function(x, file){
             fs::dir_create(dirname(file), FALSE, TRUE)
