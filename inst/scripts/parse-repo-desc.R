@@ -32,13 +32,12 @@ for(id in tags$id) tryCatch({
     if((which(id %in% tags$id) - 1) %% 100 == 0) try(pb$tick(100), silent = TRUE)
 
     invisible(
-        stargazers <- artifacts
-        |> purrr::pluck(as.character(id))
+        stargazers <- artifacts[[as.character(id)]]
         |> purrr::map_dfr(~tibble::tibble(id = .x[["id"]], login = .x[["login"]]))
         |> dplyr::summarise(dplyr::across(.fns = list))
     )
 
-    if(nrow(stargazers) == 0) next
+    if(nrow(stargazers) == 0 | ncol(stargazers) == 0) next
     tidy_repo_desc[tidy_repo_desc$id %in% id, "stargazers_id"][[1]] <- stargazers$id
     tidy_repo_desc[tidy_repo_desc$id %in% id, "stargazers_login"][[1]] <- stargazers$login
 }, error = function(e) pb$message(glue("Failed to parse `{repo}`", repo = tidy_repo_desc |> dplyr::filter(id == !!id) |> dplyr::pull(repo))))
