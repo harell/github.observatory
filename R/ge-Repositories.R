@@ -38,7 +38,8 @@ Repository <- R6::R6Class(
             invisible(self)
         },
         write_repo_desc = function(x){
-            private$cache$package$repo_desc <- x
+            assert$has_columns(x, colnames(private$null_repo_desc))
+            private$cache$package$repo_desc <- dplyr::select(x, colnames(private$null_repo_desc))
             invisible(self)
         },
         read_cran_desc = function(){
@@ -54,14 +55,17 @@ Repository <- R6::R6Class(
         create_repo_desc = function() suppressMessages(
             self$read_cran_desc()
             |> dplyr::transmute(owner = github$extract$owner(github_slug), repo = github$extract$repo(github_slug))
-            |> tibble::add_column(
-                repo_id = NA_integer_,
-                stargazers_id = list(NULL),
-                stargazers_login = list(NULL)
-            )
+            |> dplyr::full_join(private$null_repo_desc)
             |> self$write_repo_desc()
         )
     ), private = list(
+        null_repo_desc = tibble::tibble(
+            owner = NA_character_,
+            repo = NA_character_,
+            id = NA_integer_,
+            stargazers_id = list(NULL),
+            stargazers_login = list(NULL)
+        )[0,],
         # Private Methods ---------------------------------------------------------
         write_obj = function(x, file){
             fs::dir_create(dirname(file), FALSE, TRUE)
@@ -94,9 +98,12 @@ Repository <- R6::R6Class(
 )
 
 #' @title Github Explorer Archive
-#' @keywords internal
+#'
+#' @param artifact (`?`) An arbitrary R artifact to be saved.
+#' @param tags (`character`) tags in "key:value" format. E.g. "entity:repo", "type:overview".
+#' @param md5hash (`character`) artifact md5 hash.
+#'
 #' @export
-#' @noRd
 Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = list(
     # Public Methods ----------------------------------------------------------
     #' @param path (`character`) A character denoting an existing directory of the Repository for which metadata will be aved and returned.
@@ -107,6 +114,7 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
         private$immediate <- immediate
         suppressMessages(archivist::createLocalRepo(path))
     },
+    #' @description store artifact in archive
     save = function(artifact, tags = character()){
         tags <- c(paste0("date:", lubridate::format_ISO8601(Sys.Date())), tags)
 
@@ -119,45 +127,51 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
 
         invisible(self)
     },
+    #' @description fetch artifact from archive
     load = function(md5hash){
         purrr::map(md5hash, archivist::loadFromLocalRepo, repoDir = private$path, value = TRUE)
     },
+    #' @description discard artifact from archive
     delete = function(md5hash){
         private$.delete(md5hash)
         invisible(self)
     },
-    show = function() tryCatch((
-        archivist::splitTagsLocal(repoDir = private$path)
-        |> dplyr::select(-createdDate)
-        |> tidyr::pivot_wider(id_cols = artifact, names_from = tagKey, values_from = tagValue, values_fn = list)
-        |> tidyr::unnest(cols = -artifact)
-        |> dplyr::select(-format)
-        |> dplyr::distinct()
-        |> dplyr::mutate(date = as.Date(date))
-        |> dplyr::arrange(dplyr::across(-artifact))
-    ), error = function(e) return(
-        tibble::tibble(artifact = NA_character_, date = Sys.Date())
-        |> tidyr::drop_na()
-    )),
+    #' @description show artifact within the archive
+    show = function() if(private$is_empty_archive()){
+        return(tibble::tibble(artifact = NA_character_, date = Sys.Date()) |> tidyr::drop_na())
+    } else {
+        return(
+            archivist::splitTagsLocal(repoDir = private$path)
+            |> dplyr::select(-createdDate)
+            |> tidyr::pivot_wider(id_cols = artifact, names_from = tagKey, values_from = tagValue, values_fn = list)
+            |> tidyr::unnest(cols = -artifact)
+            |> dplyr::select(-format)
+            |> dplyr::distinct()
+            |> dplyr::mutate(date = as.Date(date))
+            |> dplyr::arrange(dplyr::across(-artifact))
+        )
+    },
+    #' @description commit artifacts to archive
     commit = function(){
         purrr::walk2(private$artifact, private$tags, private$.save)
         private$artifact <- private$tags <- list()
         message("Commited artifacts to archive")
         invisible(self)
     },
+    #' @description rollback changes from the archive
     rollback = function(){
         private$artifact <- private$tags <- list()
         message("Unrolled artifacts to archive")
         invisible(self)
     },
+    #' @description clean the archive
     clean = function(){
-        N1 <- nrow(self$show())
+        private$discard_corrupted()
         private$discard_duplicates()
         private$discard_outdated()
-        N2 <- nrow(self$show())
-        if(N1>N2) message("Discarded ", N1-N2, " items")
         invisible(self)
     },
+    #' @description teardown archive object
     finalize = function(){
         suppressMessages({self$rollback(); self$clean()})
         invisible(self)
@@ -171,7 +185,9 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
     # Private Methods ---------------------------------------------------------
     .save = function(artifact, tags = character()) archivist::saveToLocalRepo(artifact = artifact, repoDir = private$path, archiveTags = FALSE, archiveMiniature = FALSE, archiveSessionInfo = FALSE, force = TRUE, userTags = tags),
     .delete = function(md5hash) archivist::rmFromLocalRepo(md5hash, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE),
+    is_empty_archive = function() nrow(archivist::showLocalRepo(repoDir = private$path, method = 'tags')) == 0,
     discard_duplicates = function(){
+        if(private$is_empty_archive()) return()
         invisible(
             keep_artifact <- self$show()
             |> dplyr::group_by(dplyr::across(-artifact))
@@ -182,6 +198,7 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
         archivist::rmFromLocalRepo(discard_artifact, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
     },
     discard_outdated = function(){
+        if(private$is_empty_archive()) return()
         invisible(
             keep_artifact <- self$show()
             |> dplyr::arrange(dplyr::desc(date))
@@ -192,6 +209,20 @@ Archive <- R6::R6Class(classname = "Repository", cloneable = FALSE, public = lis
         )
         discard_artifact <- dplyr::setdiff(dplyr::pull(self$show(), artifact), keep_artifact)
         archivist::rmFromLocalRepo(discard_artifact, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
+    },
+    discard_corrupted = function(){
+        if(private$is_empty_archive()) return()
+        invisible(
+            corrupted_artifacts <- archivist::splitTagsLocal(repoDir = private$path)
+            |> dplyr::select(-createdDate)
+            |> dplyr::group_by(artifact, tagKey)
+            |> dplyr::summarise(n_instances = dplyr::n(), .groups = "drop")
+            |> dplyr::distinct(artifact, n_instances)
+            |> dplyr::count(artifact, name = "n_variants")
+            |> dplyr::filter(n_variants > 1)
+            |> dplyr::pull(artifact)
+        )
+        archivist::rmFromLocalRepo(corrupted_artifacts, repoDir = private$path, removeData = TRUE, removeMiniature = TRUE, many = TRUE)
     }
 )# end private
 )# end Archive

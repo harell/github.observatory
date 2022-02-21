@@ -28,3 +28,15 @@ query$package$overview <- function(owner, repo){
 query$package$stargazers <- function(owner, repo){
     github$query(glue("/repos/{owner}/{repo}/stargazers"))
 }
+
+query$package$contributors <- function(owner, repo){
+    github$query(glue("/repos/{owner}/{repo}/contributors"))
+}
+
+query$package$watchers <- function(owner, repo){
+    github$query(glue("/repos/{owner}/{repo}/subscribers"))
+}
+
+query$package$forkers <- function(owner, repo){
+    github$query(glue("/repos/{owner}/{repo}/forks"))
+}
