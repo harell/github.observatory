@@ -24,28 +24,24 @@ for(id in tags$id) tryCatch({
     invisible(
         following <- artifacts
         |> purrr::pluck(id)
-        # |> purrr::map_chr(~purrr::pluck(.x, "id"))
-        # |> tibble::enframe("repo", "stargazer")
-        # |> dplyr::mutate(repo = !!repo)
-        # |> dplyr::group_by(repo)
-        # |> dplyr::summarise(stargazers = list(as.integer(stargazer)), .groups = "drop")
-        # |> dplyr::pull(stargazers)
+        |> purrr::map_dfr(~tibble::tibble(id = .x[["id"]], login = .x[["login"]]))
+        |> dplyr::summarise(dplyr::across(.fns = list))
     )
 
-    invisible(
-        stargazers_login <- artifacts
-        |> purrr::pluck(repo)
-        |> purrr::map_chr(~purrr::pluck(.x, "login"))
-        |> tibble::enframe("repo", "stargazer")
-        |> dplyr::mutate(repo = !!repo)
-        |> dplyr::group_by(repo)
-        |> dplyr::summarise(stargazers = list(as.character(stargazer)), .groups = "drop")
-        |> dplyr::pull(stargazers)
-    )
-
-    if(length(stargazers_id) == 0) next
-    tidy_repo_desc[tidy_repo_desc$repo %in% repo, "stargazers_id"][[1]] <- stargazers_id
-    tidy_repo_desc[tidy_repo_desc$repo %in% repo, "stargazers_login"][[1]] <- stargazers_login
+    # invisible(
+    #     stargazers_login <- artifacts
+    #     |> purrr::pluck(repo)
+    #     |> purrr::map_chr(~purrr::pluck(.x, "login"))
+    #     |> tibble::enframe("repo", "stargazer")
+    #     |> dplyr::mutate(repo = !!repo)
+    #     |> dplyr::group_by(repo)
+    #     |> dplyr::summarise(stargazers = list(as.character(stargazer)), .groups = "drop")
+    #     |> dplyr::pull(stargazers)
+    # )
+    #
+    # if(length(stargazers_id) == 0) next
+    # tidy_repo_desc[tidy_repo_desc$repo %in% repo, "stargazers_id"][[1]] <- stargazers_id
+    # tidy_repo_desc[tidy_repo_desc$repo %in% repo, "stargazers_login"][[1]] <- stargazers_login
 
 }, error = function(e) pb$message(glue("Failed to parse `{repo}`")))
 
