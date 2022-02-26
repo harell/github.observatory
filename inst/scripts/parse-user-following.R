@@ -1,66 +1,40 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-# repository <- Repository$new()
+if(does_not_exist("repository")) repository <- Repository$new()
 if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
 
 
 # Load cached data --------------------------------------------------------
-# tidy_repo_desc <- repository$create_repo_desc()$read_repo_desc()
-
-
-# Parse stargazers --------------------------------------------------------
 invisible(
     tags <- user_archive$show()
     |> dplyr::filter(entity %in% "user", type %in% "following")
-    # |> dplyr::inner_join(repository$read_cran_desc(), by = c("repo" = "package"))
 )
+
+# Parse following ---------------------------------------------------------
 system.time(artifacts <- user_archive$load(tags$artifact))
 names(artifacts) <- tags$id
 
+following_table <- tibble::tribble(~from, ~to)
 pb <- progress::progress_bar$new(format = "Parsing User Following [:bar] :current/:total (:percent) eta: :eta", total = length(tags$id), clear = FALSE)
 for(id in tags$id) tryCatch({
-    pb$tick(1)
+    if((which(id %in% tags$id) - 1) %% 100 == 0) try(pb$tick(100), silent = TRUE)
 
     invisible(
-        following <- artifacts
+        following_entry <- artifacts
         |> purrr::pluck(id)
-        |> purrr::map_dfr(~tibble::tibble(id = .x[["id"]], login = .x[["login"]]))
-        |> dplyr::summarise(dplyr::across(.fns = list))
+        |> purrr::map_dfr(~tibble::tibble(to = .x[["id"]]))
+        |> tibble::add_column(from = as.integer(id), .before = "to")
     )
 
-    # invisible(
-    #     stargazers_login <- artifacts
-    #     |> purrr::pluck(repo)
-    #     |> purrr::map_chr(~purrr::pluck(.x, "login"))
-    #     |> tibble::enframe("repo", "stargazer")
-    #     |> dplyr::mutate(repo = !!repo)
-    #     |> dplyr::group_by(repo)
-    #     |> dplyr::summarise(stargazers = list(as.character(stargazer)), .groups = "drop")
-    #     |> dplyr::pull(stargazers)
-    # )
-    #
-    # if(length(stargazers_id) == 0) next
-    # tidy_repo_desc[tidy_repo_desc$repo %in% repo, "stargazers_id"][[1]] <- stargazers_id
-    # tidy_repo_desc[tidy_repo_desc$repo %in% repo, "stargazers_login"][[1]] <- stargazers_login
+    following_table <- dplyr::bind_rows(following_table, following_entry)
+}, error = function(e) pb$message(glue("Failed to parse `{id}`")))
 
-}, error = function(e) pb$message(glue("Failed to parse `{repo}`")))
-
-
-# Parse package metadata --------------------------------------------------
 invisible(
-    tags <- user_archive$show()
-    |> dplyr::filter(entity %in% "repo", type %in% "overview")
-    |> dplyr::inner_join(repository$read_cran_desc(), by = c("repo" = "package"))
+    following_table <- following_table
+    |> dplyr::filter(to %in% unique(following_table$from))
+    |> dplyr::distinct()
 )
-artifacts <- user_archive$load(tags$artifact)
-names(artifacts) <- tags$repo
-
-pb <- progress::progress_bar$new(format = "Parsing Metadata [:bar] :current/:total (:percent) eta: :eta", total = length(tags$repo), clear = FALSE)
-for(repo in tags$repo) tryCatch({
-    pb$tick(1)
-    tidy_repo_desc[tidy_repo_desc$repo %in% repo, "repo_id"] <- artifacts |> purrr::pluck(repo, "id") |> as.integer()
-}, error = function(e) pb$message(glue("Failed to parse `{repo}`")))
 
 
 # Teardown ----------------------------------------------------------------
-repository$write_repo_desc(tidy_repo_desc)$commit()
+# repository$write_repo_desc(tidy_repo_desc)$commit()
