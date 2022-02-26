@@ -1,7 +1,7 @@
 Type: Package
 Package: github.explorer
 Title: Explore the relationships between R packages and R users
-Version: 0.1.0
+Version: 0.2.0
 Date: 2021-11-01
 Authors@R: 
     person("Harel", "Lustiger", , "tidylab@gmail.com", role = c("aut", "cre"),
@@ -17,8 +17,9 @@ Depends:
     R (>= 4.1)
 Imports: 
     archivist,
-    fs,
+    assertthat,
     dplyr,
+    fs,
     gh,
     glue,
     lubridate,
@@ -31,8 +32,11 @@ Imports:
 Suggests: 
     bannerCommenter,
     httr,
+    Matrix,
     progress,
+    recommenderlab,
     testthat,
+    usethis,
     withr
 Encoding: UTF-8
 Language: en-GB
