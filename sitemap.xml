@@ -16,6 +16,12 @@
     <loc>https://harell.github.io/github.explorer/index.html</loc>
   </url>
   <url>
+    <loc>https://harell.github.io/github.explorer/reference/Archive.html</loc>
+  </url>
+  <url>
+    <loc>https://harell.github.io/github.explorer/reference/assert.html</loc>
+  </url>
+  <url>
     <loc>https://harell.github.io/github.explorer/reference/conventions.html</loc>
   </url>
   <url>
@@ -29,5 +35,8 @@
   </url>
   <url>
     <loc>https://harell.github.io/github.explorer/reference/query.html</loc>
+  </url>
+  <url>
+    <loc>https://harell.github.io/github.explorer/reference/utils-base.html</loc>
   </url>
 </urlset>
