@@ -7,6 +7,8 @@ if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
 invisible(
     artifacts <- user_archive$show()
     |> dplyr::filter(type %in% "overview")
+    |> dplyr::arrange(dplyr::desc(date))
+    |> dplyr::distinct(id, .keep_all = TRUE)
     |> dplyr::slice_head(n=3000)
     |> dplyr::pull(artifact)
     |> user_archive$load()
@@ -14,22 +16,24 @@ invisible(
 
 
 # Profiler ----------------------------------------------------------------
-profiles <- purrr::map_dfr(artifacts, ~tibble::tibble(
-    id           = as.integer(.x[["id"]]),
-    login        = as.character(.x[["login"]]),
-    avatar_url   = as.character(.x[["avatar_url"]]),
-    html_url     = as.character(.x[["html_url"]]),
-    name         = as.character(.x[["name"]] %||% NA_character_),
-    public_repos = as.integer(.x[["public_repos"]]),
-    followers    = as.integer(.x[["followers"]]),
-    following    = as.integer(.x[["following"]]),
-    created_at   = lubridate::ymd_hms(.x[["created_at"]]),
-    updated_at   = lubridate::ymd_hms(.x[["updated_at"]])
-))
+profiles <- purrr::map_dfr(artifacts, purrr::flatten_dfr)
 
 invisible(
     tidy_profiles <- profiles
+    |> dplyr::transmute(
+        id           = as.integer(id),
+        login        = as.character(login),
+        avatar_url   = as.character(avatar_url),
+        html_url     = as.character(html_url),
+        name         = as.character(name %||% NA_character_),
+        public_repos = as.integer(public_repos),
+        followers    = as.integer(followers),
+        following    = as.integer(following),
+        created_at   = lubridate::ymd_hms(created_at),
+        updated_at   = lubridate::ymd_hms(updated_at)
+    )
     |> ge$filter$ghosts()
+
 )
 
 
