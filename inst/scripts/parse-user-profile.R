@@ -9,7 +9,6 @@ invisible(
     |> dplyr::filter(type %in% "overview")
     |> dplyr::arrange(dplyr::desc(date))
     |> dplyr::distinct(id, .keep_all = TRUE)
-    |> dplyr::slice_head(n=3000)
     |> dplyr::pull(artifact)
     |> user_archive$load()
 )
@@ -33,7 +32,6 @@ invisible(
         updated_at   = lubridate::ymd_hms(updated_at)
     )
     |> ge$filter$ghosts()
-
 )
 
 
