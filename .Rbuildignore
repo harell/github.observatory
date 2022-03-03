@@ -28,3 +28,4 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^_cache$
