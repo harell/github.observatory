@@ -1,4 +1,4 @@
-#' @title Github Explorer InterimRepository
+#' @title Github Explorer Interim Repository
 #' @keywords internal
 #' @export
 #' @noRd
