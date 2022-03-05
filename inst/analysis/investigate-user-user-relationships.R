@@ -1,6 +1,6 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-repository <- Repository$new()
+repository <- InterimRepository$new()
 output_path <- usethis::proj_path("_cache", "user_user_sim_mat", ext = "rds")
 
 

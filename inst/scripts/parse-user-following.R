@@ -1,6 +1,6 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-if(does_not_exist("repository")) repository <- Repository$new()
+if(does_not_exist("repository")) repository <- InterimRepository$new()
 if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
 
 
