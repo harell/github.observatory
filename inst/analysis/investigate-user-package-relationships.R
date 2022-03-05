@@ -1,6 +1,6 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-repository <- Repository$new()
+repository <- InterimRepository$new()
 
 
 # Compose Stargazer-Package Matrix ----------------------------------------

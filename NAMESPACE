@@ -2,7 +2,7 @@
 
 export("%not_in%")
 export(Archive)
-export(Repository)
+export(InterimRepository)
 export(assert)
 export(does_not_exist)
 export(ge)
