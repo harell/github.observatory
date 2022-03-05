@@ -9,7 +9,7 @@ invisible(
     artifacts <- repo_archive$show()
     |> dplyr::filter(type %in% c("contributors", "forkers", "stargazers", "watchers"))
     |> dplyr::arrange(dplyr::desc(date))
-    |> dplyr::distinct(id, .keep_all = TRUE)
+    |> dplyr::distinct(id, type, .keep_all = TRUE)
 )
 
 
@@ -21,7 +21,7 @@ invisible(
 )
 
 invisible(
-    tidy_spectators <- artifacts
+    spectators <- artifacts
     |> dplyr::transmute(
         repo_id = as.integer(id),
         user_id = data,
@@ -30,11 +30,17 @@ invisible(
     |> tidyr::unnest(user_id)
 )
 
+invisible(
+    tidy_spectators <- spectators
+    |> ge$discard$robots(var = user_id)
+)
+
 
 # Statistics --------------------------------------------------------------
-# artifacts |> dplyr::n_distinct("id")
+# length(unique(artifacts$id)) # How many packages have at least on spectator?
 # janitor::tabyl(artifacts, type)
 # janitor::tabyl(tidy_spectators, user_role)
+# spectators_leaderboard <- dplyr::count(tidy_spectators, user_id, user_role, sort = TRUE)
 
 
 # Teardown ----------------------------------------------------------------

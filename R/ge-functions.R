@@ -11,4 +11,5 @@ ge$standardise$col_names <- function(.data) {
 
 
 # filters -----------------------------------------------------------------
-ge$filter$ghosts <- function(.data, var = "login") dplyr::filter(.data, {{var}} %not_in% c("ghost"))
+ge$discard$ghosts <- function(.data, var = "login") dplyr::filter(.data, {{var}} %not_in% c("ghost"))
+ge$discard$robots <- function(.data, var = "id") dplyr::filter(.data, {{var}} %not_in% c(16374903, 841039,))

@@ -32,7 +32,7 @@ invisible(
         created_at   = created_at |> lubridate::ymd_hms() |> as.Date(),
         updated_at   = updated_at |> lubridate::ymd_hms() |> as.Date()
     )
-    |> ge$filter$ghosts()
+    |> ge$discard$ghosts()
 )
 
 
