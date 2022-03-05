@@ -29,8 +29,8 @@ invisible(
         public_repos = as.integer(public_repos),
         followers    = as.integer(followers),
         following    = as.integer(following),
-        created_at   = lubridate::ymd_hms(created_at),
-        updated_at   = lubridate::ymd_hms(updated_at)
+        created_at   = created_at |> lubridate::ymd_hms() |> as.Date(),
+        updated_at   = updated_at |> lubridate::ymd_hms() |> as.Date()
     )
     |> ge$filter$ghosts()
 )
