@@ -12,19 +12,19 @@ GDrive <- R6::R6Class(
         read_REPO = function() { return(private$read("REPO")) },
         read_PACKAGE = function() { return(private$read("PACKAGE")) },
         read_FOLLOWING = function() { return(private$read("FOLLOWING")) },
-        read_STARGAZERS = function() { return(private$read("STARGAZERS")) },
-        overwrite_USER = function(value) {private$overwrite("USER", value); invisible(self)},
-        overwrite_REPO = function(value) {private$overwrite("REPO", value); invisible(self)},
-        overwrite_PACKAGE = function(value) {private$overwrite("PACKAGE", value); invisible(self)},
-        overwrite_FOLLOWING = function(value) {private$overwrite("FOLLOWING", value); invisible(self)},
-        overwrite_STARGAZERS = function(value) {private$overwrite("STARGAZERS", value); invisible(self)}
+        read_SPECTATOR = function() { return(private$read("SPECTATOR")) },
+        overwrite_USER = function(value) { private$overwrite("USER", value); invisible(self) },
+        overwrite_REPO = function(value) { private$overwrite("REPO", value); invisible(self) },
+        overwrite_PACKAGE = function(value) { private$overwrite("PACKAGE", value); invisible(self) },
+        overwrite_FOLLOWING = function(value) { private$overwrite("FOLLOWING", value); invisible(self) },
+        overwrite_SPECTATOR = function(value) { private$overwrite("SPECTATOR", value); invisible(self) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         path = ".",
         null_table = tibble::tibble(),
         # Private Methods ---------------------------------------------------------
-        read = function(key) return(tibble::tibble()),
-        overwrite = function(key, value) return(invisible())
+        read = function(key) { return(tibble::tibble()) },
+        overwrite = function(key, value) { return(invisible()) }
     )
 )
 
