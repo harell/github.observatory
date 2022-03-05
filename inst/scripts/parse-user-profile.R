@@ -16,10 +16,10 @@ invisible(
 
 
 # Profiler ----------------------------------------------------------------
-profiles <- purrr::map_dfr(artifacts, purrr::flatten_dfr)
+users <- purrr::map_dfr(artifacts, purrr::flatten_dfr)
 
 invisible(
-    tidy_profiles <- profiles
+    tidy_users <- users
     |> dplyr::transmute(
         id           = as.integer(id),
         login        = as.character(login),
@@ -37,4 +37,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-gdrive_repo$overwrite_USER(tidy_profiles)
+gdrive_repo$overwrite_USER(tidy_users)
