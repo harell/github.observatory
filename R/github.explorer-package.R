@@ -1,5 +1,6 @@
 #' @keywords internal
 #' @importFrom glue glue
+#' @importFrom purrr `%||%`
 "_PACKAGE"
 
 # The following block is used by usethis to automatically manage

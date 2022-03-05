@@ -1,16 +1,14 @@
-# `github.explorer` <img src="https://raw.githubusercontent.com/harell/github.explorer/master/pkgdown/logo.png" align="right" height="75"/>
+
+# `github.explorer` <img src="https://raw.githubusercontent.com/harell/github.explorer/master/pkgdown/logo.png" align="right" style="float:right; height:75px"/>
 
 <!-- badges: start -->
 
-[![CRAN
-status](https://www.r-pkg.org/badges/version/github.explorer)](https://CRAN.R-project.org/package=github.explorer)
-[![R build
-status](https://github.com/harell/github.explorer/workflows/R-CMD-check/badge.svg)](https://github.com/harell/github.explorer/actions)
+[![R-CMD-check](https://github.com/harell/github.explorer/workflows/R-CMD-check/badge.svg)](https://github.com/harell/github.explorer/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/harell/github.explorer/branch/master/graph/badge.svg)](https://codecov.io/gh/harell/github.explorer?branch=master)
 <!-- badges: end -->
 
-<img src="https://th-thumbnailer.cdn-si-edu.com/i_4iiCzNJ-R8Ow8LR3fMFWplBEU=/fit-in/1600x0/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/0c/eb/0ceb7b9c-36dc-40cf-b045-0b435a458434/gettyimages-1195887138.jpg" width="100%" style="display: block; margin: auto;" />
+<img src="https://www.tmt.org/assets/tmt_comp_background-f920515202d7fa2ce6dc8c485d53df5c2a9f5f3e4ff1414500ab8d5da629e49e.jpg" width="100%" style="display: block; margin: auto;" />
 
 ## Overview
 
@@ -21,5 +19,7 @@ recommend them some R packages that they may like.
 
 You can install `github.explorer` by using:
 
-    install.packages("remotes")
-    remotes::install_github("harell/github.explorer")
+``` r
+install.packages("remotes")
+remotes::install_github("harell/github.explorer")
+```

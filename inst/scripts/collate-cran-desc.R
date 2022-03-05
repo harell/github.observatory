@@ -1,6 +1,6 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-repository <- Repository$new()
+repository <- InterimRepository$new()
 
 
 # Download CRAN packages list ---------------------------------------------
@@ -8,7 +8,7 @@ pkg_desc <- tools::CRAN_package_db()
 
 invisible(
     tidy_pkg_desc <- pkg_desc
-    |> standardise_col_names()
+    |> ge$standardise$col_names()
     |> dplyr::transmute(
         package = as.character(package),
         github_slug = dplyr::if_else(
