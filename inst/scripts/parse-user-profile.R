@@ -1,6 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
+if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
 
 
 # Load cached data --------------------------------------------------------
@@ -36,5 +37,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-
-# repository$write_repo_desc(tidy_repo_desc)$commit()
+gdrive_repo$overwrite_USER(tidy_profiles)
