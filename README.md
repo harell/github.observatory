@@ -12,7 +12,7 @@ coverage](https://codecov.io/gh/harell/github.explorer/branch/master/graph/badge
 
 ## Overview
 
-Investigate what R users on Github are similar to each other, and
+Investigate which R users on Github are similar to each other, and
 recommend them some R packages that they may like.
 
 ## Installation
