@@ -19,15 +19,15 @@ invisible(
     |> purrr::map_dfr(~.x |> user_archive$load() |> unlist())
     |> dplyr::transmute(
         id           = as.integer(id),
-        login        = ge$standardise$name(login),
+        login        = as.character(login),
         avatar_url   = as.character(avatar_url),
         html_url     = as.character(html_url),
-        name         = as.character(name %||% NA_character_),
+        name         = as.character(name %||% NA_character_) |> ge$standardise$name(),
         public_repos = as.integer(public_repos),
         followers    = as.integer(followers),
         following    = as.integer(following),
-        created_at   = created_at |> lubridate::ymd_hms() |> ge$standardise$date(),
-        updated_at   = updated_at |> lubridate::ymd_hms() |> ge$standardise$date()
+        created_at   = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
+        updated_at   = lubridate::ymd_hms(updated_at) |> ge$standardise$date()
     )
 )
 
