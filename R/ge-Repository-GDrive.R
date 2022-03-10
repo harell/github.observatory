@@ -41,6 +41,6 @@ GDrive$set(which = "private", name = "read", overwrite = TRUE, value = function(
 
 GDrive$set(which = "private", name = "overwrite", overwrite = TRUE, value = function(key, value) {
     stopifnot(is.data.frame(value))
-    readr::write_csv(value, fs::path(private$path, key, ext = "csv", na = ""))
+    readr::write_csv(value, fs::path(private$path, key, ext = "csv"), na = "")
     invisible()
 })
