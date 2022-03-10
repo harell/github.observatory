@@ -15,7 +15,7 @@ invisible(
 
 # Parse users -------------------------------------------------------------
 invisible(
-    repos <- artifacts$artifact[1:1000]
+    repos <- artifacts$artifact
     |> purrr::map_dfr(~.x |> repo_archive$load() |> unlist())
     |> ge$standardise$col_names()
     |> dplyr::transmute(
@@ -34,11 +34,6 @@ invisible(
     )
 )
 
-invisible(
-    tidy_users <- users
-    |> ge$discard$ghosts()
-)
-
 
 # Teardown ----------------------------------------------------------------
-gdrive_repo$overwrite_REPO()
+gdrive_repo$overwrite_REPO(repos)
