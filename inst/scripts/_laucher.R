@@ -16,6 +16,9 @@ source(system.file("scripts", "parse-repo-spectators.R", package = "github.explo
 print_banner("Collate users information from GitHub")
 source(system.file("scripts", "collate-user-info.R", package = "github.explorer", mustWork = TRUE))
 
+print_banner("Parse repo information")
+source(system.file("scripts", "parse-repo-info.R", package = "github.explorer", mustWork = TRUE))
+
 print_banner("Parse user information")
 source(system.file("scripts", "parse-user-info.R", package = "github.explorer", mustWork = TRUE))
 
