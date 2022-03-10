@@ -24,10 +24,10 @@ withr::with_seed(2212, suppressWarnings(
 pb <- progress::progress_bar$new(format = "Quering Github Repos [:bar] :current/:total (:percent) eta: :eta", total = length(packages), clear = FALSE)
 for(package in packages){ try(pb$tick(1), silent = TRUE); tryCatch({
     github$alter_PAT()
-    if((which(packages %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 50) Sys.sleep(60)
+    if((which(packages %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 10) Sys.sleep(60)
 
     suppressMessages({
-        github_slug <- repository$read_cran_desc() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_slug)
+        github_slug <- repository$read_cran_desc() |> dplyr::filter(package %in% !!package) |> dplyr::pull(full_name)
         owner <- github$extract$owner(github_slug)
         repo <- github$extract$repo(github_slug)
     })
