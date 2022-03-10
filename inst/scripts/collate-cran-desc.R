@@ -1,13 +1,13 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-if(does_not_exist("intr_repo")) intr_repo <- InterimRepository$new()
+if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
 
 
 # Download CRAN packages list ---------------------------------------------
 pkg_desc <- tools::CRAN_package_db()
 
 invisible(
-    tidy_pkg_desc <- pkg_desc
+    tidy_packages <- pkg_desc
     |> ge$standardise$col_names()
     |> dplyr::transmute(
         package = as.character(package),
@@ -23,6 +23,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-intr_repo$write_cran_desc(tidy_pkg_desc)
-intr_repo$commit()
-
+gdrive_repo$overwrite_PACKAGE(tidy_packages)

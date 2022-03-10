@@ -31,7 +31,7 @@ GDrive <- R6::R6Class(
 
 # Class Methods -----------------------------------------------------------
 GDrive$set(which = "private", name = "read", overwrite = TRUE, value = function(key) {
-    file <- fs::path(private$path, key, ext = ".csv")
+    file <- fs::path(private$path, key, ext = "csv")
     if(file.exists(file)){
         return(readr::read_csv(file, show_col_types = FALSE, progress = TRUE, lazy = FALSE))
     } else {
