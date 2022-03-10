@@ -17,11 +17,10 @@ invisible(
 invisible(
     repos <- artifacts$artifact[1:1000]
     |> purrr::map_dfr(~.x |> repo_archive$load() |> unlist())
-    # |> dplyr::select(-dplyr::matches("(_|\\.)url$"), -dplyr::matches("^(topic|licence|premissions)"))
     |> ge$standardise$col_names()
     |> dplyr::transmute(
         id               = as.integer(id),
-        name             = as.character(name),
+        full_name        = as.character(full_name) |> tolower(),
         owner_type       = as.character(owner_type),
         owner_id         = as.integer(owner_id),
         html_url         = as.character(html_url),

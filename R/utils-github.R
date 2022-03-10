@@ -48,6 +48,32 @@ github$is_valid_url <- function(url) return(
 
 
 # parsers -----------------------------------------------------------------
+github$extract$html_url <- function(url) return(
+    glue("https://github.com/{path}", path = github$extract$full_name(url))
+    |> as.character()
+)
+
+github$extract$full_name <- function(url) {
+
+    extract_path <- purrr::compose(
+        httr::parse_url,
+        ~purrr::pluck(.x, "path"),
+        ~stringr::str_split(.x, "/"),
+        ~purrr::pluck(.x, 1),
+        ~head(.x, n = 2),
+        ~paste0(.x, collapse = "/"),
+        .dir = "forward"
+    )
+
+    extract_path <- Vectorize(extract_path)
+
+    return(
+        url
+        |> extract_path()
+        |> unname()
+    )
+}
+
 github$extract$owner <- function(url) return(
     url
     |> github$extract$slug()
