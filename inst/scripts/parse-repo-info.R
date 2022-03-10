@@ -13,7 +13,7 @@ invisible(
 )
 
 
-# Parse users -------------------------------------------------------------
+# Parse repos -------------------------------------------------------------
 invisible(
     repos <- artifacts$artifact
     |> purrr::map_dfr(~.x |> repo_archive$load() |> unlist())
