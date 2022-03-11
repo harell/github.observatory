@@ -1,10 +1,12 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-if(does_not_exist("repository")) repository <- InterimRepository$new()
 if(does_not_exist("repo_archive")) repo_archive <- RepoArchive$new()
+if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
 
 
 # Query Github ------------------------------------------------------------
+pkgs_on_cran <- gdrive_repo$read_PACKAGE()
+
 pkgs_to_skip <- tryCatch(
     repo_archive$show()
     |> dplyr::filter(type %in% "overview")
@@ -15,7 +17,7 @@ pkgs_to_skip <- tryCatch(
 )
 
 withr::with_seed(2212, suppressWarnings(
-    packages <- repository$read_cran_desc()
+    packages <- pkgs_on_cran
     |> dplyr::pull("package")
     |> setdiff(pkgs_to_skip)
     |> sample()
@@ -24,12 +26,12 @@ withr::with_seed(2212, suppressWarnings(
 pb <- progress::progress_bar$new(format = "Quering Github Repos [:bar] :current/:total (:percent) eta: :eta", total = length(packages), clear = FALSE)
 for(package in packages){ try(pb$tick(1), silent = TRUE); tryCatch({
     github$alter_PAT()
-    if((which(packages %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 50) Sys.sleep(60)
+    if((which(packages %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 10) Sys.sleep(60)
 
     suppressMessages({
-        github_slug <- repository$read_cran_desc() |> dplyr::filter(package %in% !!package) |> dplyr::pull(github_slug)
-        owner <- github$extract$owner(github_slug)
-        repo <- github$extract$repo(github_slug)
+        full_name <- pkgs_on_cran |> dplyr::filter(package %in% !!package) |> dplyr::pull(full_name)
+        owner <- github$extract$owner(full_name)
+        repo <- github$extract$repo(full_name)
     })
 
     repo_overview <- query$package$overview(owner, repo)

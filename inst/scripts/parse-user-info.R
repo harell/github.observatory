@@ -10,28 +10,29 @@ invisible(
     |> dplyr::filter(type %in% "overview")
     |> dplyr::arrange(dplyr::desc(date))
     |> dplyr::distinct(id, .keep_all = TRUE)
-    |> dplyr::pull(artifact)
-    |> user_archive$load()
 )
 
 
-# Profiler ----------------------------------------------------------------
-users <- purrr::map_dfr(artifacts, purrr::flatten_dfr)
-
+# Parse users -------------------------------------------------------------
 invisible(
-    tidy_users <- users
+    users <- artifacts$artifact
+    |> purrr::map_dfr(~.x |> user_archive$load() |> unlist())
     |> dplyr::transmute(
         id           = as.integer(id),
         login        = as.character(login),
         avatar_url   = as.character(avatar_url),
         html_url     = as.character(html_url),
-        name         = as.character(name %||% NA_character_),
+        name         = as.character(name %||% NA_character_) |> ge$standardise$name(),
         public_repos = as.integer(public_repos),
         followers    = as.integer(followers),
         following    = as.integer(following),
-        created_at   = created_at |> lubridate::ymd_hms() |> as.Date(),
-        updated_at   = updated_at |> lubridate::ymd_hms() |> as.Date()
+        created_at   = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
+        updated_at   = lubridate::ymd_hms(updated_at) |> ge$standardise$date()
     )
+)
+
+invisible(
+    tidy_users <- users
     |> ge$discard$ghosts()
 )
 

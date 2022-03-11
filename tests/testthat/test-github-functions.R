@@ -15,6 +15,13 @@ test_that("extract functions work", {
     expect_identical(github$extract$repo(urls), c("github.explorer", "dplyr"))
 })
 
+test_that("extract html_url works", {
+    urls <- c("https://github.com/onnx/onnx-r/issues", "https://github.com/onnx/onnx-r")
+
+    expect_identical(github$extract$full_name(urls), rep("onnx/onnx-r", 2))
+    expect_identical(github$extract$html_url(urls), rep("https://github.com/onnx/onnx-r", 2))
+})
+
 
 # compose -----------------------------------------------------------------
 test_that("compose functions work", {
