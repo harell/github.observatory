@@ -27,13 +27,15 @@ invisible(
         followers    = as.integer(followers),
         following    = as.integer(following),
         created_at   = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
-        updated_at   = lubridate::ymd_hms(updated_at) |> ge$standardise$date()
+        updated_at   = lubridate::ymd_hms(updated_at) |> ge$standardise$date(),
+        queried_at   = queried_at %||% "1970-01-01"
     )
 )
 
 invisible(
     tidy_users <- users
     |> ge$discard$ghosts()
+    |> ge$discard$robots()
 )
 
 
