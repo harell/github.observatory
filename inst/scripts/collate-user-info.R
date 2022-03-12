@@ -35,7 +35,6 @@ for(user in users){try(pb$tick(1), silent = TRUE); tryCatch({
     if((which(users %in% user) - 1) %% 10 == 0) while(github$return_remaining_quote() < 10) Sys.sleep(60)
 
     user_overview <- query$user$by_id(user)
-    user_overview <- purrr::list_merge(user_overview, queried_at = Sys.time() |> ge$standardise$date())
     user_archive$save(user_overview, tags = c("entity:user", "type:overview", paste0("id:", user)))
 
     artifact <- if(user_overview$following > 0)(

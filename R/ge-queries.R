@@ -6,11 +6,6 @@ query <- new.env()
 # User Queries ------------------------------------------------------------
 query$user <- new.env()
 
-query$user$starred <- function(user){
-    output <- github$query(glue("/users/{user}/starred"))
-    return(purrr::map_chr(output, ~purrr::pluck(.x, "full_name")))
-}
-
 query$user$by_id <- function(id) github$query(glue("/user/{id}"))
 
 query$user$by_login <- function(login) github$query(glue("/users/{login}"))

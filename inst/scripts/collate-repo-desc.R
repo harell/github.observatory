@@ -35,7 +35,6 @@ for(package in packages){ try(pb$tick(1), silent = TRUE); tryCatch({
     })
 
     repo_overview <- query$package$overview(owner, repo)
-    repo_overview <- purrr::list_merge(repo_overview, queried_at = Sys.time() |> ge$standardise$date())
     repo_archive$save(repo_overview, tags = c("entity:repo", "type:overview", paste0("id:", repo_overview$id)))
 
     repo_contributors <- query$package$contributors(owner, repo) |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
