@@ -16,7 +16,6 @@ github$query <- function(endpoint){
         output
         |> purrr::flatten()
         |> as.list()
-        |> purrr::list_merge(queried_at = lubridate::format_ISO8601(Sys.time()))
     )
 }
 
