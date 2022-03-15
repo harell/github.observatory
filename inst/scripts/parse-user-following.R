@@ -28,7 +28,7 @@ invisible(
 
 invisible(
     tidy_following <- following
-    |> dplyr::filter(from %in% to)
+    |> dplyr::filter(to %in% from)
 )
 
 

@@ -36,6 +36,14 @@ invisible(
     tidy_users <- users
     |> ge$discard$ghosts()
     |> ge$discard$robots()
+    |> tibble::add_column(
+        r_followers = NA_integer_,
+        r_following = NA_integer_,
+        r_contributor_count = NA_integer_,
+        r_stargazer_count = NA_integer_,
+        r_watcher_count = NA_integer_,
+        .after = "following"
+    )
 )
 
 
