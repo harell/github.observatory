@@ -47,7 +47,7 @@ SPECTATOR <- gdrive_repo$read_SPECTATOR()
 
 # Update users -------------------------------------------------------------
 (
-    USER <- USER
+    USER_STAR <- USER
     |> dplyr::select(-dplyr::starts_with("r_"))
     |> dplyr::left_join(followers, by = "id")
     |> dplyr::left_join(following, by = "id")
@@ -58,4 +58,4 @@ SPECTATOR <- gdrive_repo$read_SPECTATOR()
 
 
 # Teardown ----------------------------------------------------------------
-gdrive_repo$overwrite_USER(tidy_users)
+gdrive_repo$overwrite_USER(USER_STAR)
