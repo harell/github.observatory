@@ -7,7 +7,7 @@ if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
 # Load cached data --------------------------------------------------------
 invisible(
     artifacts <- repo_archive$show()
-    |> dplyr::filter(type %in% c("contributors", "forkers", "stargazers", "watchers"))
+    |> dplyr::filter(type %in% c("contributors", "stargazers", "watchers"))
     |> dplyr::arrange(dplyr::desc(date))
     |> dplyr::distinct(id, type, .keep_all = TRUE)
 )

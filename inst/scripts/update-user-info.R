@@ -10,7 +10,6 @@ FOLLOWING <- gdrive_repo$read_FOLLOWING()
 SPECTATOR <- gdrive_repo$read_SPECTATOR()
 
 
-
 # Summarise R statistics --------------------------------------------------
 ## Calculate following and followers
 (
