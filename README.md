@@ -1,11 +1,12 @@
 
-# `github.explorer` <img src="https://raw.githubusercontent.com/harell/github.explorer/master/pkgdown/logo.png" align="right" style="float:right; height:75px"/>
+# `github.observatory` <img src="https://raw.githubusercontent.com/harell/github.observatory/master/pkgdown/logo.png" align="right" style="float:right; height:75px"/>
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/harell/github.explorer/workflows/R-CMD-check/badge.svg)](https://github.com/harell/github.explorer/actions)
+[![R-CMD-check](https://github.com/harell/github.observatory/workflows/R-CMD-check/badge.svg)](https://github.com/harell/github.observatory/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/harell/github.explorer/branch/master/graph/badge.svg)](https://codecov.io/gh/harell/github.explorer?branch=master)
+coverage](https://codecov.io/gh/harell/github.observatory/branch/master/graph/badge.svg)](https://codecov.io/gh/harell/github.observatory?branch=master)
+
 <!-- badges: end -->
 
 <img src="https://www.tmt.org/assets/tmt_comp_background-f920515202d7fa2ce6dc8c485d53df5c2a9f5f3e4ff1414500ab8d5da629e49e.jpg" width="100%" style="display: block; margin: auto;" />
@@ -17,9 +18,9 @@ recommend them some R packages that they may like.
 
 ## Installation
 
-You can install `github.explorer` by using:
+You can install `github.observatory` by using:
 
 ``` r
 install.packages("remotes")
-remotes::install_github("harell/github.explorer")
+remotes::install_github("harell/github.observatory")
 ```
