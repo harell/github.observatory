@@ -55,12 +55,6 @@ for(package in packages){ try(pb$tick(1), silent = TRUE); tryCatch({
         |> repo_archive$save(tags = c("entity:repo", "type:watchers", paste0("id:", repo_overview$id)))
     )
 
-    if(repo_overview$forks_count > 0) (
-        query$package$forkers(owner, repo)
-        |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
-        |> repo_archive$save(tags = c("entity:repo", "type:forkers", paste0("id:", repo_overview$id)))
-    )
-
     suppressMessages(repo_archive$commit())
     try(pb$message(glue("Retrieved `{package}` information")), silent = TRUE)
 }, error = function(e){

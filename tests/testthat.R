@@ -1,4 +1,4 @@
 library(testthat)
-library(github.explorer)
+library(github.observatory)
 
-test_check("github.explorer")
+test_check("github.observatory")

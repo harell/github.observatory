@@ -27,13 +27,23 @@ invisible(
         followers    = as.integer(followers),
         following    = as.integer(following),
         created_at   = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
-        updated_at   = lubridate::ymd_hms(updated_at) |> ge$standardise$date()
+        updated_at   = lubridate::ymd_hms(updated_at) |> ge$standardise$date(),
+        queried_at   = lubridate::ymd_hms(queried_at) |> ge$standardise$date()
     )
 )
 
 invisible(
     tidy_users <- users
     |> ge$discard$ghosts()
+    |> ge$discard$robots()
+    |> tibble::add_column(
+        r_followers = NA_integer_,
+        r_following = NA_integer_,
+        r_contributor_count = NA_integer_,
+        r_stargazer_count = NA_integer_,
+        r_watcher_count = NA_integer_,
+        .after = "following"
+    )
 )
 
 

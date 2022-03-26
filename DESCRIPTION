@@ -1,5 +1,5 @@
 Type: Package
-Package: github.explorer
+Package: github.observatory
 Title: Explore the relationships between R packages and R users
 Version: 0.4.0
 Date: 2021-11-01
@@ -10,9 +10,9 @@ Maintainer: Harel Lustiger <tidylab@gmail.com>
 Description: Investigate which R users on Github are similar to each
     other, and recommend them some R packages that they may like.
 License: MIT + file LICENSE
-URL: https://harell.github.io/github.explorer/,
-    https://github.com/harell/github.explorer
-BugReports: https://github.com/harell/github.explorer/issues
+URL: https://harell.github.io/github.observatory/,
+    https://github.com/harell/github.observatory
+BugReports: https://github.com/harell/github.observatory/issues
 Depends: 
     R (>= 4.1)
 Imports: 

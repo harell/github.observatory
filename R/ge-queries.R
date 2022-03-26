@@ -6,37 +6,65 @@ query <- new.env()
 # User Queries ------------------------------------------------------------
 query$user <- new.env()
 
-query$user$starred <- function(user){
-    output <- github$query(glue("/users/{user}/starred"))
-    return(purrr::map_chr(output, ~purrr::pluck(.x, "full_name")))
+query$user$by_id <- function(id) {
+    return(
+        glue("/user/{id}")
+        |> github$query()
+        |> purrr::list_merge(queried_at = lubridate::format_ISO8601(Sys.time()))
+    )
 }
 
-query$user$by_id <- function(id) github$query(glue("/user/{id}"))
+query$user$by_login <- function(login) {
+    return(
+        glue("/users/{login}")
+        |> github$query()
+    )
+}
 
-query$user$by_login <- function(login) github$query(glue("/users/{login}"))
-
-query$user$following <- function(login) github$query(glue("/users/{login}/following"))
+query$user$following <- function(login) {
+    return(
+        glue("/users/{login}/following")
+        |> github$query()
+    )
+}
 
 
 # Package Queries ---------------------------------------------------------
 query$package <- new.env()
 
-query$package$overview <- function(owner, repo){
-    github$query(glue("/repos/{owner}/{repo}"))
+query$package$overview <- function(owner, repo) {
+    return(
+        glue("/repos/{owner}/{repo}")
+        |> github$query()
+        |> purrr::list_merge(queried_at = lubridate::format_ISO8601(Sys.time()))
+    )
 }
 
-query$package$stargazers <- function(owner, repo){
-    github$query(glue("/repos/{owner}/{repo}/stargazers"))
+query$package$stargazers <- function(owner, repo) {
+    return(
+        glue("/repos/{owner}/{repo}/stargazers")
+        |> github$query()
+    )
 }
 
-query$package$contributors <- function(owner, repo){
-    github$query(glue("/repos/{owner}/{repo}/contributors"))
+
+query$package$contributors <- function(owner, repo) {
+    return(
+        glue("/repos/{owner}/{repo}/contributors")
+        |> github$query()
+    )
 }
 
-query$package$watchers <- function(owner, repo){
-    github$query(glue("/repos/{owner}/{repo}/subscribers"))
+query$package$watchers <- function(owner, repo) {
+    return(
+        glue("/repos/{owner}/{repo}/subscribers")
+        |> github$query()
+    )
 }
 
-query$package$forkers <- function(owner, repo){
-    github$query(glue("/repos/{owner}/{repo}/forks"))
+query$package$forkers <- function(owner, repo) {
+    return(
+        glue("/repos/{owner}/{repo}/forks")
+        |> github$query()
+    )
 }

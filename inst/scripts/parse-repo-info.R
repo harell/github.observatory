@@ -24,13 +24,14 @@ invisible(
         owner_type       = as.character(owner_type),
         owner_id         = as.integer(owner_id),
         html_url         = as.character(html_url),
-        created_at       = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
-        updated_at       = lubridate::ymd_hms(updated_at) |> ge$standardise$date(),
         stargazers_count = as.integer(stargazers_count),
         watchers_count   = as.integer(subscribers_count),
         forks_count      = as.integer(forks_count),
         language         = as.character(language %||% NA_character_),
-        homepage         = as.character(homepage %||% NA_character_)
+        homepage         = as.character(homepage %||% NA_character_),
+        created_at       = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
+        updated_at       = lubridate::ymd_hms(updated_at) |> ge$standardise$date(),
+        queried_at       = lubridate::ymd_hms(queried_at) |> ge$standardise$date()
     )
 )
 
