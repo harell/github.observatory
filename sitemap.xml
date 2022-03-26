@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://harell.github.io/github.explorer/404.html</loc>
+    <loc>https://harell.github.io/github.observatory/404.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/LICENSE-text.html</loc>
+    <loc>https://harell.github.io/github.observatory/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/LICENSE.html</loc>
+    <loc>https://harell.github.io/github.observatory/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/authors.html</loc>
+    <loc>https://harell.github.io/github.observatory/authors.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/index.html</loc>
+    <loc>https://harell.github.io/github.observatory/index.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/reference/Archive.html</loc>
+    <loc>https://harell.github.io/github.observatory/reference/Archive.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/reference/assert.html</loc>
+    <loc>https://harell.github.io/github.observatory/reference/assert.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/reference/ge.html</loc>
+    <loc>https://harell.github.io/github.observatory/reference/ge.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/reference/github.explorer-package.html</loc>
+    <loc>https://harell.github.io/github.observatory/reference/github.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/reference/github.html</loc>
+    <loc>https://harell.github.io/github.observatory/reference/github.observatory-package.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/reference/index.html</loc>
+    <loc>https://harell.github.io/github.observatory/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/reference/query.html</loc>
+    <loc>https://harell.github.io/github.observatory/reference/query.html</loc>
   </url>
   <url>
-    <loc>https://harell.github.io/github.explorer/reference/utils-base.html</loc>
+    <loc>https://harell.github.io/github.observatory/reference/utils-base.html</loc>
   </url>
 </urlset>
