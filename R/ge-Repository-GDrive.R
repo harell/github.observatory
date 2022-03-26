@@ -1,4 +1,7 @@
 #' @title Github Explorer GDrive Repository
+#' @param filter (`character`) either 'latest' or 'everything'. If 'latest' then
+#'   return the latest query of each entity. Otherwise, return all all records
+#'   (might include multiple records per entity).
 #' @keywords internal
 #' @export
 #' @noRd
@@ -8,11 +11,11 @@ GDrive <- R6::R6Class(
             private$path <- usethis::proj_path("_cache", "tables")
             fs::dir_create(private$path)
         },
-        read_USER = function() { return(private$read("USER")) },
-        read_REPO = function() { return(private$read("REPO")) },
-        read_PACKAGE = function() { return(private$read("PACKAGE")) },
-        read_FOLLOWING = function() { return(private$read("FOLLOWING")) },
-        read_SPECTATOR = function() { return(private$read("SPECTATOR")) },
+        read_USER      = function(filter = "latest") { return(private$read("USER", filter = filter)) },
+        read_REPO      = function(filter = "latest") { return(private$read("REPO", filter = filter)) },
+        read_PACKAGE   = function() { return(private$read("PACKAGE", filter = "everything")) },
+        read_FOLLOWING = function() { return(private$read("FOLLOWING", filter = "everything")) },
+        read_SPECTATOR = function() { return(private$read("SPECTATOR", filter = "everything")) },
         overwrite_USER = function(value) { private$overwrite("USER", value); invisible(self) },
         overwrite_REPO = function(value) { private$overwrite("REPO", value); invisible(self) },
         overwrite_PACKAGE = function(value) { private$overwrite("PACKAGE", value); invisible(self) },
@@ -30,13 +33,22 @@ GDrive <- R6::R6Class(
 
 
 # Class Methods -----------------------------------------------------------
-GDrive$set(which = "private", name = "read", overwrite = TRUE, value = function(key) {
+GDrive$set(which = "private", name = "read", overwrite = TRUE, value = function(key, filter) {
+    filter <- match.arg(tolower(filter), c("latest", "everything"))
     file <- fs::path(private$path, key, ext = "csv")
-    if(file.exists(file)){
-        return(readr::read_csv(file, show_col_types = FALSE, progress = TRUE, lazy = FALSE))
-    } else {
-        return(private$null_table)
-    }
+
+    if(file_not_exists(file)) return(private$null_table)
+
+    data <- readr::read_csv(file, show_col_types = FALSE, progress = TRUE, lazy = FALSE)
+
+    if (filter == "everything") return(data)
+    if (filter == "latest") return(
+        data
+        |> dplyr::group_by(id, queried_at)
+        |> dplyr::arrange(queried_at)
+        |> dplyr::slice_tail(n = 1)
+        |> dplyr::ungroup()
+    )
 })
 
 GDrive$set(which = "private", name = "overwrite", overwrite = TRUE, value = function(key, value) {
