@@ -31,10 +31,11 @@ invisible(
         homepage         = as.character(homepage %||% NA_character_),
         created_at       = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
         updated_at       = lubridate::ymd_hms(updated_at) |> ge$standardise$date(),
-        queried_at       = lubridate::ymd_hms(queried_at) |> ge$standardise$date()
+        queried_at       = lubridate::ymd_hms(queried_at) |> ge$standardise$date(),
+        processed_at     = Sys.Date() |> ge$standardise$date()
     )
 )
 
 
 # Teardown ----------------------------------------------------------------
-gdrive_repo$snapshot_REPO(repos)
+gdrive_repo$overwrite_REPO(repos)

@@ -28,7 +28,8 @@ invisible(
         following    = as.integer(following),
         created_at   = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
         updated_at   = lubridate::ymd_hms(updated_at) |> ge$standardise$date(),
-        queried_at   = lubridate::ymd_hms(queried_at) |> ge$standardise$date()
+        queried_at   = lubridate::ymd_hms(queried_at) |> ge$standardise$date(),
+        processed_at = Sys.Date() |> ge$standardise$date()
     )
 )
 
@@ -48,4 +49,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-gdrive_repo$snapshot_USER(tidy_users)
+gdrive_repo$overwrite_USER(tidy_users)
