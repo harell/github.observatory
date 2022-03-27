@@ -1,10 +1,12 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("repo_archive")) repo_archive <- RepoArchive$new()
-if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
+if(does_not_exist("gdrive")) gdrive <- GDrive$new()
 
 
 # Load cached data --------------------------------------------------------
+repos_todate <- gdrive$read_REPO(filter = "everything")
+
 invisible(
     artifacts <- repo_archive$show()
     |> dplyr::filter(type %in% "overview")
@@ -15,7 +17,7 @@ invisible(
 
 # Parse repos -------------------------------------------------------------
 invisible(
-    repos <- artifacts$artifact
+    repos_update <- artifacts$artifact
     |> purrr::map_dfr(~.x |> repo_archive$load() |> unlist())
     |> ge$standardise$col_names()
     |> dplyr::transmute(
@@ -31,10 +33,22 @@ invisible(
         homepage         = as.character(homepage %||% NA_character_),
         created_at       = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
         updated_at       = lubridate::ymd_hms(updated_at) |> ge$standardise$date(),
-        queried_at       = lubridate::ymd_hms(queried_at) |> ge$standardise$date()
+        queried_at       = lubridate::ymd_hms(queried_at) |> ge$standardise$date(),
+        processed_at     = Sys.Date() |> ge$standardise$date()
     )
 )
 
 
+# Consolidate data --------------------------------------------------------
+(
+    repos <- repos_todate
+    |> dplyr::bind_rows(repos_update)
+    |> dplyr::arrange(id, dplyr::desc(queried_at), processed_at)
+    |> dplyr::group_by(id, queried_at)
+    |> dplyr::slice_head(n = 1)
+    |> dplyr::ungroup()
+)
+
+
 # Teardown ----------------------------------------------------------------
-gdrive_repo$snapshot_REPO(repos)
+gdrive$overwrite_REPO(repos)

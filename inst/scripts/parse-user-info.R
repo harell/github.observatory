@@ -1,10 +1,12 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
-if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
+if(does_not_exist("gdrive")) gdrive <- GDrive$new()
 
 
 # Load cached data --------------------------------------------------------
+users_todate <- gdrive$read_USER(filter = "everything")
+
 invisible(
     artifacts <- user_archive$show()
     |> dplyr::filter(type %in% "overview")
@@ -15,7 +17,7 @@ invisible(
 
 # Parse users -------------------------------------------------------------
 invisible(
-    users <- artifacts$artifact
+    users_update <- artifacts$artifact
     |> purrr::map_dfr(~.x |> user_archive$load() |> unlist())
     |> dplyr::transmute(
         id           = as.integer(id),
@@ -28,12 +30,13 @@ invisible(
         following    = as.integer(following),
         created_at   = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
         updated_at   = lubridate::ymd_hms(updated_at) |> ge$standardise$date(),
-        queried_at   = lubridate::ymd_hms(queried_at) |> ge$standardise$date()
+        queried_at   = lubridate::ymd_hms(queried_at) |> ge$standardise$date(),
+        processed_at = Sys.Date() |> ge$standardise$date()
     )
 )
 
 invisible(
-    tidy_users <- users
+    tidy_users <- users_update
     |> ge$discard$ghosts()
     |> ge$discard$robots()
     |> tibble::add_column(
@@ -47,5 +50,16 @@ invisible(
 )
 
 
+# Consolidate data --------------------------------------------------------
+(
+    users <- users_todate
+    |> dplyr::bind_rows(tidy_users)
+    |> dplyr::arrange(id, dplyr::desc(queried_at), processed_at)
+    |> dplyr::group_by(id, queried_at)
+    |> dplyr::slice_head(n = 1)
+    |> dplyr::ungroup()
+)
+
+
 # Teardown ----------------------------------------------------------------
-gdrive_repo$snapshot_USER(tidy_users)
+gdrive$overwrite_USER(users)
