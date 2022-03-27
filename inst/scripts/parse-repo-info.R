@@ -37,4 +37,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-gdrive_repo$overwrite_REPO(repos)
+gdrive_repo$snapshot_REPO(repos)
