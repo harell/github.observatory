@@ -5,6 +5,8 @@ if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
 
 
 # Load cached data --------------------------------------------------------
+repos_todate <- gdrive_repo$read_REPO(filter = "everything")
+
 invisible(
     artifacts <- repo_archive$show()
     |> dplyr::filter(type %in% "overview")
@@ -15,7 +17,7 @@ invisible(
 
 # Parse repos -------------------------------------------------------------
 invisible(
-    repos <- artifacts$artifact
+    repos_update <- artifacts$artifact
     |> purrr::map_dfr(~.x |> repo_archive$load() |> unlist())
     |> ge$standardise$col_names()
     |> dplyr::transmute(
@@ -34,6 +36,17 @@ invisible(
         queried_at       = lubridate::ymd_hms(queried_at) |> ge$standardise$date(),
         processed_at     = Sys.Date() |> ge$standardise$date()
     )
+)
+
+
+# Consolidate data --------------------------------------------------------
+(
+    repos <- repos_todate
+    |> dplyr::bind_rows(repos_update)
+    |> dplyr::arrange(id, dplyr::desc(queried_at), processed_at)
+    |> dplyr::group_by(id, queried_at)
+    |> dplyr::slice_head(n = 1)
+    |> dplyr::ungroup()
 )
 
 

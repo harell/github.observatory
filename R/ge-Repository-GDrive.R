@@ -39,7 +39,11 @@ GDrive$set(which = "private", name = "read", overwrite = TRUE, value = function(
 
     if(file_not_exists(file)) return(private$null_table)
 
-    data <- readr::read_csv(file, show_col_types = FALSE, progress = TRUE, lazy = FALSE)
+    invisible(
+        data <- readr::read_csv(file, show_col_types = FALSE, progress = TRUE, lazy = FALSE)
+        |> purrr::modify_if(lubridate::is.Date, ge$standardise$date)
+        |> dplyr::distinct()
+    )
 
     if (filter == "everything") return(data)
     if (filter == "latest") return(
@@ -59,6 +63,10 @@ GDrive$set(which = "private", name = "overwrite", overwrite = TRUE, value = func
     return(
         value
         |> dplyr::distinct()
-        |> readr::write_csv(fs::path(private$path, file_name, ext = "csv"), na = "", append = FALSE)
+        |> readr::write_csv(
+            fs::path(private$path, file_name, ext = "csv"),
+            # na = "",
+            append = FALSE
+        )
     )
 })
