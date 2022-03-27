@@ -48,9 +48,9 @@ GDrive$set(which = "private", name = "read", overwrite = TRUE, value = function(
     if (filter == "everything") return(data)
     if (filter == "latest") return(
         data
-        |> dplyr::group_by(id, queried_at)
-        |> dplyr::arrange(queried_at)
-        |> dplyr::slice_tail(n = 1)
+        |> dplyr::arrange(dplyr::desc(queried_at))
+        |> dplyr::group_by(id)
+        |> dplyr::slice_head(n = 1)
         |> dplyr::ungroup()
     )
 })
