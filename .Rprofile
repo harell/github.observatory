@@ -14,7 +14,7 @@ assign(".Rprofile", new.env(), envir = globalenv())
 # .Last -------------------------------------------------------------------
 .Last <- function(){
     try(if(testthat::is_testing()) return())
-    try(system('docker-compose down'), silent = TRUE)
+    # try(system('docker-compose down'), silent = TRUE)
 }
 
 # Docker ------------------------------------------------------------------

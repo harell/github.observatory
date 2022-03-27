@@ -16,8 +16,8 @@ GDrive <- R6::R6Class(
         read_PACKAGE   = function() { return(private$read("PACKAGE", filter = "everything")) },
         read_FOLLOWING = function() { return(private$read("FOLLOWING", filter = "everything")) },
         read_SPECTATOR = function() { return(private$read("SPECTATOR", filter = "everything")) },
-        overwrite_USER = function(value) { private$overwrite("USER", value); invisible(self) },
-        overwrite_REPO = function(value) { private$overwrite("REPO", value); invisible(self) },
+        snapshot_USER = function(value) { private$snapshot("USER", value); invisible(self) },
+        snapshot_REPO = function(value) { private$snapshot("REPO", value); invisible(self) },
         overwrite_PACKAGE = function(value) { private$overwrite("PACKAGE", value); invisible(self) },
         overwrite_FOLLOWING = function(value) { private$overwrite("FOLLOWING", value); invisible(self) },
         overwrite_SPECTATOR = function(value) { private$overwrite("SPECTATOR", value); invisible(self) }
@@ -27,7 +27,8 @@ GDrive <- R6::R6Class(
         null_table = tibble::tibble(),
         # Private Methods ---------------------------------------------------------
         read = function(key) { return(tibble::tibble()) },
-        overwrite = function(key, value) { return(invisible()) }
+        overwrite = function(key, value) { return(invisible()) },
+        snapshot = function(key, value) { return(invisible()) }
     )
 )
 
@@ -53,6 +54,25 @@ GDrive$set(which = "private", name = "read", overwrite = TRUE, value = function(
 
 GDrive$set(which = "private", name = "overwrite", overwrite = TRUE, value = function(key, value) {
     stopifnot(is.data.frame(value))
-    readr::write_csv(value, fs::path(private$path, key, ext = "csv"), na = "")
-    invisible()
+
+    file_name <- key
+
+    return(
+        value
+        |> dplyr::distinct()
+        |> readr::write_csv(fs::path(private$path, file_name, ext = "csv"), na = "", append = FALSE)
+    )
+})
+
+GDrive$set(which = "private", name = "snapshot", overwrite = TRUE, value = function(key, value) {
+    stopifnot(is.data.frame(value))
+
+    timestamp <- value$queried_at |> max() |> as.Date() |> lubridate$floor_week()
+    file_name <- paste0(key, "_", timestamp)
+
+    return(
+        value
+        |> dplyr::distinct()
+        |> readr::write_csv(fs::path(private$path, file_name, ext = "csv"), na = "", append = FALSE)
+    )
 })

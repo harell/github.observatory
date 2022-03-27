@@ -1,6 +1,6 @@
 # Folders
 .*/
-cache/
+_cache/
 docs/
 man/
 vignettes/_cache/

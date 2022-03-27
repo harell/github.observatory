@@ -36,12 +36,5 @@ invisible(
 )
 
 
-# Statistics --------------------------------------------------------------
-# length(unique(artifacts$id)) # How many packages have at least on spectator?
-# janitor::tabyl(artifacts, type)
-# janitor::tabyl(tidy_spectators, user_role)
-# spectators_leaderboard <- dplyr::count(tidy_spectators, user_id, user_role, sort = TRUE)
-
-
 # Teardown ----------------------------------------------------------------
 gdrive_repo$overwrite_SPECTATOR(tidy_spectators)
