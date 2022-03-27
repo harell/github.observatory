@@ -57,16 +57,22 @@ GDrive$set(which = "private", name = "overwrite", overwrite = TRUE, value = func
 
     file_name <- key
 
-    readr::write_csv(value, fs::path(private$path, file_name, ext = "csv"), na = "", append = FALSE)
-    invisible()
+    return(
+        value
+        |> dplyr::distinct()
+        |> readr::write_csv(fs::path(private$path, file_name, ext = "csv"), na = "", append = FALSE)
+    )
 })
 
 GDrive$set(which = "private", name = "snapshot", overwrite = TRUE, value = function(key, value) {
     stopifnot(is.data.frame(value))
 
-    timestamp <- value$queried_at |> max() |> lubridate$floor_week()
+    timestamp <- value$queried_at |> max() |> as.Date() |> lubridate$floor_week()
     file_name <- paste0(key, "_", timestamp)
 
-    readr::write_csv(value, fs::path(private$path, file_name, ext = "csv"), na = "", append = FALSE)
-    invisible()
+    return(
+        value
+        |> dplyr::distinct()
+        |> readr::write_csv(fs::path(private$path, file_name, ext = "csv"), na = "", append = FALSE)
+    )
 })
