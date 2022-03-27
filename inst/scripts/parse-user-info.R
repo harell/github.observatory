@@ -24,21 +24,21 @@ invisible(
         login        = as.character(login),
         avatar_url   = as.character(avatar_url),
         html_url     = as.character(html_url),
-        name         = as.character(name %||% NA_character_) |> ge$standardise$name(),
+        name         = as.character(name %||% NA_character_) |> observatory$standardise$name(),
         public_repos = as.integer(public_repos),
         followers    = as.integer(followers),
         following    = as.integer(following),
-        created_at   = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
-        updated_at   = lubridate::ymd_hms(updated_at) |> ge$standardise$date(),
-        queried_at   = lubridate::ymd_hms(queried_at) |> ge$standardise$date(),
-        processed_at = Sys.Date() |> ge$standardise$date()
+        created_at   = lubridate::ymd_hms(created_at) |> observatory$standardise$date(),
+        updated_at   = lubridate::ymd_hms(updated_at) |> observatory$standardise$date(),
+        queried_at   = lubridate::ymd_hms(queried_at) |> observatory$standardise$date(),
+        processed_at = Sys.Date() |> observatory$standardise$date()
     )
 )
 
 invisible(
     tidy_users <- users_update
-    |> ge$discard$ghosts()
-    |> ge$discard$robots()
+    |> observatory$discard$ghosts()
+    |> observatory$discard$robots()
     |> tibble::add_column(
         r_followers = NA_integer_,
         r_following = NA_integer_,

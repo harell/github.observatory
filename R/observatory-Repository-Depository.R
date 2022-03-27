@@ -41,7 +41,7 @@ Depository$set(which = "private", name = "read", overwrite = TRUE, value = funct
 
     invisible(
         data <- readr::read_csv(file, show_col_types = FALSE, progress = TRUE, lazy = FALSE)
-        |> purrr::modify_if(lubridate::is.Date, ge$standardise$date)
+        |> purrr::modify_if(lubridate::is.Date, observatory$standardise$date)
         |> dplyr::distinct()
     )
 

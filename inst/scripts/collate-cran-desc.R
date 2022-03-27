@@ -8,7 +8,7 @@ pkg_desc <- tools::CRAN_package_db()
 
 invisible(
     packages <- pkg_desc
-    |> ge$standardise$col_names()
+    |> observatory$standardise$col_names()
     |> dplyr::transmute(
         package = as.character(package),
         full_name = dplyr::if_else(

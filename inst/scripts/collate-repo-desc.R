@@ -34,23 +34,23 @@ for(package in packages){ try(pb$tick(1), silent = TRUE); tryCatch({
         repo <- github$extract$repo(full_name)
     })
 
-    repo_overview <- query$package$overview(owner, repo)
+    repo_overview <- query$packaobservatory$overview(owner, repo)
     repo_archive$save(repo_overview, tags = c("entity:repo", "type:overview", paste0("id:", repo_overview$id)))
 
-    repo_contributors <- query$package$contributors(owner, repo) |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
+    repo_contributors <- query$packaobservatory$contributors(owner, repo) |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
     if(length(repo_contributors) > 0) (
         repo_contributors
         |> repo_archive$save(tags = c("entity:repo", "type:contributors", paste0("id:", repo_overview$id)))
     )
 
     if(repo_overview$stargazers_count > 0) (
-        query$package$stargazers(owner, repo)
+        query$packaobservatory$stargazers(owner, repo)
         |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
         |> repo_archive$save(tags = c("entity:repo", "type:stargazers", paste0("id:", repo_overview$id)))
     )
 
     if(repo_overview$subscribers_count > 0) (
-        query$package$watchers(owner, repo)
+        query$packaobservatory$watchers(owner, repo)
         |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
         |> repo_archive$save(tags = c("entity:repo", "type:watchers", paste0("id:", repo_overview$id)))
     )

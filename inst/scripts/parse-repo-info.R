@@ -19,7 +19,7 @@ invisible(
 invisible(
     repos_update <- artifacts$artifact
     |> purrr::map_dfr(~.x |> repo_archive$load() |> unlist())
-    |> ge$standardise$col_names()
+    |> observatory$standardise$col_names()
     |> dplyr::transmute(
         id               = as.integer(id),
         full_name        = as.character(full_name) |> tolower(),
@@ -31,10 +31,10 @@ invisible(
         forks_count      = as.integer(forks_count),
         language         = as.character(language %||% NA_character_),
         homepage         = as.character(homepage %||% NA_character_),
-        created_at       = lubridate::ymd_hms(created_at) |> ge$standardise$date(),
-        updated_at       = lubridate::ymd_hms(updated_at) |> ge$standardise$date(),
-        queried_at       = lubridate::ymd_hms(queried_at) |> ge$standardise$date(),
-        processed_at     = Sys.Date() |> ge$standardise$date()
+        created_at       = lubridate::ymd_hms(created_at) |> observatory$standardise$date(),
+        updated_at       = lubridate::ymd_hms(updated_at) |> observatory$standardise$date(),
+        queried_at       = lubridate::ymd_hms(queried_at) |> observatory$standardise$date(),
+        processed_at     = Sys.Date() |> observatory$standardise$date()
     )
 )
 
