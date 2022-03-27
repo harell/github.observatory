@@ -1,5 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
+source <- purrr::partial(base::source, local = FALSE, echo = TRUE)
+
 
 # Workflow ----------------------------------------------------------------
 print("Collate packages information from CRAN")
