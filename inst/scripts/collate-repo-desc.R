@@ -1,11 +1,11 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("repo_archive")) repo_archive <- RepoArchive$new()
-if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
+if(does_not_exist("depo_repo")) depo_repo <- Depository$new()
 
 
 # Query Github ------------------------------------------------------------
-pkgs_on_cran <- gdrive_repo$read_PACKAGE()
+pkgs_on_cran <- depo_repo$read_PACKAGE()
 
 pkgs_to_skip <- tryCatch(
     repo_archive$show()

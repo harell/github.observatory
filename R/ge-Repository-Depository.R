@@ -1,12 +1,12 @@
-#' @title Github Explorer GDrive Repository
+#' @title Github Explorer Depository
 #' @param filter (`character`) either 'latest' or 'everything'. If 'latest' then
 #'   return the latest query of each entity. Otherwise, return all all records
 #'   (might include multiple records per entity).
 #' @keywords internal
 #' @export
 #' @noRd
-GDrive <- R6::R6Class(
-    classname = "GDriveRepository", cloneable = FALSE, public = list(
+Depository <- R6::R6Class(
+    classname = "DepositoryRepository", cloneable = FALSE, public = list(
         initialize = function(){
             private$path <- usethis::proj_path("_cache", "tables")
             fs::dir_create(private$path)
@@ -33,7 +33,7 @@ GDrive <- R6::R6Class(
 
 
 # Class Methods -----------------------------------------------------------
-GDrive$set(which = "private", name = "read", overwrite = TRUE, value = function(key, filter) {
+Depository$set(which = "private", name = "read", overwrite = TRUE, value = function(key, filter) {
     filter <- match.arg(tolower(filter), c("latest", "everything"))
     file <- fs::path(private$path, key, ext = "csv")
 
@@ -55,7 +55,7 @@ GDrive$set(which = "private", name = "read", overwrite = TRUE, value = function(
     )
 })
 
-GDrive$set(which = "private", name = "overwrite", overwrite = TRUE, value = function(key, value) {
+Depository$set(which = "private", name = "overwrite", overwrite = TRUE, value = function(key, value) {
     stopifnot(is.data.frame(value))
 
     return(

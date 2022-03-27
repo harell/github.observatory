@@ -2,7 +2,7 @@
 
 export("%not_in%")
 export(Archive)
-export(GDrive)
+export(Depository)
 export(assert)
 export(does_not_exist)
 export(file_not_exists)

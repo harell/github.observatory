@@ -1,11 +1,11 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
-if(does_not_exist("gdrive")) gdrive <- GDrive$new()
+if(does_not_exist("depo")) depo <- Depository$new()
 
 
 # Load cached data --------------------------------------------------------
-users_todate <- gdrive$read_USER(filter = "everything")
+users_todate <- depo$read_USER(filter = "everything")
 
 invisible(
     artifacts <- user_archive$show()
@@ -62,4 +62,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-gdrive$overwrite_USER(users)
+depo$overwrite_USER(users)

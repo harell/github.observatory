@@ -1,14 +1,14 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
-if(does_not_exist("gdrive")) gdrive <- GDrive$new()
+if(does_not_exist("depo")) depo <- Depository$new()
 
 
 # Load data ---------------------------------------------------------------
-USER <- gdrive$read_USER(filter = "latest")
-USER_complement <- dplyr::setdiff(gdrive$read_USER(filter = "everything"), USER)
-FOLLOWING <- gdrive$read_FOLLOWING()
-SPECTATOR <- gdrive$read_SPECTATOR()
+USER <- depo$read_USER(filter = "latest")
+USER_complement <- dplyr::setdiff(depo$read_USER(filter = "everything"), USER)
+FOLLOWING <- depo$read_FOLLOWING()
+SPECTATOR <- depo$read_SPECTATOR()
 
 
 # Summarise R statistics --------------------------------------------------
@@ -69,4 +69,4 @@ SPECTATOR <- gdrive$read_SPECTATOR()
 )
 
 # Teardown ----------------------------------------------------------------
-gdrive$overwrite_USER(users)
+depo$overwrite_USER(users)
