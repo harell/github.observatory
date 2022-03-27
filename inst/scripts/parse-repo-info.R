@@ -1,11 +1,11 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("repo_archive")) repo_archive <- RepoArchive$new()
-if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
+if(does_not_exist("gdrive")) gdrive <- GDrive$new()
 
 
 # Load cached data --------------------------------------------------------
-repos_todate <- gdrive_repo$read_REPO(filter = "everything")
+repos_todate <- gdrive$read_REPO(filter = "everything")
 
 invisible(
     artifacts <- repo_archive$show()
@@ -51,4 +51,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-gdrive_repo$overwrite_REPO(repos)
+gdrive$overwrite_REPO(repos)

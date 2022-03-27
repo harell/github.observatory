@@ -58,15 +58,9 @@ GDrive$set(which = "private", name = "read", overwrite = TRUE, value = function(
 GDrive$set(which = "private", name = "overwrite", overwrite = TRUE, value = function(key, value) {
     stopifnot(is.data.frame(value))
 
-    file_name <- key
-
     return(
         value
         |> dplyr::distinct()
-        |> readr::write_csv(
-            fs::path(private$path, file_name, ext = "csv"),
-            # na = "",
-            append = FALSE
-        )
+        |> readr::write_csv(fs::path(private$path, key, ext = "csv"), append = FALSE)
     )
 })
