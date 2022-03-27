@@ -57,4 +57,4 @@ SPECTATOR <- gdrive_repo$read_SPECTATOR()
 
 
 # Teardown ----------------------------------------------------------------
-gdrive_repo$overwrite_USER(USER_STAR)
+gdrive_repo$snapshot_USER(USER_STAR)
