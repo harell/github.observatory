@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
-if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
+if(does_not_exist("depo_repo")) depo_repo <- Depository$new()
 
 
 # Load cached data --------------------------------------------------------
@@ -33,4 +33,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-gdrive_repo$overwrite_FOLLOWING(tidy_following)
+depo_repo$overwrite_FOLLOWING(tidy_following)

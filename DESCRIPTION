@@ -1,8 +1,8 @@
 Type: Package
 Package: github.observatory
 Title: Explore the relationships between R packages and R users
-Version: 0.4.0
-Date: 2021-11-01
+Version: 0.5.0
+Date: 2022-03-10
 Authors@R: 
     person("Harel", "Lustiger", , "tidylab@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2953-9598"))
@@ -30,11 +30,9 @@ Imports:
     tibble,
     tidyr
 Suggests: 
-    bannerCommenter,
     httr,
     Matrix,
     progress,
-    recommenderlab,
     testthat,
     usethis,
     withr

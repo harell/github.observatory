@@ -1,13 +1,14 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
-if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
+if(does_not_exist("depo")) depo <- Depository$new()
 
 
 # Load data ---------------------------------------------------------------
-USER <- gdrive_repo$read_USER()
-FOLLOWING <- gdrive_repo$read_FOLLOWING()
-SPECTATOR <- gdrive_repo$read_SPECTATOR()
+USER <- depo$read_USER(filter = "latest")
+USER_complement <- dplyr::setdiff(depo$read_USER(filter = "everything"), USER)
+FOLLOWING <- depo$read_FOLLOWING()
+SPECTATOR <- depo$read_SPECTATOR()
 
 
 # Summarise R statistics --------------------------------------------------
@@ -53,8 +54,19 @@ SPECTATOR <- gdrive_repo$read_SPECTATOR()
     |> dplyr::left_join(relationships, by = "id")
     |> purrr::modify_at(dplyr::vars(dplyr::starts_with("r_")), tidyr::replace_na, replace = 0)
     |> dplyr::relocate(dplyr::starts_with("r_"), .after = "following")
+    |> dplyr::mutate(processed_at = Sys.Date() |> ge$standardise$date())
 )
 
 
+# Consolidate data --------------------------------------------------------
+(
+    users <- USER_complement
+    |> dplyr::bind_rows(USER_STAR)
+    |> dplyr::arrange(id, dplyr::desc(queried_at), processed_at)
+    |> dplyr::group_by(id, queried_at)
+    |> dplyr::slice_head(n = 1)
+    |> dplyr::ungroup()
+)
+
 # Teardown ----------------------------------------------------------------
-gdrive_repo$overwrite_USER(USER_STAR)
+depo$overwrite_USER(users)

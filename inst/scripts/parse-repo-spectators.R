@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("repo_archive")) repo_archive <- RepoArchive$new()
-if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
+if(does_not_exist("depo_repo")) depo_repo <- Depository$new()
 
 
 # Load cached data --------------------------------------------------------
@@ -36,12 +36,5 @@ invisible(
 )
 
 
-# Statistics --------------------------------------------------------------
-# length(unique(artifacts$id)) # How many packages have at least on spectator?
-# janitor::tabyl(artifacts, type)
-# janitor::tabyl(tidy_spectators, user_role)
-# spectators_leaderboard <- dplyr::count(tidy_spectators, user_id, user_role, sort = TRUE)
-
-
 # Teardown ----------------------------------------------------------------
-gdrive_repo$overwrite_SPECTATOR(tidy_spectators)
+depo_repo$overwrite_SPECTATOR(tidy_spectators)

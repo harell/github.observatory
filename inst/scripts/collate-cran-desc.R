@@ -1,6 +1,6 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-if(does_not_exist("gdrive_repo")) gdrive_repo <- GDrive$new()
+if(does_not_exist("depo_repo")) depo_repo <- Depository$new()
 
 
 # Download CRAN packages list ---------------------------------------------
@@ -37,4 +37,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-gdrive_repo$overwrite_PACKAGE(tidy_packages)
+depo_repo$overwrite_PACKAGE(tidy_packages)
