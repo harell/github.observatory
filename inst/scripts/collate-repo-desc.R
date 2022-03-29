@@ -7,19 +7,22 @@ if(does_not_exist("depo_repo")) depo_repo <- Depository$new()
 # Query Github ------------------------------------------------------------
 pkgs_on_cran <- depo_repo$read_PACKAGE()
 
-pkgs_to_skip <- tryCatch(
+pkgs_in_cache <- tryCatch(
     repo_archive$show()
     |> dplyr::filter(type %in% "overview")
     |> dplyr::pull(artifact)
     |> repo_archive$load()
     |> purrr::map_chr(~purrr::pluck(.x, "name"))
+    |> unique()
     , error = function(e) return(character())
 )
 
+pkgs_to_query <- setdiff(tolower(pkgs_on_cran$package), tolower(pkgs_in_cache))
+
 withr::with_seed(2212, suppressWarnings(
     packages <- pkgs_on_cran
+    |> dplyr::filter(tolower(package) %in% pkgs_to_query)
     |> dplyr::pull("package")
-    |> setdiff(pkgs_to_skip)
     |> sample()
 ))
 
