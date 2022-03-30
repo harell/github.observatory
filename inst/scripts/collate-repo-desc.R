@@ -17,10 +17,10 @@ pkgs_in_cache <- tryCatch(
     , error = function(e) return(character())
 )
 
-pkgs_to_query <- setdiff(pkgs_on_cran$package, pkgs_in_cache)
-
+withr::with_seed(1943, pkgs_to_query <- setdiff(pkgs_on_cran$package, pkgs_in_cache) |> sample())
 pb <- progress::progress_bar$new(format = "Quering Github Repos [:bar] :current/:total (:percent) eta: :eta", total = length(pkgs_to_query), clear = FALSE)
-for(package in pkgs_to_query[1:3]){ try(pb$tick(1), silent = TRUE); tryCatch({
+
+for(package in pkgs_to_query){ try(pb$tick(1), silent = TRUE); tryCatch({
     github$alter_PAT()
     if((which(pkgs_to_query %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 10) Sys.sleep(60)
 
@@ -53,10 +53,11 @@ for(package in pkgs_to_query[1:3]){ try(pb$tick(1), silent = TRUE); tryCatch({
     )
 
     suppressMessages(repo_archive$commit())
-    try(pb$message(glue("[\033[32mv\033[39m] Retrieved `{package}` information")), silent = TRUE)
+    pb$message(events$SucceededToQuery(package))
+
 }, error = function(e){
     suppressMessages(repo_archive$rollback())
-    try(pb$message(glue("[\033[31mx\033[39m] Failed to retrieve `{package}` information")), silent = TRUE)
+    pb$message(events$FailedToQuery(package))
 })}
 
 
