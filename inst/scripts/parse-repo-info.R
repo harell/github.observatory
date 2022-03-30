@@ -22,6 +22,7 @@ invisible(
     |> observatory$standardise$col_names()
     |> dplyr::transmute(
         id               = as.integer(id),
+        package          = as.character(package),
         full_name        = as.character(full_name) |> tolower(),
         owner_type       = as.character(owner_type),
         owner_id         = as.integer(owner_id),
