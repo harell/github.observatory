@@ -12,24 +12,17 @@ pkgs_in_cache <- tryCatch(
     |> dplyr::filter(type %in% "overview")
     |> dplyr::pull(artifact)
     |> repo_archive$load()
-    |> purrr::map_chr(~purrr::pluck(.x, "name"))
+    |> purrr::map_chr(~purrr::pluck(.x, "package"))
     |> unique()
     , error = function(e) return(character())
 )
 
-pkgs_to_query <- setdiff(tolower(pkgs_on_cran$package), tolower(pkgs_in_cache))
+pkgs_to_query <- setdiff(pkgs_on_cran$package, pkgs_in_cache)
 
-withr::with_seed(2212, suppressWarnings(
-    packages <- pkgs_on_cran
-    |> dplyr::filter(tolower(package) %in% pkgs_to_query)
-    |> dplyr::pull("package")
-    |> sample()
-))
-
-pb <- progress::progress_bar$new(format = "Quering Github Repos [:bar] :current/:total (:percent) eta: :eta", total = length(packages), clear = FALSE)
-for(package in packages){ try(pb$tick(1), silent = TRUE); tryCatch({
+pb <- progress::progress_bar$new(format = "Quering Github Repos [:bar] :current/:total (:percent) eta: :eta", total = length(pkgs_to_query), clear = FALSE)
+for(package in pkgs_to_query[1:3]){ try(pb$tick(1), silent = TRUE); tryCatch({
     github$alter_PAT()
-    if((which(packages %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 10) Sys.sleep(60)
+    if((which(pkgs_to_query %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 10) Sys.sleep(60)
 
     suppressMessages({
         full_name <- pkgs_on_cran |> dplyr::filter(package %in% !!package) |> dplyr::pull(full_name)
@@ -38,6 +31,7 @@ for(package in packages){ try(pb$tick(1), silent = TRUE); tryCatch({
     })
 
     repo_overview <- observatory$query$package$overview(owner, repo)
+    repo_overview <- purrr::list_modify(repo_overview, package = package)
     repo_archive$save(repo_overview, tags = c("entity:repo", "type:overview", paste0("id:", repo_overview$id)))
 
     repo_contributors <- observatory$query$package$contributors(owner, repo) |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
@@ -59,10 +53,10 @@ for(package in packages){ try(pb$tick(1), silent = TRUE); tryCatch({
     )
 
     suppressMessages(repo_archive$commit())
-    try(pb$message(glue("Retrieved `{package}` information")), silent = TRUE)
+    try(pb$message(glue("[\033[32mv\033[39m] Retrieved `{package}` information")), silent = TRUE)
 }, error = function(e){
     suppressMessages(repo_archive$rollback())
-    try(pb$message(glue("Failed to retrieve `{package}` information")), silent = TRUE)
+    try(pb$message(glue("[\033[31mx\033[39m] Failed to retrieve `{package}` information")), silent = TRUE)
 })}
 
 
