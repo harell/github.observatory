@@ -62,6 +62,7 @@ SPECTATOR <- depo$read_SPECTATOR()
 # Consolidate data --------------------------------------------------------
 (
     users <- dplyr::bind_rows(USER_new, USER_old)
+    |> dplyr::arrange(id)
 )
 
 # Teardown ----------------------------------------------------------------

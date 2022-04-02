@@ -53,11 +53,11 @@ for(package in pkgs_to_query){ try(pb$tick(1), silent = TRUE); tryCatch({
     )
 
     suppressMessages(repo_archive$commit())
-    pb$message(events$SucceededToQuery(package))
+    try(pb$message(events$SucceededToQueryRepo(package)), silent = TRUE)
 
 }, error = function(e){
     suppressMessages(repo_archive$rollback())
-    pb$message(events$FailedToQuery(package))
+    try(pb$message(events$FailedToQueryRepo(package)), silent = TRUE)
 })}
 
 
