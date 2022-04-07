@@ -3,6 +3,7 @@
 export("%not_in%")
 export(Archive)
 export(Depository)
+export(QueryQueue)
 export(assert)
 export(does_not_exist)
 export(events)

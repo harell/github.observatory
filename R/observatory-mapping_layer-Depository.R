@@ -7,8 +7,8 @@
 #' @noRd
 Depository <- R6::R6Class(
     classname = "DepositoryRepository", cloneable = FALSE, public = list(
-        initialize = function(){
-            private$path <- usethis::proj_path("_cache", "tables")
+        initialize = function(path = usethis::proj_path("_cache", "tables")){
+            private$path <- path
             fs::dir_create(private$path)
         },
         read_USER      = function(filter = "latest") { return(private$read("USER", filter = filter)) },
