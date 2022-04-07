@@ -18,13 +18,19 @@ pkgs_in_cache <- tryCatch(
 )
 
 withr::with_seed(1943, pkgs_to_query <- setdiff(pkgs_on_cran$package, pkgs_in_cache) |> sample())
-pb <- progress::progress_bar$new(format = "Quering Github Repos [:bar] :current/:total (:percent) eta: :eta", total = length(pkgs_to_query), clear = FALSE)
 
-for(package in pkgs_to_query){ try(pb$tick(1), silent = TRUE); tryCatch({
+queue <- collections::priority_queue(items = pkgs_to_query[2], priorities = 2)
+
+
+# Inquire -----------------------------------------------------------------
+msg_bar <- "Quering Github Repos [:bar] :current/:total (:percent) eta: :eta"
+pb <- progress::progress_bar$new(format = msg_bar, total = queue$size(), clear = FALSE)
+while(queue$size() > 0) { try(pb$tick(1), silent = TRUE); tryCatch({
     github$alter_PAT()
-    if((which(pkgs_to_query %in% package) - 1) %% 10 == 0) while(github$return_remaining_quote() < 10) Sys.sleep(60)
+    if((queue$size() - 1) %% 10 == 0) while(github$return_remaining_quote() < 10) Sys.sleep(60)
 
     suppressMessages({
+        package <- queue$pop()
         full_name <- pkgs_on_cran |> dplyr::filter(package %in% !!package) |> dplyr::pull(full_name)
         owner <- github$extract$owner(full_name)
         repo <- github$extract$repo(full_name)
