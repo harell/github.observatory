@@ -7,4 +7,5 @@ test_that("QueryQueue works", {
     expect_type(queue$USER, "environment")
 
     expect_gte(QueryQueue$new()$REPO$size(), 0)
+    expect_gte(QueryQueue$new()$USER$size(), 0)
 })
