@@ -39,10 +39,52 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
         , error = function(e) return(character())
     )
 
-    pkgs_to_query <- setdiff(pkgs_on_cran$package, pkgs_in_cache)
+    new_pkgs <- setdiff(pkgs_on_cran$package, pkgs_in_cache)
 
     collections::priority_queue(
-        items = pkgs_to_query,
+        items = new_pkgs,
+        priorities = 2
+    )
+})
+
+
+QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE, value = function() {
+    pkgload::load_all(usethis::proj_get(), quiet = TRUE)
+    repo_archive <- RepoArchive$new()
+    user_archive <- UserArchive$new()
+
+    invisible(
+        artifacts <- repo_archive$show()
+        |> dplyr::filter(type %in% c("contributors", "forkers", "stargazers", "watchers")[c(1,3)])
+        |> dplyr::arrange(dplyr::desc(date))
+        |> dplyr::distinct(id, type, .keep_all = TRUE)
+    )
+
+    invisible(
+        artifacts$data <- artifacts$artifact
+        |> purrr::map(~.x |> repo_archive$load() |> unlist())
+        |> purrr::map(~as.integer(.x[names(.x) == "id"]))
+    )
+
+    invisible(
+        all_users <- artifacts
+        |> dplyr::pull(data)
+        |> purrr::flatten_int()
+        |> unique()
+    )
+
+    existing_users <- tryCatch(
+        user_archive$show()
+        |> dplyr::filter(entity %in% "user")
+        |> dplyr::pull("id")
+        |> as.integer(),
+        error = function(e) return(0)
+    )
+
+    new_users <- setdiff(all_users, existing_users)
+
+    collections::priority_queue(
+        items = new_users,
         priorities = 2
     )
 })
