@@ -5,9 +5,6 @@ if(does_not_exist("depo")) depo <- Depository$new()
 
 
 # Load data ---------------------------------------------------------------
-USER_all <- depo$read_USER(filter = "everything")
-USER_new <- dplyr::filter(USER_all, is.na(r_stargazer_count))
-USER_old <- dplyr::setdiff(USER_all, USER_new)
 FOLLOWING <- depo$read_FOLLOWING()
 SPECTATOR <- depo$read_SPECTATOR()
 
@@ -48,7 +45,7 @@ SPECTATOR <- depo$read_SPECTATOR()
 
 # Update users -------------------------------------------------------------
 (
-    USER_new <- USER_new
+    users <- depo$read_USER()
     |> dplyr::select(-dplyr::starts_with("r_"))
     |> dplyr::left_join(followers, by = "id")
     |> dplyr::left_join(following, by = "id")
@@ -58,12 +55,6 @@ SPECTATOR <- depo$read_SPECTATOR()
     |> dplyr::mutate(processed_at = Sys.Date() |> observatory$standardise$date())
 )
 
-
-# Consolidate data --------------------------------------------------------
-(
-    users <- dplyr::bind_rows(USER_new, USER_old)
-    |> dplyr::arrange(id)
-)
 
 # Teardown ----------------------------------------------------------------
 depo$overwrite_USER(users)
