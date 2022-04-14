@@ -5,8 +5,6 @@ if(does_not_exist("depo")) depo <- Depository$new()
 
 
 # Load cached data --------------------------------------------------------
-users_todate <- depo$read_USER(filter = "everything")
-
 invisible(
     artifacts <- user_archive$show()
     |> dplyr::filter(type %in% "overview")
@@ -17,7 +15,7 @@ invisible(
 
 # Parse users -------------------------------------------------------------
 invisible(
-    users_update <- artifacts$artifact
+    messy_users <- artifacts$artifact
     |> purrr::map_dfr(~.x |> user_archive$load() |> unlist())
     |> dplyr::transmute(
         id           = as.integer(id),
@@ -36,7 +34,7 @@ invisible(
 )
 
 invisible(
-    tidy_users <- users_update
+    tidy_users <- messy_users
     |> observatory$discard$ghosts()
     |> observatory$discard$robots()
     |> tibble::add_column(
@@ -50,16 +48,5 @@ invisible(
 )
 
 
-# Consolidate data --------------------------------------------------------
-(
-    users <- users_todate
-    |> dplyr::bind_rows(tidy_users)
-    |> dplyr::arrange(id, dplyr::desc(queried_at), processed_at)
-    |> dplyr::group_by(id, queried_at)
-    |> dplyr::slice_head(n = 1)
-    |> dplyr::ungroup()
-)
-
-
 # Teardown ----------------------------------------------------------------
-depo$overwrite_USER(users)
+depo$overwrite_USER(tidy_users)

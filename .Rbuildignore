@@ -2,6 +2,7 @@
 ^\..*/
 ^\.Rproj\.user$
 .*_cache/
+^_cache/
 ^data-raw/
 ^inst/snippets/
 ^renv/
@@ -28,4 +29,4 @@
 ^docs$
 ^pkgdown$
 ^\.github$
-^_cache$
+

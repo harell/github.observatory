@@ -29,6 +29,6 @@ print("Update user information")
 source(system.file("scripts", "update-user-info.R", package = "github.observatory", mustWork = TRUE))
 
 
-# Tidyup ------------------------------------------------------------------
+# Teardown ----------------------------------------------------------------
 RepoArchive$new()$clean()
 UserArchive$new()$clean()
