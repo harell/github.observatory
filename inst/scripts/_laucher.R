@@ -27,3 +27,8 @@ source(system.file("scripts", "parse-user-following.R", package = "github.observ
 
 print("Update user information")
 source(system.file("scripts", "update-user-info.R", package = "github.observatory", mustWork = TRUE))
+
+
+# Tidyup ------------------------------------------------------------------
+RepoArchive$new()$clean()
+UserArchive$new()$clean()
