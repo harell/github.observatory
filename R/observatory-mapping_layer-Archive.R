@@ -74,7 +74,7 @@ Archive <- R6::R6Class(classname = "Archive", cloneable = FALSE, public = list(
     },
     #' @description teardown archive object
     finalize = function(){
-        suppressMessages({self$rollback(); self$clean()})
+        suppressMessages(self$rollback())
         invisible(self)
     }
 ), private = list(
