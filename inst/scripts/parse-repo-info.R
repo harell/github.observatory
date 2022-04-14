@@ -5,8 +5,6 @@ if(does_not_exist("depo")) depo <- Depository$new()
 
 
 # Load cached data --------------------------------------------------------
-repos_todate <- depo$read_REPO(filter = "everything")
-
 invisible(
     artifacts <- repo_archive$show()
     |> dplyr::filter(type %in% "overview")
@@ -17,7 +15,7 @@ invisible(
 
 # Parse repos -------------------------------------------------------------
 invisible(
-    repos_update <- artifacts$artifact
+    unique_repos <- artifacts$artifact
     |> purrr::map_dfr(~.x |> repo_archive$load() |> unlist())
     |> observatory$standardise$col_names()
     |> dplyr::transmute(
@@ -40,16 +38,5 @@ invisible(
 )
 
 
-# Consolidate data --------------------------------------------------------
-(
-    repos <- repos_todate
-    |> dplyr::bind_rows(repos_update)
-    |> dplyr::arrange(id, dplyr::desc(queried_at), processed_at)
-    |> dplyr::group_by(id, queried_at)
-    |> dplyr::slice_head(n = 1)
-    |> dplyr::ungroup()
-)
-
-
 # Teardown ----------------------------------------------------------------
-depo$overwrite_REPO(repos)
+depo$overwrite_REPO(unique_repos)

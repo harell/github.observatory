@@ -11,11 +11,11 @@ Depository <- R6::R6Class(
             private$path <- path
             fs::dir_create(private$path)
         },
-        read_USER      = function(filter = "latest") { return(private$read("USER", filter = filter)) },
-        read_REPO      = function(filter = "latest") { return(private$read("REPO", filter = filter)) },
-        read_PACKAGE   = function() { return(private$read("PACKAGE", filter = "everything")) },
-        read_FOLLOWING = function() { return(private$read("FOLLOWING", filter = "everything")) },
-        read_SPECTATOR = function() { return(private$read("SPECTATOR", filter = "everything")) },
+        read_USER      = function() { return(private$read("USER")) },
+        read_REPO      = function() { return(private$read("REPO")) },
+        read_PACKAGE   = function() { return(private$read("PACKAGE")) },
+        read_FOLLOWING = function() { return(private$read("FOLLOWING")) },
+        read_SPECTATOR = function() { return(private$read("SPECTATOR")) },
         overwrite_USER = function(value) { private$overwrite("USER", value); invisible(self) },
         overwrite_REPO = function(value) { private$overwrite("REPO", value); invisible(self) },
         overwrite_PACKAGE = function(value) { private$overwrite("PACKAGE", value); invisible(self) },
@@ -33,8 +33,7 @@ Depository <- R6::R6Class(
 
 
 # Class Methods -----------------------------------------------------------
-Depository$set(which = "private", name = "read", overwrite = TRUE, value = function(key, filter) {
-    filter <- match.arg(tolower(filter), c("latest", "everything"))
+Depository$set(which = "private", name = "read", overwrite = TRUE, value = function(key) {
     file <- fs::path(private$path, key, ext = "csv")
 
     if(file_not_exists(file)) return(private$null_table)
@@ -45,14 +44,7 @@ Depository$set(which = "private", name = "read", overwrite = TRUE, value = funct
         |> dplyr::distinct()
     )
 
-    if (filter == "everything") return(data)
-    if (filter == "latest") return(
-        data
-        |> dplyr::arrange(dplyr::desc(queried_at))
-        |> dplyr::group_by(id)
-        |> dplyr::slice_head(n = 1)
-        |> dplyr::ungroup()
-    )
+    return(data)
 })
 
 Depository$set(which = "private", name = "overwrite", overwrite = TRUE, value = function(key, value) {
