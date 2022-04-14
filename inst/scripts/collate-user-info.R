@@ -4,7 +4,7 @@ if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
 if(does_not_exist("user_queue")) user_queue <- QueryQueue$new()$USER
 
 
-# Query Github ------------------------------------------------------------
+# Inquire -----------------------------------------------------------------
 msg_bar <- "Quering Github Users [:bar] :current/:total (:percent) eta: :eta"
 pb <- progress::progress_bar$new(format = msg_bar, total = user_queue$size(), clear = FALSE)
 while(user_queue$size() > 0){ try(pb$tick(1), silent = TRUE); tryCatch({
@@ -23,10 +23,10 @@ while(user_queue$size() > 0){ try(pb$tick(1), silent = TRUE); tryCatch({
     )
 
     suppressMessages(user_archive$commit())
-    try(pb$message(glue("Retrieved user `{user_id}`")), silent = TRUE)
+    try(pb$message(events$SucceededToQueryUser(user_id)), silent = TRUE)
 }, error = function(e){
     suppressMessages(user_archive$rollback())
-    try(pb$message(glue("Failed to Retrieve user `{user_id}`")), silent = TRUE)
+    try(pb$message(events$FailedToQueryUser(user_id)), silent = TRUE)
 })}
 
 

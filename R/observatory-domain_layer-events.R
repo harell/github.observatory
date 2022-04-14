@@ -14,3 +14,11 @@ events$FailedToQueryRepo <- function(context) {
 events$SucceededToQueryRepo <- function(context) {
     invisible(glue("[\033[32mv\033[39m] Retrieved `{context}` information"))
 }
+
+events$FailedToQueryUser <- function(context) {
+    invisible(glue("[\033[31mx\033[39m] Failed to retrieve `{context}` information"))
+}
+
+events$SucceededToQueryUser <- function(context) {
+    invisible(glue("[\033[32mv\033[39m] Retrieved `{context}` information"))
+}
