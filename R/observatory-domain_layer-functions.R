@@ -4,7 +4,7 @@ observatory <- new.env()
 
 
 # Conventions -------------------------------------------------------------
-observatory$standardise$date <- function(x) { return(x |> as.Date() |> lubridate::format_ISO8601()) }
+observatory$standardise$date <- function(x) { return(x |> as_date() |> lubridate::format_ISO8601()) }
 observatory$standardise$name <- function(x) { return(x |> as.character() |> snakecase::to_title_case()) }
 observatory$standardise$col_names <- function(.data) {
     .fn <- snakecase::to_snake_case

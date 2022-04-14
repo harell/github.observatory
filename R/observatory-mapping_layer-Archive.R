@@ -48,7 +48,7 @@ Archive <- R6::R6Class(classname = "Archive", cloneable = FALSE, public = list(
             |> tidyr::unnest(cols = -artifact)
             |> dplyr::select(-format)
             |> dplyr::distinct()
-            |> dplyr::mutate(date = as.Date(date))
+            |> dplyr::mutate(date = as_date(date))
             |> dplyr::arrange(dplyr::across(-artifact))
         )
     },
