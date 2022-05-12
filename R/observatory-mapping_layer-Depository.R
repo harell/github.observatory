@@ -72,11 +72,11 @@ Depository$set(which = "private", name = "snapshot", overwrite = TRUE, value = f
 
     # Name Snapshot
     last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
-    file_name <- fs::path(paste0(key, "_", last_processed), ext = "csv.gz")
+    file_name <- fs::path(paste0(key, "_", last_processed), ext = "csv.bz2")
 
     # Compress Data
     local_file <- fs::path_temp(file_name) |> as.character()
-    readr::write_csv(value, gzfile(local_file))
+    readr::write_csv(value, bzfile(local_file))
 
     # Upload file
     s3$file_copy(local_file, snapshot_uri, overwrite = TRUE)
