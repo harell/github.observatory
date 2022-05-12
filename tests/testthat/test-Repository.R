@@ -17,5 +17,5 @@ test_that("Depository works", {
     expect_s3_class(depo <- Depository$new(), "R6")
 
     expect_s3_class(depo$snapshot_USER(), "R6")
-    # expect_s3_class(depo$snapshot_REPO(), "data.frame")
+    expect_s3_class(depo$snapshot_REPO(), "R6")
 })

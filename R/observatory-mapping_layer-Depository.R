@@ -6,7 +6,7 @@
 #' @export
 #' @noRd
 Depository <- R6::R6Class(
-    classname = "DepositoryRepository", cloneable = FALSE, public = list(
+    classname = "Repository", cloneable = FALSE, public = list(
         initialize = function(path = usethis::proj_path("_cache", "tables")){
             private$path <- path
             fs::dir_create(private$path)
@@ -21,7 +21,8 @@ Depository <- R6::R6Class(
         overwrite_PACKAGE = function(value) { private$overwrite("PACKAGE", value); invisible(self) },
         overwrite_FOLLOWING = function(value) { private$overwrite("FOLLOWING", value); invisible(self) },
         overwrite_SPECTATOR = function(value) { private$overwrite("SPECTATOR", value); invisible(self) },
-        snapshot_USER = function() { private$snapshot("USER"); invisible(self) }
+        snapshot_USER = function() { private$snapshot("USER"); invisible(self) },
+        snapshot_REPO = function() { private$snapshot("REPO"); invisible(self) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         path = ".",
