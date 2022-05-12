@@ -27,6 +27,7 @@ Imports:
     purrr,
     R6,
     readr,
+    S3,
     snakecase,
     tibble,
     tidyr
@@ -41,3 +42,5 @@ Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE, r6 = TRUE)
 RoxygenNote: 7.1.2
+Remotes:
+    git::https://github.com/tidylab/S3.git
