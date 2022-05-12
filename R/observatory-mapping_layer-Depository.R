@@ -60,6 +60,27 @@ Depository$set(which = "private", name = "overwrite", overwrite = TRUE, value = 
 })
 
 Depository$set(which = "private", name = "snapshot", overwrite = TRUE, value = function(key) {
+    # Setup
+    s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
+    uri <- "s3://tidylab/github.observatory/"
+    snapshot_uri <- s3$path(uri, "snapshots")
 
+    # Retrieve Data
+    value <- self[[paste0("read_", key)]]()
+    if(nrow(value) == 0) return()
+
+    # Name Snapshot
+    last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
+    file_name <- fs::path(paste0(key, "_", last_processed), ext = "csv.gz")
+
+    # Compress Data
+    local_file <- fs::path_temp(file_name) |> as.character()
+    readr::write_csv(value, gzfile(local_file))
+
+    # Upload file
+    s3$file_copy(local_file, snapshot_uri, overwrite = TRUE)
+
+    # Return
+    rm(local_file)
     invisible()
 })
