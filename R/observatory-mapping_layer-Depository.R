@@ -20,14 +20,16 @@ Depository <- R6::R6Class(
         overwrite_REPO = function(value) { private$overwrite("REPO", value); invisible(self) },
         overwrite_PACKAGE = function(value) { private$overwrite("PACKAGE", value); invisible(self) },
         overwrite_FOLLOWING = function(value) { private$overwrite("FOLLOWING", value); invisible(self) },
-        overwrite_SPECTATOR = function(value) { private$overwrite("SPECTATOR", value); invisible(self) }
+        overwrite_SPECTATOR = function(value) { private$overwrite("SPECTATOR", value); invisible(self) },
+        snapshot_USER = function() { private$snapshot("USER"); invisible(self) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         path = ".",
         null_table = tibble::tibble(),
         # Private Methods ---------------------------------------------------------
-        read = function(key) { return(tibble::tibble()) },
-        overwrite = function(key, value) { return(invisible()) }
+        read = function(key) { stop() },
+        overwrite = function(key, value) { stop() },
+        snapshot = function(key) { stop() }
     )
 )
 
@@ -55,4 +57,9 @@ Depository$set(which = "private", name = "overwrite", overwrite = TRUE, value = 
         |> dplyr::distinct()
         |> readr::write_csv(fs::path(private$path, key, ext = "csv"), append = FALSE)
     )
+})
+
+Depository$set(which = "private", name = "snapshot", overwrite = TRUE, value = function(key) {
+
+    invisible()
 })
