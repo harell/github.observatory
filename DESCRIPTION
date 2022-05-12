@@ -2,7 +2,7 @@ Type: Package
 Package: github.observatory
 Title: Discover and Explore the Relationships Between R Packages and R Users
 Version: 0.5.0
-Date: 2022-03-10
+Date: 2022-04-22
 Authors@R: 
     person("Harel", "Lustiger", , "tidylab@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2953-9598"))
@@ -27,6 +27,7 @@ Imports:
     purrr,
     R6,
     readr,
+    S3,
     snakecase,
     tibble,
     tidyr
@@ -41,3 +42,5 @@ Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE, r6 = TRUE)
 RoxygenNote: 7.1.2
+Remotes:
+    git::https://github.com/tidylab/S3.git
