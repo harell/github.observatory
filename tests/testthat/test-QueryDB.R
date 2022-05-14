@@ -1,6 +1,7 @@
 # Setup -------------------------------------------------------------------
 path <- fs::file_temp("QueryDB")
-repo_query <- list(
+db_path <- fs::path(path, "db", ext = "csv")
+data <- list(
     id = 280924484,
     name = "clintools",
     owner = list(login = "lilleoel", id = 68481897),
@@ -10,17 +11,19 @@ repo_query <- list(
 
 # Tests -------------------------------------------------------------------
 test_that("QueryDB constructor works", {
-  expect_s3_class(query_db <<- QueryDB$new(path, immediate = FALSE), "R6")
+    expect_s3_class(query_db <<- QueryDB$new(path, immediate = FALSE), "R6")
 })
 
 
 # Save and Load -----------------------------------------------------------
 test_that("QueryDB save() works", {
     expect_s3_class(query_db$save(
-        data = repo_query,
+        data = data,
         entity = "repo",
         type = "overview",
-        id = repo_query$id
+        id = data$id
     ), "R6")
+
+    expect_true(fs::file_exists(db_path))
 })
 

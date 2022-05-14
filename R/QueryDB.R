@@ -11,7 +11,7 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
         assertthat::assert_that(assertthat::is.scalar(immediate), assertthat::is.flag(immediate))
 
         fs::dir_create(path)
-        private$path <- path
+        private$db_path <- fs::path(path, "db", ext = "csv")
         private$immediate <- immediate
     },
     #' @description Save a query in the database
@@ -25,8 +25,15 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     }
 ), private = list(
     # Private Fields ----------------------------------------------------------
-    path = character(),
+    db_path = character(),
     immediate = logical(),
+    null_table = tibble::tibble(
+        date = as.Date(NA),
+        entity = NA_character_,
+        type = NA_character_,
+        id = NA_character_,
+        data = NA_character_
+    )[0,],
     # Private Methods ---------------------------------------------------------
     .save = function(data, entity, type, id) { stop() }
 ))
@@ -35,12 +42,24 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
 # Private Methods ---------------------------------------------------------
 QueryDB$set("private", ".save", overwrite = TRUE, value = function(data, entity, type, id){
     assertthat::assert_that(
+        "list" %in% class(data),
         assertthat::is.scalar(entity),
         assertthat::is.scalar(type),
         assertthat::is.scalar(id)
     )
 
+    invisible(
+        entry <- private$null_table
+        |> tibble::add_row(
+            date   = lubridate::today("UTC"),
+            entity = as.character(entity),
+            type   = as.character(type),
+            id     = as.character(id),
+            data   = as.character(jsonlite::toJSON(data))
+        )
+    )
 
+    readr::write_csv(entry, file = private$db_path, na = "", append = fs::file_exists(private$db_path), progress = FALSE)
 
     invisible()
 })
