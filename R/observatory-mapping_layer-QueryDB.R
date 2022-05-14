@@ -20,7 +20,14 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     #' @param type (`character`) The query type. For example "overview" or "contributors".
     #' @param id (`character`) The entity id. For example "280924484" or "clintools".
     save = function(data = list(), entity = character(), type = character(), id = character()){
-        private$.save(data, entity, type, id)
+        entry <- private$.compose_row(data, entity, type, id)
+        if(private$immediate){
+            private$.save(entry)
+            # private$.empty_buffer()
+        } else {
+            private$buffer_table <- dplyr::bind_rows(private$buffer_table, entry)
+        }
+
         invisible(self)
     },
     #' @description Load queries from database
@@ -29,6 +36,7 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     # Private Fields ----------------------------------------------------------
     db_path = character(),
     immediate = logical(),
+    buffer_table = tibble::tibble(),
     null_table = tibble::tibble(
         date = as.Date(NA),
         entity = NA_character_,
@@ -38,12 +46,29 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     )[0,],
     # Private Methods ---------------------------------------------------------
     .save = function(data, entity, type, id) { stop() },
-    .load = function() { stop() }
+    .load = function() { stop() },
+    .compose_row = function(data, entity, type, id) { stop() },
+    .empty_buffer = function() { private$buffer_table <- private$null_table }
 ))
 
 
 # Private Methods ---------------------------------------------------------
-QueryDB$set("private", ".save", overwrite = TRUE, value = function(data, entity, type, id){
+QueryDB$set("private", ".save", overwrite = TRUE, value = function(entry){
+    readr::write_csv(entry, file = private$db_path, na = "", append = fs::file_exists(private$db_path), progress = FALSE)
+    invisible()
+})
+
+QueryDB$set("private", ".load", overwrite = TRUE, value = function(){
+    if(isFALSE(fs::file_exists(private$db_path))) return(private$null_table)
+    return(
+        private$db_path
+        |> readr::read_csv(lazy = FALSE)
+        |> tibble::as_tibble()
+        |> dplyr::distinct()
+    )
+})
+
+QueryDB$set("private", ".compose_row", overwrite = TRUE, value = function(data, entity, type, id){
     assertthat::assert_that(
         "list" %in% class(data),
         assertthat::is.scalar(entity),
@@ -51,7 +76,7 @@ QueryDB$set("private", ".save", overwrite = TRUE, value = function(data, entity,
         assertthat::is.scalar(id)
     )
 
-    invisible(
+    return(
         entry <- private$null_table
         |> tibble::add_row(
             date   = lubridate::today("UTC"),
@@ -61,21 +86,7 @@ QueryDB$set("private", ".save", overwrite = TRUE, value = function(data, entity,
             data   = as.character(jsonlite::toJSON(data))
         )
     )
-
-    readr::write_csv(entry, file = private$db_path, na = "", append = fs::file_exists(private$db_path), progress = FALSE)
-
-    invisible()
 })
-
-QueryDB$set("private", ".load", overwrite = TRUE, value = function(){
-    return(
-        private$db_path
-        |> readr::read_csv(lazy = FALSE)
-        |> tibble::as_tibble()
-        |> dplyr::distinct()
-    )
-})
-
 
 # Derivatives -------------------------------------------------------------
 #' @describeIn QueryDB User QueryDB
