@@ -23,7 +23,6 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
         entry <- private$.compose_row(data, entity, type, id)
         if(private$immediate){
             private$.save(entry)
-            # private$.empty_buffer()
         } else {
             private$buffer_table <- dplyr::bind_rows(private$buffer_table, entry)
         }
@@ -31,7 +30,9 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
         invisible(self)
     },
     #' @description Load queries from database
-    load = function() { private$.load() }
+    load = function() { private$.load() },
+    #' @description Commit entires to database
+    commit = function() { private$.commit() ; return(self) }
 ), private = list(
     # Private Fields ----------------------------------------------------------
     db_path = character(),
@@ -47,6 +48,7 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     # Private Methods ---------------------------------------------------------
     .save = function(data, entity, type, id) { stop() },
     .load = function() { stop() },
+    .commit = function() { stop() },
     .compose_row = function(data, entity, type, id) { stop() },
     .empty_buffer = function() { private$buffer_table <- private$null_table }
 ))
@@ -66,6 +68,11 @@ QueryDB$set("private", ".load", overwrite = TRUE, value = function(){
         |> tibble::as_tibble()
         |> dplyr::distinct()
     )
+})
+
+QueryDB$set("private", ".commit", overwrite = TRUE, value = function(){
+    private$.save(private$buffer_table)
+    private$.empty_buffer()
 })
 
 QueryDB$set("private", ".compose_row", overwrite = TRUE, value = function(data, entity, type, id){

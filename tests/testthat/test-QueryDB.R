@@ -32,8 +32,8 @@ test_that("QueryDB save() works", {
 # rollback and commit -----------------------------------------------------
 test_that("QueryDB commit() works", {
     expect_equal(nrow(query_db$load()), 0L)
-    # expect_s3_class(query_db$commit(), "R6")
-    # expect_equal(nrow(query_db$load()), 1L)
+    expect_s3_class(query_db$commit(), "R6")
+    expect_equal(nrow(query_db$load()), 1L)
 })
 
 
