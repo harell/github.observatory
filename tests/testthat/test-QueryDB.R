@@ -1,6 +1,5 @@
 # Setup -------------------------------------------------------------------
 path <- fs::file_temp("QueryDB")
-db_path <- fs::path(path, "db", ext = "csv")
 data <- list(
     id = 280924484,
     name = "clintools",
@@ -23,7 +22,8 @@ test_that("QueryDB save() works", {
         type = "overview",
         id = data$id
     ), "R6")
-
-    expect_true(fs::file_exists(db_path))
 })
 
+test_that("QueryDB save() works", {
+    expect_s3_class(query_db$load(), "data.frame")
+})
