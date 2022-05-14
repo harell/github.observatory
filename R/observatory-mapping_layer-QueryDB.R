@@ -21,6 +21,7 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     #' @param id (`character`) The entity id. For example "280924484" or "clintools".
     save = function(data = list(), entity = character(), type = character(), id = character()){
         entry <- private$.compose_row(data, entity, type, id)
+
         if(private$immediate){
             private$.save(entry)
         } else {
@@ -32,7 +33,9 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     #' @description Load queries from database
     load = function() { private$.load() },
     #' @description Commit entires to database
-    commit = function() { private$.commit() ; return(self) }
+    commit = function() { private$.commit() ; return(self) },
+    #' @description Rollback changes from the database
+    rollback = function() {private$.rollback(); return(self) }
 ), private = list(
     # Private Fields ----------------------------------------------------------
     db_path = character(),
@@ -49,15 +52,14 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     .save = function(data, entity, type, id) { stop() },
     .load = function() { stop() },
     .commit = function() { stop() },
-    .compose_row = function(data, entity, type, id) { stop() },
-    .empty_buffer = function() { private$buffer_table <- private$null_table }
+    .rollback = function() { stop() },
+    .compose_row = function(data, entity, type, id) { stop() }
 ))
 
 
 # Private Methods ---------------------------------------------------------
 QueryDB$set("private", ".save", overwrite = TRUE, value = function(entry){
     readr::write_csv(entry, file = private$db_path, na = "", append = fs::file_exists(private$db_path), progress = FALSE)
-    invisible()
 })
 
 QueryDB$set("private", ".load", overwrite = TRUE, value = function(){
@@ -72,7 +74,11 @@ QueryDB$set("private", ".load", overwrite = TRUE, value = function(){
 
 QueryDB$set("private", ".commit", overwrite = TRUE, value = function(){
     private$.save(private$buffer_table)
-    private$.empty_buffer()
+    private$.rollback()
+})
+
+QueryDB$set("private", ".rollback", overwrite = TRUE, value = function(){
+    private$buffer_table <- private$null_table
 })
 
 QueryDB$set("private", ".compose_row", overwrite = TRUE, value = function(data, entity, type, id){

@@ -36,7 +36,6 @@ test_that("QueryDB commit() works", {
     expect_equal(nrow(query_db$load()), 1L)
 })
 
-
-# Teardown ----------------------------------------------------------------
-unlink(path, T, T)
-query_db <<- NULL
+test_that("QueryDB rollback() works", {
+    expect_s3_class(query_db$rollback(), "R6")
+})
