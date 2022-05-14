@@ -67,6 +67,11 @@ QueryDB$set("private", ".save", overwrite = TRUE, value = function(data, entity,
     invisible()
 })
 
-QueryDB$set("private", ".load", overwrite = TRUE, value = function(data, entity, type, id){
-    mtcars
+QueryDB$set("private", ".load", overwrite = TRUE, value = function(){
+    return(
+        private$db_path
+        |> readr::read_csv(lazy = FALSE)
+        |> tibble::as_tibble()
+        |> dplyr::distinct()
+    )
 })
