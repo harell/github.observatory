@@ -32,7 +32,7 @@ invisible(
 
 invisible(
     tidy_spectators <- spectators
-    |> ge$discard$robots(var = user_id)
+    |> observatory$discard$robots(var = user_id)
 )
 
 
