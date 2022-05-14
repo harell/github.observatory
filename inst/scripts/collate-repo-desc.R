@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("depo")) depo <- Depository$new()
-if(does_not_exist("repo_archive")) repo_archive <- RepoArchive$new()
+if(does_not_exist("repo_db")) repo_db <- RepoQueryDB$new()
 if(does_not_exist("repo_queue")) repo_queue <- QueryQueue$new()$REPO
 pkgs_on_cran <- depo$read_PACKAGE()
 
@@ -22,34 +22,31 @@ while(repo_queue$size() > 0) { try(pb$tick(1), silent = TRUE); tryCatch({
 
     repo_overview <- observatory$query$package$overview(owner, repo)
     repo_overview <- purrr::list_modify(repo_overview, package = package)
-    repo_archive$save(repo_overview, tags = c("entity:repo", "type:overview", paste0("id:", repo_overview$id)))
+    repo_db$save(data = repo_overview, entity = "repo", type = "overview", id = repo_overview$id)
 
     repo_contributors <- observatory$query$package$contributors(owner, repo) |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
     if(length(repo_contributors) > 0) (
         repo_contributors
-        |> repo_archive$save(tags = c("entity:repo", "type:contributors", paste0("id:", repo_overview$id)))
+        |> repo_db$save(entity = "repo", type = "contributors", id = repo_overview$id)
     )
 
     if(repo_overview$stargazers_count > 0) (
         observatory$query$package$stargazers(owner, repo)
         |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
-        |> repo_archive$save(tags = c("entity:repo", "type:stargazers", paste0("id:", repo_overview$id)))
+        |> repo_db$save(entity = "repo", type = "stargazers", id = repo_overview$id)
     )
 
     if(repo_overview$subscribers_count > 0) (
         observatory$query$package$watchers(owner, repo)
         |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
-        |> repo_archive$save(tags = c("entity:repo", "type:watchers", paste0("id:", repo_overview$id)))
+        |> repo_db$save(entity = "repo", type = "watchers", id = repo_overview$id)
     )
 
-    suppressMessages(repo_archive$commit())
+    repo_db$commit()
     try(pb$message(events$SucceededToQueryRepo(package)), silent = TRUE)
 
 }, error = function(e){
-    suppressMessages(repo_archive$rollback())
+    repo_db$rollback()
     try(pb$message(events$FailedToQueryRepo(package)), silent = TRUE)
 })}
 
-
-# Teardown ----------------------------------------------------------------
-repo_archive$clean()

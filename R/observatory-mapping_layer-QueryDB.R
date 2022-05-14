@@ -33,9 +33,9 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     #' @description Load queries from database
     load = function() { private$.load() },
     #' @description Commit entires to database
-    commit = function() { private$.commit() ; return(self) },
+    commit = function() { private$.commit() ; invisible(self) },
     #' @description Rollback changes from the database
-    rollback = function() {private$.rollback(); return(self) }
+    rollback = function() {private$.rollback(); invisible(self) }
 ), private = list(
     # Private Fields ----------------------------------------------------------
     db_path = character(),
@@ -66,7 +66,7 @@ QueryDB$set("private", ".load", overwrite = TRUE, value = function(){
     if(isFALSE(fs::file_exists(private$db_path))) return(private$null_table)
     return(
         private$db_path
-        |> readr::read_csv(lazy = FALSE)
+        |> readr::read_csv(lazy = FALSE, show_col_types = FALSE)
         |> tibble::as_tibble()
         |> dplyr::distinct()
     )
