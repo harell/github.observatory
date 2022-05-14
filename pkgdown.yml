@@ -1,8 +1,8 @@
 pandoc: 2.7.3
-pkgdown: 2.0.2
+pkgdown: 2.0.3
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-03-27T06:58Z
+last_built: 2022-05-14T04:39Z
 urls:
   reference: https://harell.github.io/github.observatory/reference
   article: https://harell.github.io/github.observatory/articles

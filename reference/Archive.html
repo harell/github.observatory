@@ -18,7 +18,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">R Packages and Users Observatory</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
       </span>
     </div>
 
@@ -42,7 +42,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Github Explorer Archive</h1>
-    <small class="dont-index">Source: <a href="https://github.com/harell/github.observatory/blob/HEAD/R/ge-Repository-Archive.R" class="external-link"><code>R/ge-Repository-Archive.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/harell/github.observatory/blob/HEAD/R/observatory-mapping_layer-Archive.R" class="external-link"><code>R/observatory-mapping_layer-Archive.R</code></a></small>
     <div class="hidden name"><code>Archive.Rd</code></div>
     </div>
 
@@ -74,16 +74,16 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
-<ul><li><p><a href="#method-new"><code>Archive$new()</code></a></p></li>
-<li><p><a href="#method-save"><code>Archive$save()</code></a></p></li>
-<li><p><a href="#method-load"><code>Archive$load()</code></a></p></li>
-<li><p><a href="#method-delete"><code>Archive$delete()</code></a></p></li>
-<li><p><a href="#method-show"><code>Archive$show()</code></a></p></li>
-<li><p><a href="#method-commit"><code>Archive$commit()</code></a></p></li>
-<li><p><a href="#method-rollback"><code>Archive$rollback()</code></a></p></li>
-<li><p><a href="#method-clean"><code>Archive$clean()</code></a></p></li>
-<li><p><a href="#method-finalize"><code>Archive$finalize()</code></a></p></li>
-</ul></div><p></p><hr><a id="method-new"></a><div class="section">
+<ul><li><p><a href="#method-Archive-new"><code>Archive$new()</code></a></p></li>
+<li><p><a href="#method-Archive-save"><code>Archive$save()</code></a></p></li>
+<li><p><a href="#method-Archive-load"><code>Archive$load()</code></a></p></li>
+<li><p><a href="#method-Archive-delete"><code>Archive$delete()</code></a></p></li>
+<li><p><a href="#method-Archive-show"><code>Archive$show()</code></a></p></li>
+<li><p><a href="#method-Archive-commit"><code>Archive$commit()</code></a></p></li>
+<li><p><a href="#method-Archive-rollback"><code>Archive$rollback()</code></a></p></li>
+<li><p><a href="#method-Archive-clean"><code>Archive$clean()</code></a></p></li>
+<li><p><a href="#method-Archive-finalize"><code>Archive$finalize()</code></a></p></li>
+</ul></div><p></p><hr><a id="method-Archive-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 
 <div class="section">
@@ -104,7 +104,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-save"></a><div class="section">
+</div><p></p><hr><a id="method-Archive-save"></a><div class="section">
 <h3 id="method-save-">Method <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code><a class="anchor" aria-label="anchor" href="#method-save-"></a></h3>
 <p>store artifact in archive</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
@@ -124,7 +124,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-load"></a><div class="section">
+</div><p></p><hr><a id="method-Archive-load"></a><div class="section">
 <h3 id="method-load-">Method <code><a href="https://rdrr.io/r/base/load.html" class="external-link">load()</a></code><a class="anchor" aria-label="anchor" href="#method-load-"></a></h3>
 <p>fetch artifact from archive</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
@@ -140,7 +140,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-delete"></a><div class="section">
+</div><p></p><hr><a id="method-Archive-delete"></a><div class="section">
 <h3 id="method-delete-">Method <code>delete()</code><a class="anchor" aria-label="anchor" href="#method-delete-"></a></h3>
 <p>discard artifact from archive</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
@@ -156,7 +156,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-show"></a><div class="section">
+</div><p></p><hr><a id="method-Archive-show"></a><div class="section">
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>show artifact within the archive</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
@@ -164,7 +164,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 </div>
 
 
-</div><p></p><hr><a id="method-commit"></a><div class="section">
+</div><p></p><hr><a id="method-Archive-commit"></a><div class="section">
 <h3 id="method-commit-">Method <code>commit()</code><a class="anchor" aria-label="anchor" href="#method-commit-"></a></h3>
 <p>commit artifacts to archive</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
@@ -172,7 +172,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 </div>
 
 
-</div><p></p><hr><a id="method-rollback"></a><div class="section">
+</div><p></p><hr><a id="method-Archive-rollback"></a><div class="section">
 <h3 id="method-rollback-">Method <code>rollback()</code><a class="anchor" aria-label="anchor" href="#method-rollback-"></a></h3>
 <p>rollback changes from the archive</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
@@ -180,7 +180,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 </div>
 
 
-</div><p></p><hr><a id="method-clean"></a><div class="section">
+</div><p></p><hr><a id="method-Archive-clean"></a><div class="section">
 <h3 id="method-clean-">Method <code>clean()</code><a class="anchor" aria-label="anchor" href="#method-clean-"></a></h3>
 <p>clean the archive</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
@@ -188,7 +188,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 </div>
 
 
-</div><p></p><hr><a id="method-finalize"></a><div class="section">
+</div><p></p><hr><a id="method-Archive-finalize"></a><div class="section">
 <h3 id="method-finalize-">Method <code>finalize()</code><a class="anchor" aria-label="anchor" href="#method-finalize-"></a></h3>
 <p>teardown archive object</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
@@ -212,7 +212,7 @@ Github Explorer Archive"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>
