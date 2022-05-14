@@ -22,7 +22,9 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     save = function(data = list(), entity = character(), type = character(), id = character()){
         private$.save(data, entity, type, id)
         invisible(self)
-    }
+    },
+    #' @description Load queries from database
+    load = function() { private$.load() }
 ), private = list(
     # Private Fields ----------------------------------------------------------
     db_path = character(),
@@ -35,7 +37,8 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
         data = NA_character_
     )[0,],
     # Private Methods ---------------------------------------------------------
-    .save = function(data, entity, type, id) { stop() }
+    .save = function(data, entity, type, id) { stop() },
+    .load = function() { stop() }
 ))
 
 
@@ -64,3 +67,6 @@ QueryDB$set("private", ".save", overwrite = TRUE, value = function(data, entity,
     invisible()
 })
 
+QueryDB$set("private", ".load", overwrite = TRUE, value = function(data, entity, type, id){
+    mtcars
+})
