@@ -20,7 +20,8 @@ test_that("QueryDB save() works", {
         data = data,
         entity = "repo",
         type = "overview",
-        id = data$id
+        id = data$id,
+        alias = data$name
     ), "R6")
 })
 

@@ -30,12 +30,12 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
     pkgs_on_cran <- private$depo$read_PACKAGE()
 
 
-    invisible(
-        pkgs_in_cache <- private$repo_db$load()
-        |> dplyr::filter(entity %in% "repo", type %in% "overview")
-        |> dplyr::pull(id)
-    )
-
+    # invisible(
+    #     pkgs_in_cache <- private$repo_db$load()
+    #     |> dplyr::filter(entity %in% "repo", type %in% "overview")
+    #     |> dplyr::pull(id)
+    # )
+    pkgs_in_cache <- character(0)
     new_pkgs <- setdiff(pkgs_on_cran$package, pkgs_in_cache) |> sample()
 
     collections::priority_queue(

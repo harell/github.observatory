@@ -22,24 +22,24 @@ while(repo_queue$size() > 0) { try(pb$tick(1), silent = TRUE); tryCatch({
 
     repo_overview <- observatory$query$package$overview(owner, repo)
     repo_overview <- purrr::list_modify(repo_overview, package = package)
-    repo_db$save(data = repo_overview, entity = "repo", type = "overview", id = repo_overview$id)
+    repo_db$save(data = repo_overview, entity = "repo", type = "overview", id = repo_overview$id, alias = package)
 
     repo_contributors <- observatory$query$package$contributors(owner, repo) |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
     if(length(repo_contributors) > 0) (
         repo_contributors
-        |> repo_db$save(entity = "repo", type = "contributors", id = repo_overview$id)
+        |> repo_db$save(entity = "repo", type = "contributors", id = repo_overview$id, alias = package)
     )
 
     if(repo_overview$stargazers_count > 0) (
         observatory$query$package$stargazers(owner, repo)
         |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
-        |> repo_db$save(entity = "repo", type = "stargazers", id = repo_overview$id)
+        |> repo_db$save(entity = "repo", type = "stargazers", id = repo_overview$id, alias = package)
     )
 
     if(repo_overview$subscribers_count > 0) (
         observatory$query$package$watchers(owner, repo)
         |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
-        |> repo_db$save(entity = "repo", type = "watchers", id = repo_overview$id)
+        |> repo_db$save(entity = "repo", type = "watchers", id = repo_overview$id, alias = package)
     )
 
     repo_db$commit()
