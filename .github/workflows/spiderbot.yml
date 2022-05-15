@@ -29,7 +29,7 @@ jobs:
           Rscript -e "Date <- as.character(read.dcf('DESCRIPTION', 'Date'));
                       URL <- if(is.na(Date)) 'https://cran.rstudio.com/' else paste0('https://mran.microsoft.com/snapshot/', Date);
                       Rprofile <- file('.Rprofile', open = 'wt');
-                      writeLines('.libPaths(.libPaths()[1])', Rprofile);
+                      writeLines('.libPaths(Sys.getenv(\'R_LIBS_USER\'))', Rprofile);
                       writeLines('require(remotes)', Rprofile);
                       writeLines(paste0('options(repos = \'', URL, '\')'), Rprofile);
                       close(Rprofile)"
@@ -41,6 +41,14 @@ jobs:
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
+
+      - name: Cache R packages
+        if: runner.os != 'Windows'
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install system dependencies
         run: |
