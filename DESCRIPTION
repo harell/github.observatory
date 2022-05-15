@@ -21,6 +21,7 @@ Imports:
     assertthat,
     collections,
     dplyr,
+    jsonlite,
     fs,
     gh,
     glue,

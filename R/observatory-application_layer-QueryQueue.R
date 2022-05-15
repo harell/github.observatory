@@ -31,7 +31,7 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
 
 
     invisible(
-        pkgs_in_cache <- repo_db$load()
+        pkgs_in_cache <- private$repo_db$load()
         |> dplyr::filter(entity %in% "repo", type %in% "overview")
         |> dplyr::pull(id)
     )
