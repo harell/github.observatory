@@ -29,13 +29,12 @@ QueryQueue <- R6::R6Class(
 QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE, value = function() {
     pkgs_on_cran <- private$depo$read_PACKAGE()
 
-
-    # invisible(
-    #     pkgs_in_cache <- private$repo_db$load()
-    #     |> dplyr::filter(entity %in% "repo", type %in% "overview")
-    #     |> dplyr::pull(id)
-    # )
-    pkgs_in_cache <- character(0)
+    invisible(
+        pkgs_in_cache <- private$repo_db$load()
+        |> dplyr::filter(entity %in% "repo", type %in% "overview")
+        |> dplyr::distinct(alias)
+        |> dplyr::pull(alias)
+    )
     new_pkgs <- setdiff(pkgs_on_cran$package, pkgs_in_cache) |> sample()
 
     collections::priority_queue(
