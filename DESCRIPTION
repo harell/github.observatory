@@ -17,14 +17,13 @@ BugReports: https://github.com/harell/github.observatory/issues
 Depends: 
     R (>= 4.1)
 Imports: 
-    archivist,
     assertthat,
     collections,
     dplyr,
-    jsonlite,
     fs,
     gh,
     glue,
+    jsonlite,
     lubridate,
     purrr,
     R6,
