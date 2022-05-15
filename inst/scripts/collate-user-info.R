@@ -1,6 +1,6 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
+if(does_not_exist("user_db")) user_db <- UserQueryDB$new()
 if(does_not_exist("user_queue")) user_queue <- QueryQueue$new()$USER
 
 
@@ -13,22 +13,19 @@ while(user_queue$size() > 0){ try(pb$tick(1), silent = TRUE); tryCatch({
 
     user_id <- user_queue$pop()
     user_overview <- observatory$query$user$by_id(user_id)
-    user_archive$save(user_overview, tags = c("entity:user", "type:overview", paste0("id:", user_id)))
+    user_db$save(data = user_overview, entity = "user", type = "overview", id = user_id, alias = user_overview$login)
 
     artifact <- if(user_overview$following > 0)(
         user_overview$login
         |> observatory$query$user$following()
         |> purrr::map(~purrr::keep(.x, names(.x) %in% c("login", "id")))
-        |> user_archive$save(tags = c("entity:user", "type:following", paste0("id:", user_id)))
+        |> user_db$save(entity = "user", type = "following", id = user_id, alias = user_overview$login)
     )
 
-    suppressMessages(user_archive$commit())
+    user_db$commit()
     try(pb$message(events$SucceededToQueryUser(user_id)), silent = TRUE)
+
 }, error = function(e){
-    suppressMessages(user_archive$rollback())
+    suppressMessages(user_db$rollback())
     try(pb$message(events$FailedToQueryUser(user_id)), silent = TRUE)
 })}
-
-
-# Teardown ----------------------------------------------------------------
-user_archive$clean()

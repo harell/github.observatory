@@ -45,49 +45,19 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
 
 
 QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE, value = function() {
-    # pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-    # repo_archive <- RepoArchive$new()
-    # user_archive <- UserArchive$new()
-    #
-    # artifacts <- repo_archive$show()
-    #
-    # if(nrow(artifacts) > 0) {
-    #     invisible(
-    #         artifacts <- artifacts
-    #         |> dplyr::filter(type %in% c("contributors", "forkers", "stargazers", "watchers")[c(1,3)])
-    #         |> dplyr::arrange(dplyr::desc(date))
-    #         |> dplyr::distinct(id, type, .keep_all = TRUE)
-    #     )
-    #
-    #     invisible(
-    #         artifacts$data <- artifacts$artifact
-    #         |> purrr::map(~.x |> repo_archive$load() |> unlist())
-    #         |> purrr::map(~as.integer(.x[names(.x) == "id"]))
-    #     )
-    #
-    #     invisible(
-    #         all_users <- artifacts
-    #         |> dplyr::pull(data)
-    #         |> purrr::flatten_int()
-    #         |> unique()
-    #     )
-    #
-    #     existing_users <- tryCatch(
-    #         user_archive$show()
-    #         |> dplyr::filter(entity %in% "user")
-    #         |> dplyr::pull("id")
-    #         |> as.integer(),
-    #         error = function(e) return(0)
-    #     )
-    #
-    #     new_users <- setdiff(all_users, existing_users)
-    #
-    # } else {
-    #
-    #     new_users <- integer(0)
-    # }
+    invisible(
+        ecosystem_users <- private$repo_db$load()
+        |> dplyr::filter(data %not_in% "[]")
+        |> dplyr::filter(type %in% c("contributors", "stargazers", "watchers"))
+        |> dplyr::arrange(dplyr::desc(date))
+        |> dplyr::distinct(id, type, .keep_all = TRUE)
+        |> dplyr::mutate(user_id = data |> purrr::map(~.x |> jsonlite::fromJSON() |> purrr::pluck("id", 1)) |> as.integer())
+        |> dplyr::distinct(user_id)
+        |> dplyr::pull(user_id)
+    )
+    existing_users <- unique(private$user_db$load()$id)
+    new_users <- setdiff(ecosystem_users, existing_users) |> sample()
 
-    new_users <- "280924484"
     collections::priority_queue(
         items = new_users,
         priorities = 2
