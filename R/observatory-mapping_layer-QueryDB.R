@@ -19,8 +19,9 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     #' @param entity (`character`) The entity name. For example "repo" or "user".
     #' @param type (`character`) The query type. For example "overview" or "contributors".
     #' @param id (`character`) The entity id. For example "280924484" or "clintools".
-    save = function(data = list(), entity = character(), type = character(), id = character()){
-        entry <- private$.compose_row(data, entity, type, id)
+    #' @param alias (`character`) The entity alias name. For example "dplyr" or "hadley".
+    save = function(data = list(), entity = character(), type = character(), id = character(), alias = character()){
+        entry <- private$.compose_row(data, entity, type, id, alias)
 
         if(private$immediate){
             private$.save(entry)
@@ -46,6 +47,7 @@ QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
         entity = NA_character_,
         type = NA_character_,
         id = NA_character_,
+        alias = NA_character_,
         data = NA_character_
     )[0,],
     # Private Methods ---------------------------------------------------------
@@ -81,12 +83,13 @@ QueryDB$set("private", ".rollback", overwrite = TRUE, value = function(){
     private$buffer_table <- private$null_table
 })
 
-QueryDB$set("private", ".compose_row", overwrite = TRUE, value = function(data, entity, type, id){
+QueryDB$set("private", ".compose_row", overwrite = TRUE, value = function(data, entity, type, id, alias){
     assertthat::assert_that(
         "list" %in% class(data),
         assertthat::is.scalar(entity),
         assertthat::is.scalar(type),
-        assertthat::is.scalar(id)
+        assertthat::is.scalar(id),
+        assertthat::is.scalar(alias)
     )
 
     return(
@@ -96,6 +99,7 @@ QueryDB$set("private", ".compose_row", overwrite = TRUE, value = function(data, 
             entity = as.character(entity),
             type   = as.character(type),
             id     = as.character(id),
+            alias  = as.character(alias),
             data   = as.character(jsonlite::toJSON(data))
         )
     )
