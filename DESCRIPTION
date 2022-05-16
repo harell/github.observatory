@@ -2,7 +2,7 @@ Type: Package
 Package: github.observatory
 Title: Discover and Explore the Relationships Between R Packages and R
     Users
-Version: 0.6.0
+Version: 0.6.1
 Date: 2022-04-22
 Authors@R: 
     person("Harel", "Lustiger", , "tidylab@gmail.com", role = c("aut", "cre"),
@@ -17,13 +17,13 @@ BugReports: https://github.com/harell/github.observatory/issues
 Depends: 
     R (>= 4.1)
 Imports: 
-    archivist,
     assertthat,
     collections,
     dplyr,
     fs,
     gh,
     glue,
+    jsonlite,
     lubridate,
     purrr,
     R6,

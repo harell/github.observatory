@@ -14,6 +14,8 @@ test_that("Depository works", {
 
 test_that("Depository works", {
     skip_on_ci()
+    skip_localy()
+
     expect_s3_class(depo <- Depository$new(), "R6")
 
     expect_s3_class(depo$snapshot_USER(), "R6")
