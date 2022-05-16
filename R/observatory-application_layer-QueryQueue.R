@@ -45,8 +45,8 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
 
 
 QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE, value = function() {
-    invisible(
-        ecosystem_users <- private$repo_db$load()
+    ecosystem_users <- tryCatch(invisible(
+        private$repo_db$load()
         |> dplyr::filter(data %not_in% "[]")
         |> dplyr::filter(type %in% c("contributors", "stargazers"))
         |> dplyr::pull(data)
@@ -54,8 +54,10 @@ QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE
         |> dplyr::pull(id)
         |> as.integer()
         |> unique()
-    )
+    ), error = function(e) return(character(0)))
+
     existing_users <- unique(private$user_db$load()$id)
+
     new_users <- setdiff(ecosystem_users, existing_users) |> sample()
 
     collections::priority_queue(
