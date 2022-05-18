@@ -16,24 +16,18 @@ invisible(
 
 # Parse spectators --------------------------------------------------------
 invisible(
-    queries$data <- queries$data
-    |> purrr::map(~.x |> jsonlite::fromJSON() |> purrr::pluck("id", 1))
-    |> as.integer()
-)
-
-invisible(
-    spectators <- queries
+    tidy_spectators <- queries
+    |> dplyr::rename(repo_id = id)
+    |> dplyr::rowwise()
+    |> dplyr::mutate(obj = data |> jsonlite::fromJSON() |> list())
+    |> tidyr::unnest(obj, keep_empty = TRUE, ptype = list(login = "character", id = "integer"))
+    |> dplyr::ungroup()
     |> dplyr::transmute(
-        repo_id = as.integer(id),
-        user_id = data,
+        repo_id = as.integer(repo_id),
+        user_id = as.integer(id),
         user_role = stringr::str_remove(type, "s$")
     )
-    |> tidyr::unnest(user_id)
-)
-
-invisible(
-    tidy_spectators <- spectators
-    |> observatory$discard$robots(var = user_id)
+    |> observatory$discard$robots(user_id)
 )
 
 

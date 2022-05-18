@@ -51,6 +51,7 @@ QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE
         |> dplyr::filter(type %in% c("contributors", "stargazers"))
         |> dplyr::pull(data)
         |> purrr::map_dfr(jsonlite::fromJSON)
+        |> observatory$discard$robots()
         |> dplyr::pull(id)
         |> as.integer()
         |> unique()
