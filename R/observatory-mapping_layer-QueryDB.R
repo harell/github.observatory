@@ -71,6 +71,7 @@ QueryDB$set("private", ".load", overwrite = TRUE, value = function(){
         |> readr::read_csv(lazy = FALSE, show_col_types = FALSE)
         |> tibble::as_tibble()
         |> dplyr::distinct()
+        |> dplyr::filter(data %not_in% "[]")
     )
 })
 

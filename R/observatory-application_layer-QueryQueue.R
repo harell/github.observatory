@@ -47,7 +47,6 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
 QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE, value = function() {
     ecosystem_users <- tryCatch(invisible(
         private$repo_db$load()
-        |> dplyr::filter(data %not_in% "[]")
         |> dplyr::filter(type %in% c("contributors", "stargazers"))
         |> dplyr::pull(data)
         |> purrr::map_dfr(jsonlite::fromJSON)

@@ -7,7 +7,6 @@ if(does_not_exist("depo_repo")) depo_repo <- Depository$new()
 # Load cached data --------------------------------------------------------
 invisible(
     queries <- repo_db$load()
-    |> dplyr::filter(data %not_in% "[]")
     |> dplyr::filter(type %in% c("contributors", "stargazers", "watchers"))
     |> dplyr::arrange(dplyr::desc(date))
     |> dplyr::distinct(id, type, .keep_all = TRUE)
