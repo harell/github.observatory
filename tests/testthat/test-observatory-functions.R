@@ -1,6 +1,6 @@
 # Queries -----------------------------------------------------------------
 test_that("user queries work", {
-    skip("Github Queries")
+    skip_localy()
     expect_type(observatory$query$user$starred("nz-stefan"), "character")
     expect_identical(
         observatory$query$user$by_login("nz-stefan"),
