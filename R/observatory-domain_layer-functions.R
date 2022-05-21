@@ -33,6 +33,7 @@ observatory$query$user$by_login <- function(login) {
     return(
         glue("/users/{login}")
         |> github$query()
+        |> purrr::list_merge(queried_at = lubridate::format_ISO8601(Sys.time()))
     )
 }
 
