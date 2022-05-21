@@ -71,6 +71,26 @@ Depository$set(which = "private", name = "overwrite_locally", overwrite = TRUE, 
 
 
 # Remote Data Storage -----------------------------------------------------
+Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, value = function(key) {
+    # Setup
+    s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
+    remote_path <- private$remote_path
+    local_path <- private$local_path
+
+    # Name File
+    # last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
+    last_processed <- NULL
+    file_name <- fs::path(glue::glue_collapse(c(key, last_processed), sep = "_"), ext = "csv.bz2")
+
+    # Download Data
+    remote_file <- s3$path(remote_path, file_name)
+    s3$file_copy(remote_file, local_path, overwrite = TRUE)
+
+    # Decompress Data
+    local_file <- fs::path_temp(remote_file) |> as.character()
+    private$read_csv(bzfile(local_file))
+})
+
 Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
     stopifnot(is.data.frame(value))
 
@@ -93,26 +113,6 @@ Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE,
     # Return
     rm(local_file)
     invisible()
-})
-
-Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, value = function(key) {
-    # Setup
-    s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
-    remote_path <- private$remote_path
-    local_path <- private$local_path
-
-    # Name File
-    # last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
-    last_processed <- NULL
-    file_name <- fs::path(glue::glue_collapse(c(key, last_processed), sep = "_"), ext = "csv.bz2")
-
-    # Download Data
-    remote_file <- s3$path(remote_path, file_name)
-    s3$file_copy(remote_file, local_path, overwrite = TRUE)
-
-    # Decompress Data
-    local_file <- fs::path_temp(remote_file) |> as.character()
-    private$read_csv(bzfile(local_file))
 })
 
 
