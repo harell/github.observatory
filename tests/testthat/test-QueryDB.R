@@ -1,5 +1,4 @@
 # Setup -------------------------------------------------------------------
-path <- fs::file_temp("QueryDB")
 data <- list(
     id = 280924484,
     name = "clintools",
@@ -10,7 +9,7 @@ data <- list(
 
 # Tests -------------------------------------------------------------------
 test_that("QueryDB constructor works", {
-    expect_s3_class(query_db <<- QueryDB$new(path, immediate = FALSE), "R6")
+    expect_s3_class(query_db <<- QueryDB$new(local_path, immediate = FALSE), "R6")
 })
 
 

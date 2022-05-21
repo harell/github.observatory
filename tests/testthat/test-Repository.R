@@ -1,9 +1,6 @@
 # Depository --------------------------------------------------------------
 test_that("Depository constructor works", {
-    expect_s3_class(depo <<- Depository$new(
-        local_path = fs::path_temp("testthat"),
-        remote_path = "s3://tidylab/github.observatory/testthat/"
-    ), "R6")
+    expect_s3_class(depo <<- Depository$new(local_path = local_path, remote_path = remote_path), "R6")
 })
 
 test_that("Depository write functions work", {
