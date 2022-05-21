@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("repo_db")) repo_db <- RepoQueryDB$new()
-if(does_not_exist("depo_repo")) depo_repo <- Depository$new()
+if(does_not_exist("depo")) depo <- Depository$new()
 
 
 # Load cached data --------------------------------------------------------
@@ -31,4 +31,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-depo_repo$overwrite_SPECTATOR(tidy_spectators)
+depo$overwrite_SPECTATOR(tidy_spectators)
