@@ -1,6 +1,6 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
+if(does_not_exist("user_db")) user_db <- UserQueryDB$new()
 if(does_not_exist("depo")) depo <- Depository$new()
 
 
@@ -52,7 +52,7 @@ SPECTATOR <- depo$read_SPECTATOR()
     |> dplyr::left_join(relationships, by = "id")
     |> purrr::modify_at(dplyr::vars(dplyr::starts_with("r_")), tidyr::replace_na, replace = 0)
     |> dplyr::relocate(dplyr::starts_with("r_"), .after = "following")
-    |> dplyr::mutate(processed_at = Sys.Date() |> observatory$standardise$date())
+    |> dplyr::mutate(processed_at = observatory$standardise$date(Sys.Date()))
 )
 
 

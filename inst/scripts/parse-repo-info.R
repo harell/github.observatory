@@ -36,7 +36,7 @@ invisible(
         created_at       = lubridate::ymd_hms(created_at) |> observatory$standardise$date(),
         updated_at       = lubridate::ymd_hms(updated_at) |> observatory$standardise$date(),
         queried_at       = lubridate::ymd_hms(queried_at) |> observatory$standardise$date(),
-        processed_at     = Sys.Date() |> observatory$standardise$date()
+        processed_at     = observatory$standardise$date(Sys.Date())
     )
 )
 
