@@ -56,7 +56,11 @@ Depository$set(which = "private", name = "overwrite", overwrite = TRUE, value = 
     return(
         value
         |> dplyr::distinct()
-        |> readr::write_csv(fs::path(private$path, key, ext = "csv"), append = FALSE)
+        |> readr::write_csv(
+            fs::path(private$path, key, ext = "csv"),
+            append = FALSE,
+            na = ""
+        )
     )
 })
 
