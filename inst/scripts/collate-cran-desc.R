@@ -1,6 +1,6 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-if(does_not_exist("depo_repo")) depo_repo <- Depository$new()
+if(does_not_exist("depo")) depo <- Depository$new()
 
 
 # Download CRAN packages list ---------------------------------------------
@@ -47,4 +47,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-depo_repo$overwrite_PACKAGE(tidy_packages)
+depo$overwrite_PACKAGE(tidy_packages)

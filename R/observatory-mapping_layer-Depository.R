@@ -13,20 +13,20 @@ Depository <- R6::R6Class(
         ){
             private$remote_path <- as.character(remote_path)
             private$local_path <- as.character(local_path)
-            fs::dir_create(private$path)
+            fs::dir_create(private$local_path)
 
             invisible(self)
         },
-        read_USER      = function() { return(private$read_locally("USER")) },
-        read_REPO      = function() { return(private$read_locally("REPO")) },
-        read_PACKAGE   = function() { return(private$read_locally("PACKAGE")) },
-        read_FOLLOWING = function() { return(private$read_locally("FOLLOWING")) },
-        read_SPECTATOR = function() { return(private$read_locally("SPECTATOR")) },
-        overwrite_USER = function(value) { private$overwrite_locally("USER", value); invisible(self) },
-        overwrite_REPO = function(value) { private$overwrite_locally("REPO", value); invisible(self) },
-        overwrite_PACKAGE = function(value) { private$overwrite_locally("PACKAGE", value); invisible(self) },
-        overwrite_FOLLOWING = function(value) { private$overwrite_locally("FOLLOWING", value); invisible(self) },
-        overwrite_SPECTATOR = function(value) { private$overwrite_locally("SPECTATOR", value); invisible(self) }
+        read_USER      = function() { return(private$read_remotely("USER")) },
+        read_REPO      = function() { return(private$read_remotely("REPO")) },
+        read_PACKAGE   = function() { return(private$read_remotely("PACKAGE")) },
+        read_FOLLOWING = function() { return(private$read_remotely("FOLLOWING")) },
+        read_SPECTATOR = function() { return(private$read_remotely("SPECTATOR")) },
+        overwrite_USER = function(value) { private$overwrite_remotely("USER", value); invisible(self) },
+        overwrite_REPO = function(value) { private$overwrite_remotely("REPO", value); invisible(self) },
+        overwrite_PACKAGE = function(value) { private$overwrite_remotely("PACKAGE", value); invisible(self) },
+        overwrite_FOLLOWING = function(value) { private$overwrite_remotely("FOLLOWING", value); invisible(self) },
+        overwrite_SPECTATOR = function(value) { private$overwrite_remotely("SPECTATOR", value); invisible(self) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         local_path = ".",
@@ -86,7 +86,7 @@ Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, valu
     remote_file <- s3$path(remote_path, file_name)
     if(s3$file_exists(remote_file)){
         s3$file_copy(remote_file, local_path, overwrite = TRUE)
-        local_file <- fs::path_temp(remote_file) |> as.character()
+        local_file <- fs::path(local_path, basename(remote_file)) |> as.character()
         tbl <- private$read_csv(bzfile(local_file))
     } else {
         tbl <- private$null_table
@@ -122,6 +122,6 @@ Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE,
 
 
 # Low-level Methods -------------------------------------------------------
-Depository$set(which = "private", name = "read_csv", overwrite = TRUE, value = purrr::partial(readr::read_csv, show_col_types = FALSE, progress = TRUE, lazy = FALSE))
-Depository$set(which = "private", name = "write_csv", overwrite = TRUE, value = purrr::partial(readr::write_csv, na = "", append = FALSE))
+Depository$set(which = "private", name = "read_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::read_csv, show_col_types = FALSE, progress = TRUE, lazy = FALSE)(...))
+Depository$set(which = "private", name = "write_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::write_csv, na = "", append = FALSE)(...))
 
