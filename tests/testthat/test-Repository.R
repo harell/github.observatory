@@ -1,8 +1,7 @@
 # Depository --------------------------------------------------------------
 test_that("Depository works", {
-    skip_localy()
+    # skip_localy()
     expect_s3_class(depo <- Depository$new(), "R6")
-
 
     expect_s3_class(depo$read_USER(), "data.frame")
     expect_s3_class(depo$read_REPO(), "data.frame")
