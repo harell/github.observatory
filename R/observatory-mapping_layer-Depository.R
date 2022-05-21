@@ -66,54 +66,30 @@ Depository$set(which = "private", name = "overwrite_locally", overwrite = TRUE, 
 
 
 # Remote Data Storage -----------------------------------------------------
-# Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
-#     stopifnot(is.data.frame(value))
-#
-#     # Setup
-#     s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
-#     uri <- "s3://tidylab/github.observatory/"
-#     snapshot_uri <- s3$path(uri, "snapshots")
-#
-#
-#
-#     return(
-#         value
-#         |> dplyr::distinct()
-#         |> readr::write_csv(
-#             fs::path(private$path, key, ext = "csv"),
-#             append = FALSE,
-#             na = ""
-#         )
-#     )
-# })
+Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
+    stopifnot(is.data.frame(value))
 
-
-Depository$set(which = "private", name = "snapshot", overwrite = TRUE, value = function(key) {
     # Setup
     s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
     uri <- "s3://tidylab/github.observatory/"
-    snapshot_uri <- s3$path(uri, "snapshots")
-
-    # Retrieve Data
-    value <- self[[paste0("read_", key)]]()
-    if(nrow(value) == 0) return()
+    remote_dir <- s3$path(uri, "tables")
 
     # Name Snapshot
-    last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
-    file_name <- fs::path(paste0(key, "_", last_processed), ext = "csv.bz2")
+    # last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
+    last_processed <- NULL
+    file_name <- fs::path(glue::glue_collapse(c(key, last_processed), sep = "_"), ext = "csv.bz2")
 
     # Compress Data
     local_file <- fs::path_temp(file_name) |> as.character()
-    readr::write_csv(value, bzfile(local_file))
+    private$write_csv(value, bzfile(local_file))
 
     # Upload file
-    s3$file_copy(local_file, snapshot_uri, overwrite = TRUE)
+    s3$file_copy(local_file, remote_dir, overwrite = TRUE)
 
     # Return
     rm(local_file)
     invisible()
 })
-
 
 
 # Low-level Methods -------------------------------------------------------
