@@ -7,9 +7,15 @@
 #' @noRd
 Depository <- R6::R6Class(
     classname = "Repository", lock_objects = FALSE, cloneable = FALSE, public = list(
-        initialize = function(path = fs::path_wd("_cache", "tables")){
-            private$path <- path
+        initialize = function(
+        local_path = fs::path_wd("_cache", "tables"),
+        remote_path = "s3://tidylab/github.observatory/tables/"
+        ){
+            private$remote_path <- as.character(remote_path)
+            private$local_path <- as.character(local_path)
             fs::dir_create(private$path)
+
+            invisible(self)
         },
         read_USER      = function() { return(private$read_locally("USER")) },
         read_REPO      = function() { return(private$read_locally("REPO")) },
@@ -20,12 +26,11 @@ Depository <- R6::R6Class(
         overwrite_REPO = function(value) { private$overwrite_locally("REPO", value); invisible(self) },
         overwrite_PACKAGE = function(value) { private$overwrite_locally("PACKAGE", value); invisible(self) },
         overwrite_FOLLOWING = function(value) { private$overwrite_locally("FOLLOWING", value); invisible(self) },
-        overwrite_SPECTATOR = function(value) { private$overwrite_locally("SPECTATOR", value); invisible(self) },
-        snapshot_USER = function() { private$snapshot("USER"); invisible(self) },
-        snapshot_REPO = function() { private$snapshot("REPO"); invisible(self) }
+        overwrite_SPECTATOR = function(value) { private$overwrite_locally("SPECTATOR", value); invisible(self) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
-        path = ".",
+        local_path = ".",
+        remote_path = ".",
         null_table = tibble::tibble(),
         # Private Methods ---------------------------------------------------------
         read_csv = function(...) { stop() },
@@ -41,7 +46,7 @@ Depository <- R6::R6Class(
 
 # Local Data Storage ------------------------------------------------------
 Depository$set(which = "private", name = "read_locally", overwrite = TRUE, value = function(key) {
-    file <- fs::path(private$path, key, ext = "csv")
+    file <- fs::path(private$local_path, key, ext = "csv")
 
     if(file_not_exists(file)) return(private$null_table)
 
@@ -60,7 +65,7 @@ Depository$set(which = "private", name = "overwrite_locally", overwrite = TRUE, 
     return(
         value
         |> dplyr::distinct()
-        |> private$write_csv(fs::path(private$path, key, ext = "csv"))
+        |> private$write_csv(fs::path(private$local_path, key, ext = "csv"))
     )
 })
 
@@ -71,10 +76,9 @@ Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE,
 
     # Setup
     s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
-    uri <- "s3://tidylab/github.observatory/"
-    remote_dir <- s3$path(uri, "tables")
+    remote_path <- private$remote_path
 
-    # Name Snapshot
+    # Name File
     # last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
     last_processed <- NULL
     file_name <- fs::path(glue::glue_collapse(c(key, last_processed), sep = "_"), ext = "csv.bz2")
@@ -84,11 +88,31 @@ Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE,
     private$write_csv(value, bzfile(local_file))
 
     # Upload file
-    s3$file_copy(local_file, remote_dir, overwrite = TRUE)
+    s3$file_copy(local_file, remote_path, overwrite = TRUE)
 
     # Return
     rm(local_file)
     invisible()
+})
+
+Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, value = function(key) {
+    # Setup
+    s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
+    remote_path <- private$remote_path
+    local_path <- private$local_path
+
+    # Name File
+    # last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
+    last_processed <- NULL
+    file_name <- fs::path(glue::glue_collapse(c(key, last_processed), sep = "_"), ext = "csv.bz2")
+
+    # Download Data
+    remote_file <- s3$path(remote_path, file_name)
+    s3$file_copy(remote_file, local_path, overwrite = TRUE)
+
+    # Decompress Data
+    local_file <- fs::path_temp(remote_file) |> as.character()
+    private$read_csv(bzfile(local_file))
 })
 
 
