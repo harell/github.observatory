@@ -1,36 +1,34 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-if(does_not_exist("user_archive")) user_archive <- UserArchive$new()
-if(does_not_exist("depo_repo")) depo_repo <- Depository$new()
+if(does_not_exist("user_db")) user_db <- UserQueryDB$new()
+if(does_not_exist("depo")) depo <- Depository$new()
 
 
 # Load cached data --------------------------------------------------------
 invisible(
-    artifacts <- user_archive$show()
-    |> dplyr::filter(entity %in% "user", type %in% "following")
+    queries <- user_db$load()
+    |> dplyr::filter(type %in% "following")
     |> dplyr::arrange(dplyr::desc(date))
-    |> dplyr::distinct(id, type, .keep_all = TRUE)
+    |> dplyr::distinct(id, .keep_all = TRUE)
 )
 
 
 # Parse following ---------------------------------------------------------
 invisible(
-    artifacts$data <- artifacts$artifact
-    |> purrr::map(~.x |> user_archive$load() |> unlist())
-    |> purrr::map(~as.integer(.x[names(.x) == "id"]))
+    all_followers <- queries
+    |> dplyr::rename(user_id = id)
+    |> dplyr::rowwise()
+    |> dplyr::mutate(obj = data |> jsonlite::fromJSON() |> list())
+    |> tidyr::unnest(obj, keep_empty = TRUE, ptype = list(login = "character", id = "integer"))
+    |> dplyr::ungroup()
+    |> dplyr::transmute(from = as.integer(user_id), to = as.integer(id))
 )
 
 invisible(
-    following <- artifacts
-    |> dplyr::transmute(from = as.integer(id), to = data)
-    |> tidyr::unnest(to)
-)
-
-invisible(
-    tidy_following <- following
+    r_followers <- all_followers
     |> dplyr::filter(to %in% from)
 )
 
 
 # Teardown ----------------------------------------------------------------
-depo_repo$overwrite_FOLLOWING(tidy_following)
+depo$overwrite_FOLLOWING(r_followers)

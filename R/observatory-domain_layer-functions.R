@@ -13,8 +13,8 @@ observatory$standardise$col_names <- function(.data) {
 
 
 # Filters -----------------------------------------------------------------
-observatory$discard$ghosts <- function(.data, var = "login") dplyr::filter(.data, {{var}} %not_in% c("ghost"))
-observatory$discard$robots <- function(.data, var = "id") dplyr::filter(.data, {{var}} %not_in% c(16374903, 841039, 8518239, 34143537, 5877145, 14808551))
+observatory$discard$ghosts <- function(.data, var = login) dplyr::filter(.data, {{var}} %not_in% c("ghost"))
+observatory$discard$robots <- function(.data, var = id) dplyr::filter(.data, {{var}} %not_in% c(16374903, 841039, 8518239, 34143537, 5877145, 14808551))
 
 
 # Queries -----------------------------------------------------------------
@@ -33,6 +33,7 @@ observatory$query$user$by_login <- function(login) {
     return(
         glue("/users/{login}")
         |> github$query()
+        |> purrr::list_merge(queried_at = lubridate::format_ISO8601(Sys.time()))
     )
 }
 

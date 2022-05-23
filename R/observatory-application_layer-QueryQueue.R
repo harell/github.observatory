@@ -4,7 +4,7 @@
 #' @noRd
 QueryQueue <- R6::R6Class(
     cloneable = FALSE, public = list(
-        initialize = function(path = usethis::proj_path("_cache", "tables")){
+        initialize = function(path = fs::path_wd("_cache", "tables")){
             private$depo <- Depository$new(path)
             private$repo_db <- RepoQueryDB$new()
             private$user_db <- UserQueryDB$new()
@@ -47,10 +47,10 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
 QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE, value = function() {
     ecosystem_users <- tryCatch(invisible(
         private$repo_db$load()
-        |> dplyr::filter(data %not_in% "[]")
         |> dplyr::filter(type %in% c("contributors", "stargazers"))
         |> dplyr::pull(data)
         |> purrr::map_dfr(jsonlite::fromJSON)
+        |> observatory$discard$robots()
         |> dplyr::pull(id)
         |> as.integer()
         |> unique()

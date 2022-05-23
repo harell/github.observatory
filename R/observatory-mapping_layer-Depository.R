@@ -6,82 +6,89 @@
 #' @export
 #' @noRd
 Depository <- R6::R6Class(
-    classname = "Repository", cloneable = FALSE, public = list(
-        initialize = function(path = usethis::proj_path("_cache", "tables")){
-            private$path <- path
-            fs::dir_create(private$path)
+    classname = "Repository", lock_objects = FALSE, cloneable = FALSE, public = list(
+        initialize = function(
+        local_path = fs::path_wd("_cache", "tables"),
+        remote_path = "s3://tidylab/github.observatory/tables/"
+        ){
+            private$remote_path <- as.character(remote_path)
+            private$local_path <- as.character(local_path)
+            fs::dir_create(private$local_path)
+
+            invisible(self)
         },
-        read_USER      = function() { return(private$read("USER")) },
-        read_REPO      = function() { return(private$read("REPO")) },
-        read_PACKAGE   = function() { return(private$read("PACKAGE")) },
-        read_FOLLOWING = function() { return(private$read("FOLLOWING")) },
-        read_SPECTATOR = function() { return(private$read("SPECTATOR")) },
-        overwrite_USER = function(value) { private$overwrite("USER", value); invisible(self) },
-        overwrite_REPO = function(value) { private$overwrite("REPO", value); invisible(self) },
-        overwrite_PACKAGE = function(value) { private$overwrite("PACKAGE", value); invisible(self) },
-        overwrite_FOLLOWING = function(value) { private$overwrite("FOLLOWING", value); invisible(self) },
-        overwrite_SPECTATOR = function(value) { private$overwrite("SPECTATOR", value); invisible(self) },
-        snapshot_USER = function() { private$snapshot("USER"); invisible(self) },
-        snapshot_REPO = function() { private$snapshot("REPO"); invisible(self) }
+        read_USER      = function() { return(private$read_remotely("USER")) },
+        read_REPO      = function() { return(private$read_remotely("REPO")) },
+        read_PACKAGE   = function() { return(private$read_remotely("PACKAGE")) },
+        read_FOLLOWING = function() { return(private$read_remotely("FOLLOWING")) },
+        read_SPECTATOR = function() { return(private$read_remotely("SPECTATOR")) },
+        overwrite_USER = function(value) { private$overwrite_remotely("USER", value); invisible(self) },
+        overwrite_REPO = function(value) { private$overwrite_remotely("REPO", value); invisible(self) },
+        overwrite_PACKAGE = function(value) { private$overwrite_remotely("PACKAGE", value); invisible(self) },
+        overwrite_FOLLOWING = function(value) { private$overwrite_remotely("FOLLOWING", value); invisible(self) },
+        overwrite_SPECTATOR = function(value) { private$overwrite_remotely("SPECTATOR", value); invisible(self) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
-        path = ".",
+        local_path = ".",
+        remote_path = ".",
         null_table = tibble::tibble(),
         # Private Methods ---------------------------------------------------------
-        read = function(key) { stop() },
-        overwrite = function(key, value) { stop() },
+        read_csv = function(...) { stop() },
+        write_csv = function(...) { stop() },
+        read_remotely = function(key) { stop() },
+        overwrite_remotely = function(key, value) { stop() },
         snapshot = function(key) { stop() }
     )
 )
 
 
-# Class Methods -----------------------------------------------------------
-Depository$set(which = "private", name = "read", overwrite = TRUE, value = function(key) {
-    file <- fs::path(private$path, key, ext = "csv")
-
-    if(file_not_exists(file)) return(private$null_table)
-
-    invisible(
-        data <- readr::read_csv(file, show_col_types = FALSE, progress = TRUE, lazy = FALSE)
-        |> purrr::modify_if(lubridate::is.Date, observatory$standardise$date)
-        |> dplyr::distinct()
-    )
-
-    return(data)
-})
-
-Depository$set(which = "private", name = "overwrite", overwrite = TRUE, value = function(key, value) {
-    stopifnot(is.data.frame(value))
-
-    return(
-        value
-        |> dplyr::distinct()
-        |> readr::write_csv(fs::path(private$path, key, ext = "csv"), append = FALSE)
-    )
-})
-
-Depository$set(which = "private", name = "snapshot", overwrite = TRUE, value = function(key) {
+# Remote Data Storage -----------------------------------------------------
+Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, value = function(key) {
     # Setup
     s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
-    uri <- "s3://tidylab/github.observatory/"
-    snapshot_uri <- s3$path(uri, "snapshots")
+    remote_path <- private$remote_path
+    local_path <- private$local_path
 
-    # Retrieve Data
-    value <- self[[paste0("read_", key)]]()
-    if(nrow(value) == 0) return()
+    # Name File
+    file_name <- fs::path(key, ext = "csv.bz2")
+    remote_file <- s3$path(remote_path, file_name)
+    local_file <- fs::path(local_path, file_name)
 
-    # Name Snapshot
-    last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
-    file_name <- fs::path(paste0(key, "_", last_processed), ext = "csv.bz2")
+    # Check Sync
+    are_files_synced <- isTRUE(as.integer(s3$file_size(remote_file)) == as.integer(fs::file_size(local_file)))
+    if(isFALSE(are_files_synced)) s3$file_copy(remote_file, local_path, overwrite = TRUE)
 
-    # Compress Data
-    local_file <- fs::path_temp(file_name) |> as.character()
-    readr::write_csv(value, bzfile(local_file))
+    # Read file
+    tbl <- private$read_csv(bzfile(local_file))
+    return(tbl)
+})
+
+Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
+    assert_that(class(value) %in% "data.frame")
+
+    # Setup
+    s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
+    remote_path <- private$remote_path
+    local_path <- private$local_path
+
+    # Name File
+    file_name <- fs::path(key, ext = "csv.bz2")
+    remote_file <- s3$path(remote_path, file_name)
+    local_file <- fs::path(local_path, file_name)
+
+    # Compress and write file locally
+    private$write_csv(value, bzfile(local_file))
+
+    # Check Sync
+    are_files_synced <- isTRUE(as.integer(s3$file_size(remote_file)) == as.integer(fs::file_size(local_file)))
+    if(isTRUE(are_files_synced)) return()
 
     # Upload file
-    s3$file_copy(local_file, snapshot_uri, overwrite = TRUE)
-
-    # Return
-    rm(local_file)
-    invisible()
+    s3$file_copy(local_file, remote_path, overwrite = TRUE)
+    return()
 })
+
+
+# Low-level Methods -------------------------------------------------------
+Depository$set(which = "private", name = "read_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::read_csv, show_col_types = FALSE, progress = FALSE, lazy = FALSE)(...))
+Depository$set(which = "private", name = "write_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::write_csv, na = "", append = FALSE)(...))

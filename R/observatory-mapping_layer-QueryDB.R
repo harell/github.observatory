@@ -71,6 +71,7 @@ QueryDB$set("private", ".load", overwrite = TRUE, value = function(){
         |> readr::read_csv(lazy = FALSE, show_col_types = FALSE)
         |> tibble::as_tibble()
         |> dplyr::distinct()
+        |> dplyr::filter(data %not_in% "[]")
     )
 })
 
@@ -108,10 +109,10 @@ QueryDB$set("private", ".compose_row", overwrite = TRUE, value = function(data, 
 # Derivatives -------------------------------------------------------------
 #' @describeIn QueryDB User QueryDB
 UserQueryDB <- new.env()
-UserQueryDB$new <- function(path = usethis::proj_path("_cache", "queries", "user"), immediate = FALSE) QueryDB$new(path, immediate)
+UserQueryDB$new <- function(path = fs::path_wd("_cache", "queries", "user"), immediate = FALSE) QueryDB$new(path, immediate)
 
 #' @describeIn QueryDB Repo QueryDB
 RepoQueryDB <- new.env()
-RepoQueryDB$new <- function(path = usethis::proj_path("_cache", "queries", "repo"), immediate = FALSE) QueryDB$new(path, immediate)
+RepoQueryDB$new <- function(path = fs::path_wd("_cache", "queries", "repo"), immediate = FALSE) QueryDB$new(path, immediate)
 
 
