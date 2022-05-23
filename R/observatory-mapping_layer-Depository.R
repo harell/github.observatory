@@ -33,41 +33,14 @@ Depository <- R6::R6Class(
         remote_path = ".",
         null_table = tibble::tibble(),
         # Private Methods ---------------------------------------------------------
+        sync_csv = function(...) { stop() },
         read_csv = function(...) { stop() },
         write_csv = function(...) { stop() },
         read_locally = function(key) { stop() },
         read_remotely = function(key) { stop() },
-        overwrite_locally = function(key, value) { stop() },
-        overwrite_remotely = function(key, value) { stop() },
         snapshot = function(key) { stop() }
     )
 )
-
-
-# Local Data Storage ------------------------------------------------------
-Depository$set(which = "private", name = "read_locally", overwrite = TRUE, value = function(key) {
-    file <- fs::path(private$local_path, key, ext = "csv")
-
-    if(file_not_exists(file)) return(private$null_table)
-
-    invisible(
-        data <- private$read_csv(file)
-        |> purrr::modify_if(lubridate::is.Date, observatory$standardise$date)
-        |> dplyr::distinct()
-    )
-
-    return(data)
-})
-
-Depository$set(which = "private", name = "overwrite_locally", overwrite = TRUE, value = function(key, value) {
-    stopifnot(is.data.frame(value))
-
-    return(
-        value
-        |> dplyr::distinct()
-        |> private$write_csv(fs::path(private$local_path, key, ext = "csv"))
-    )
-})
 
 
 # Remote Data Storage -----------------------------------------------------
@@ -122,6 +95,9 @@ Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE,
 
 
 # Low-level Methods -------------------------------------------------------
-Depository$set(which = "private", name = "read_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::read_csv, show_col_types = FALSE, progress = TRUE, lazy = FALSE)(...))
+Depository$set(which = "private", name = "read_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::read_csv, show_col_types = FALSE, progress = FALSE, lazy = FALSE)(...))
 Depository$set(which = "private", name = "write_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::write_csv, na = "", append = FALSE)(...))
+Depository$set(which = "private", name = "sync_csv", overwrite = TRUE, value = function(source, target) {
+
+})
 
