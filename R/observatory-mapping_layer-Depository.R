@@ -33,7 +33,6 @@ Depository <- R6::R6Class(
         remote_path = ".",
         null_table = tibble::tibble(),
         # Private Methods ---------------------------------------------------------
-        sync_csv = function(...) { stop() },
         read_csv = function(...) { stop() },
         write_csv = function(...) { stop() },
         read_remotely = function(key) { stop() },
@@ -56,53 +55,40 @@ Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, valu
     local_file <- fs::path(local_path, file_name)
 
     # Check Sync
-    remote_file_meta <- s3$file_size(remote_file)
-    local_file_meta <- fs::file_size(local_file)
-    are_files_synced <- all.equal(s3$file_size(remote_file), fs::file_size(local_file), check.attributes = FALSE)
+    are_files_synced <- isTRUE(as.integer(s3$file_size(remote_file)) == as.integer(fs::file_size(local_file)))
+    if(isFALSE(are_files_synced)) s3$file_copy(remote_file, local_path, overwrite = TRUE)
 
     # Read file
-    if(isFALSE(s3$file_exists(remote_file))){
-        tbl <- private$null_table
-    } else if (isTRUE(are_files_synced)){
-        tbl <- private$read_csv(bzfile(local_file))
-    } else {
-        s3$file_copy(remote_file, local_path, overwrite = TRUE)
-        tbl <- private$read_csv(bzfile(local_file))
-    }
-
-    # Return
+    tbl <- private$read_csv(bzfile(local_file))
     return(tbl)
 })
 
 Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
-    stopifnot(is.data.frame(value))
+    assert_that(class(value) %in% "data.frame")
 
     # Setup
     s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
     remote_path <- private$remote_path
+    local_path <- private$local_path
 
     # Name File
-    # last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
-    last_processed <- NULL
-    file_name <- fs::path(glue::glue_collapse(c(key, last_processed), sep = "_"), ext = "csv.bz2")
+    file_name <- fs::path(key, ext = "csv.bz2")
+    remote_file <- s3$path(remote_path, file_name)
+    local_file <- fs::path(local_path, file_name)
 
-    # Compress Data
-    local_file <- fs::path_temp(file_name) |> as.character()
+    # Compress and write file locally
     private$write_csv(value, bzfile(local_file))
+
+    # Check Sync
+    are_files_synced <- isTRUE(as.integer(s3$file_size(remote_file)) == as.integer(fs::file_size(local_file)))
+    if(isTRUE(are_files_synced)) return()
 
     # Upload file
     s3$file_copy(local_file, remote_path, overwrite = TRUE)
-
-    # Return
-    rm(local_file)
-    invisible()
+    return()
 })
 
 
 # Low-level Methods -------------------------------------------------------
 Depository$set(which = "private", name = "read_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::read_csv, show_col_types = FALSE, progress = FALSE, lazy = FALSE)(...))
 Depository$set(which = "private", name = "write_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::write_csv, na = "", append = FALSE)(...))
-Depository$set(which = "private", name = "sync_csv", overwrite = TRUE, value = function(source, target) {
-
-})
-
