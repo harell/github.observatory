@@ -36,8 +36,8 @@ Depository <- R6::R6Class(
         sync_csv = function(...) { stop() },
         read_csv = function(...) { stop() },
         write_csv = function(...) { stop() },
-        read_locally = function(key) { stop() },
         read_remotely = function(key) { stop() },
+        overwrite_remotely = function(key, value) { stop() },
         snapshot = function(key) { stop() }
     )
 )
@@ -51,18 +51,23 @@ Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, valu
     local_path <- private$local_path
 
     # Name File
-    # last_processed <- value$processed_at|> as_date() |> max() |> lubridate::floor_date(unit = "1 week")
-    last_processed <- NULL
-    file_name <- fs::path(glue::glue_collapse(c(key, last_processed), sep = "_"), ext = "csv.bz2")
-
-    # Read Data
+    file_name <- fs::path(key, ext = "csv.bz2")
     remote_file <- s3$path(remote_path, file_name)
-    if(s3$file_exists(remote_file)){
-        s3$file_copy(remote_file, local_path, overwrite = TRUE)
-        local_file <- fs::path(local_path, basename(remote_file)) |> as.character()
+    local_file <- fs::path(local_path, file_name)
+
+    # Check Sync
+    remote_file_meta <- s3$file_size(remote_file)
+    local_file_meta <- fs::file_size(local_file)
+    are_files_synced <- all.equal(s3$file_size(remote_file), fs::file_size(local_file), check.attributes = FALSE)
+
+    # Read file
+    if(isFALSE(s3$file_exists(remote_file))){
+        tbl <- private$null_table
+    } else if (isTRUE(are_files_synced)){
         tbl <- private$read_csv(bzfile(local_file))
     } else {
-        tbl <- private$null_table
+        s3$file_copy(remote_file, local_path, overwrite = TRUE)
+        tbl <- private$read_csv(bzfile(local_file))
     }
 
     # Return
