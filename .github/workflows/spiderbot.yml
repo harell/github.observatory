@@ -5,10 +5,10 @@ on:
   schedule:
     - cron: "0 * * * *"
 
-name: R-CMD-check
+name: Spiderbot
 
 jobs:
-  R-CMD-check:
+  collect-data:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
