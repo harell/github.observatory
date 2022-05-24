@@ -22,6 +22,8 @@ github$query <- function(endpoint){
 github$has_next <- eval(parse(text = "gh:::gh_has_next"))
 
 github$alter_PAT <- function(){
+    if (github$is_on_ci()) return()
+
     invisible(
         PAT <- Sys.getenv()
         |> tibble::enframe()
@@ -104,3 +106,5 @@ github$extract$slug <- purrr::compose(unname, Vectorize(github$extract$slug))
 github$compose$slug <- function(owner, repo) as.character(stringr::str_glue("{owner}/{repo}", owner = owner, repo = repo))
 
 github$return_remaining_quote <- purrr::compose(~purrr::pluck(.x, "remaining"), gh::gh_rate_limit)
+
+github$is_on_ci <- function() isTRUE(as.logical(Sys.getenv("CI")))

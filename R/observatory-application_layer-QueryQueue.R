@@ -35,9 +35,9 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
         |> dplyr::distinct(alias)
         |> dplyr::pull(alias)
     )
-
     new_pkgs <- setdiff(pkgs_on_cran$package, pkgs_in_cache)
 
+    set.seed(2107)
     if(length(new_pkgs) > 1) new_pkgs <- sample(new_pkgs)
 
     collections::priority_queue(
@@ -63,6 +63,7 @@ QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE
 
     new_users <- setdiff(ecosystem_users, existing_users)
 
+    set.seed(2107)
     if(length(new_users) > 1) new_users <- sample(new_users)
 
     collections::priority_queue(
