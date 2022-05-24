@@ -85,8 +85,8 @@ jobs:
         if: runner.os != 'Windows'
         uses: actions/cache@v3
         with:
-          path: ~/_cache/**
-          key: ${{ runner.os }}-${{ hashFiles('_cache/') }}
+          path: ./_cache/
+          key: ${{ runner.os }}-${{ hashFiles('./_cache/') }}
 
       - name: Collate Packages Information From CRAN
         run: |
