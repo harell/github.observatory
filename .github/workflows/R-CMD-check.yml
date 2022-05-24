@@ -48,7 +48,7 @@ jobs:
                       URL <- if(is.na(Date)) 'https://cran.rstudio.com/' else paste0('https://mran.microsoft.com/snapshot/', Date);
                       Rprofile <- file('.Rprofile', open = 'wt');
                       writeLines('.libPaths(Sys.getenv(\'R_LIBS_USER\'))', Rprofile);
-                      writeLines('require(remotes)', Rprofile);
+                      writeLines('require(remotes, quietly = TRUE)', Rprofile);
                       writeLines(paste0('options(repos = \'', URL, '\')'), Rprofile);
                       close(Rprofile)"
           Rscript -e "if(!'remotes' %in% rownames(utils::installed.packages())) utils::install.packages('remotes')"
@@ -80,7 +80,7 @@ jobs:
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran(c("devtools", "rcmdcheck", "rmarkdown"))
+          remotes::install_cran(c("devtools", "rcmdcheck", "rmarkdown")
         shell: Rscript {0}
 
       - name: Check

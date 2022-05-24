@@ -35,7 +35,11 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
         |> dplyr::distinct(alias)
         |> dplyr::pull(alias)
     )
-    new_pkgs <- setdiff(pkgs_on_cran$package, pkgs_in_cache) |> sample()
+    new_pkgs <- setdiff(pkgs_on_cran$package, pkgs_in_cache)
+
+    set.seed(2107)
+    if(length(new_pkgs) > 1) new_pkgs <- sample(new_pkgs)
+    if(github$is_on_ci()) new_pkgs <- head(new_pkgs, 1000)
 
     collections::priority_queue(
         items = new_pkgs,
@@ -56,9 +60,13 @@ QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE
         |> unique()
     ), error = function(e) return(character(0)))
 
-    existing_users <- unique(private$user_db$load()$id)
+    existing_users <- private$user_db$load()$id |> unique() |> as.integer()
 
-    new_users <- setdiff(ecosystem_users, existing_users) |> sample()
+    new_users <- setdiff(ecosystem_users, existing_users)
+
+    set.seed(2107)
+    if(length(new_users) > 1) new_users <- sample(new_users)
+    if(github$is_on_ci()) new_users <- head(new_users, 1000)
 
     collections::priority_queue(
         items = new_users,
