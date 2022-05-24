@@ -92,7 +92,6 @@ jobs:
         run: |
           pkgload::load_all(usethis::proj_get())
           print(bannerCommenter::banner("Collate Packages Information From Github", numLines = 2, maxChar = 40))
-          print(github$return_remaining_quote())
           source(system.file("scripts", "collate-repo-desc.R", package = "github.observatory", mustWork = TRUE))
         shell: Rscript {0}
       # - name: Upload check results

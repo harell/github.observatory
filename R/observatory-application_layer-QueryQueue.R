@@ -39,6 +39,7 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
 
     set.seed(2107)
     if(length(new_pkgs) > 1) new_pkgs <- sample(new_pkgs)
+    if(github$is_on_ci()) new_pkgs <- head(new_pkgs, 1000)
 
     collections::priority_queue(
         items = new_pkgs,
@@ -65,6 +66,7 @@ QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE
 
     set.seed(2107)
     if(length(new_users) > 1) new_users <- sample(new_users)
+    if(github$is_on_ci()) new_users <- head(new_users, 1000)
 
     collections::priority_queue(
         items = new_users,
