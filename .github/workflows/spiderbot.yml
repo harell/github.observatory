@@ -1,25 +1,41 @@
 # For help debugging build failures open an issue on the RStudio community with the 'github-actions' tag.
 # https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
 on:
+  push:
   schedule:
     - cron: "0 * * * *"
 
-name: spiderbot
+name: Spiderbot
 
 jobs:
- spiderbot:
-    runs-on: ubuntu-18.04
+  collect-data:
+    runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-latest,  r: '4.2.0'}
+
     env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      R_COMPILE_AND_INSTALL_PACKAGES: always
+      NOT_CRAN: false
+      RSPM: ${{ matrix.config.rspm }}
+      GITHUB_PAT_1: ${{ secrets.PAT_1 }}
+      GITHUB_PAT_2: ${{ secrets.PAT_2 }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      GITHUB.OBSERVATORY_PASSWORD: ${{ secrets.GS4_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-r@v1
         with:
-          r-version: '4.2.0'
+          r-version: ${{ matrix.config.r }}
 
       - uses: r-lib/actions/setup-pandoc@v1
 
@@ -30,11 +46,10 @@ jobs:
                       URL <- if(is.na(Date)) 'https://cran.rstudio.com/' else paste0('https://mran.microsoft.com/snapshot/', Date);
                       Rprofile <- file('.Rprofile', open = 'wt');
                       writeLines('.libPaths(Sys.getenv(\'R_LIBS_USER\'))', Rprofile);
-                      writeLines('require(remotes)', Rprofile);
+                      writeLines('require(remotes, quietly = TRUE)', Rprofile);
                       writeLines(paste0('options(repos = \'', URL, '\')'), Rprofile);
                       close(Rprofile)"
           Rscript -e "if(!'remotes' %in% rownames(utils::installed.packages())) utils::install.packages('remotes')"
-          Rscript -e "remotes::update_packages(dependencies = TRUE)"
 
       - name: Query dependencies
         run: |
@@ -44,13 +59,14 @@ jobs:
 
       - name: Cache R packages
         if: runner.os != 'Windows'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install system dependencies
+        if: runner.os == 'Linux'
         run: |
           while read -r cmd
           do
@@ -60,21 +76,34 @@ jobs:
 
       - name: Install dependencies
         run: |
+          remotes::update_packages(dependencies = TRUE)
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran(c("devtools", "rcmdcheck", "rmarkdown"))
         shell: Rscript {0}
-    #
-    #   - name: Check
-    #     env:
-    #       _R_CHECK_CRAN_INCOMING_REMOTE_: false
-    #     run: |
-    #       devtools::document()
-    #       rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
-    #     shell: Rscript {0}
-    #
-    #   - name: Upload check results
-    #     if: failure()
-    #     uses: actions/upload-artifact@main
-    #     with:
-    #       name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-    #       path: check
+
+      - name: Cache Queries
+        if: runner.os != 'Windows'
+        uses: actions/cache@v3
+        with:
+          path: ~/_cache/**/
+          key: ${{ runner.os }}-${{ hashFiles('~/_cache/**/') }}
+
+      - name: Collate Packages Information From CRAN
+        run: |
+          pkgload::load_all(usethis::proj_get())
+          print(bannerCommenter::banner("Collate Packages Information From CRAN", numLines = 2, maxChar = 40))
+          source(system.file("scripts", "collate-cran-desc.R", package = "github.observatory", mustWork = TRUE))
+        shell: Rscript {0}
+
+      - name: Collate Packages Information From Github
+        run: |
+          pkgload::load_all(usethis::proj_get())
+          print(bannerCommenter::banner("Collate Packages Information From Github", numLines = 2, maxChar = 40))
+          source(system.file("scripts", "collate-repo-desc.R", package = "github.observatory", mustWork = TRUE))
+        shell: Rscript {0}
+      # - name: Upload check results
+      #   if: failure()
+      #   uses: actions/upload-artifact@main
+      #   with:
+      #     name: ${{ runner.os }}-r${{ matrix.config.r }}-results
+      #     path: check
