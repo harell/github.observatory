@@ -44,7 +44,7 @@ jobs:
                       URL <- if(is.na(Date)) 'https://cran.rstudio.com/' else paste0('https://mran.microsoft.com/snapshot/', Date);
                       Rprofile <- file('.Rprofile', open = 'wt');
                       writeLines('.libPaths(Sys.getenv(\'R_LIBS_USER\'))', Rprofile);
-                      writeLines('require(remotes)', Rprofile);
+                      writeLines('require(remotes, quietly = TRUE)', Rprofile);
                       writeLines(paste0('options(repos = \'', URL, '\')'), Rprofile);
                       close(Rprofile)"
           Rscript -e "if(!'remotes' %in% rownames(utils::installed.packages())) utils::install.packages('remotes')"
@@ -86,6 +86,12 @@ jobs:
           source(system.file("scripts", "collate-cran-desc.R", package = "github.observatory", mustWork = TRUE))
         shell: Rscript {0}
 
+      - name: Collate Packages Information From Github
+        run: |
+          pkgload::load_all(usethis::proj_get())
+          print(bannerCommenter::banner("Collate Packages Information From Github", numLines = 2, maxChar = 40))
+          source(system.file("scripts", "collate-repo-desc.R", package = "github.observatory", mustWork = TRUE))
+        shell: Rscript {0}
       # - name: Upload check results
       #   if: failure()
       #   uses: actions/upload-artifact@main
