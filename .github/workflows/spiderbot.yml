@@ -81,6 +81,13 @@ jobs:
           remotes::install_cran(c("devtools", "rcmdcheck", "rmarkdown"))
         shell: Rscript {0}
 
+      - name: Cache Queries
+        if: runner.os != 'Windows'
+        uses: actions/cache@v3
+        with:
+          path: ~/_cache/**
+          key: ${{ runner.os }}-${{ hashFiles('_cache/') }}
+
       - name: Collate Packages Information From CRAN
         run: |
           pkgload::load_all(usethis::proj_get())
