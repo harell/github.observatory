@@ -52,7 +52,6 @@ jobs:
                       writeLines(paste0('options(repos = \'', URL, '\')'), Rprofile);
                       close(Rprofile)"
           Rscript -e "if(!'remotes' %in% rownames(utils::installed.packages())) utils::install.packages('remotes')"
-          Rscript -e "remotes::update_packages(dependencies = TRUE)"
 
       - name: Query dependencies
         run: |
@@ -79,8 +78,9 @@ jobs:
 
       - name: Install dependencies
         run: |
+          remotes::update_packages(dependencies = TRUE)
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran(c("devtools", "rcmdcheck", "rmarkdown"))
+          remotes::install_cran(c("devtools", "rcmdcheck", "rmarkdown")
         shell: Rscript {0}
 
       - name: Check

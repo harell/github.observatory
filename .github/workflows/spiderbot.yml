@@ -79,9 +79,10 @@ jobs:
           remotes::install_cran(c("devtools", "rcmdcheck", "rmarkdown"))
         shell: Rscript {0}
 
-      - name: Collate packages information from CRAN
+      - name: Collate Packages Information From CRAN
         run: |
-          print(bannerCommenter::banner("Collate packages information from CRAN", numLines = 2, maxChar = 40))
+          pkgload::load_all(usethis::proj_get())
+          print(bannerCommenter::banner("Collate Packages Information From CRAN", numLines = 2, maxChar = 40))
           source(system.file("scripts", "collate-cran-desc.R", package = "github.observatory", mustWork = TRUE))
         shell: Rscript {0}
 
