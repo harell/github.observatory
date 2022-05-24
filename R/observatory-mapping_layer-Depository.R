@@ -22,9 +22,9 @@ Depository <- R6::R6Class(
         read_PACKAGE   = function() { return(private$read_remotely("PACKAGE")) },
         read_FOLLOWING = function() { return(private$read_remotely("FOLLOWING")) },
         read_SPECTATOR = function() { return(private$read_remotely("SPECTATOR")) },
-        overwrite_USER = function(value) { private$overwrite_remotely("USER", value); invisible(self) },
-        overwrite_REPO = function(value) { private$overwrite_remotely("REPO", value); invisible(self) },
-        overwrite_PACKAGE = function(value) { private$overwrite_remotely("PACKAGE", value); invisible(self) },
+        overwrite_USER      = function(value) { private$overwrite_remotely("USER", value); invisible(self) },
+        overwrite_REPO      = function(value) { private$overwrite_remotely("REPO", value); invisible(self) },
+        overwrite_PACKAGE   = function(value) { private$overwrite_remotely("PACKAGE", value); invisible(self) },
         overwrite_FOLLOWING = function(value) { private$overwrite_remotely("FOLLOWING", value); invisible(self) },
         overwrite_SPECTATOR = function(value) { private$overwrite_remotely("SPECTATOR", value); invisible(self) }
     ), private = list(
@@ -54,7 +54,7 @@ Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, valu
     remote_file <- s3$path(remote_path, file_name)
     local_file <- fs::path(local_path, file_name)
 
-    # Check Sync
+    # Sync file
     are_files_synced <- isTRUE(as.integer(s3$file_size(remote_file)) == as.integer(fs::file_size(local_file)))
     if(isFALSE(are_files_synced)) s3$file_copy(remote_file, local_path, overwrite = TRUE)
 
@@ -64,7 +64,7 @@ Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, valu
 })
 
 Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
-    assert_that(class(value) %in% "data.frame")
+    assert_that("data.frame" %in% class(value))
 
     # Setup
     s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
@@ -79,7 +79,7 @@ Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE,
     # Compress and write file locally
     private$write_csv(value, bzfile(local_file))
 
-    # Check Sync
+    # Sync file
     are_files_synced <- isTRUE(as.integer(s3$file_size(remote_file)) == as.integer(fs::file_size(local_file)))
     if(isTRUE(are_files_synced)) return()
 
