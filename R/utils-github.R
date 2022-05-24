@@ -22,8 +22,6 @@ github$query <- function(endpoint){
 github$has_next <- eval(parse(text = "gh:::gh_has_next"))
 
 github$alter_PAT <- function(){
-    if (github$is_on_ci()) return()
-
     invisible(
         PAT <- Sys.getenv()
         |> tibble::enframe()

@@ -24,6 +24,8 @@ jobs:
       R_COMPILE_AND_INSTALL_PACKAGES: always
       NOT_CRAN: false
       RSPM: ${{ matrix.config.rspm }}
+      GITHUB_PAT_1: ${{ secrets.PAT_1 }}
+      GITHUB_PAT_2: ${{ secrets.PAT_2 }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
