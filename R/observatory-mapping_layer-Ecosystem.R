@@ -1,12 +1,11 @@
 #' @title Github Explorer Repository
-#' @param filter (`character`) either 'latest' or 'everything'. If 'latest' then
-#'   return the latest query of each entity. Otherwise, return all all records
-#'   (might include multiple records per entity).
-#' @keywords internal
+#' @param value (`data.frame`) Data to store in the Repository.
 #' @export
-#' @noRd
 Ecosystem <- R6::R6Class(
     classname = "Repository", lock_objects = FALSE, cloneable = FALSE, public = list(
+        #' @description Instantiate an Repository object
+        #' @param local_path (`character`) A local dir path where files will be stored.
+        #' @param remote_path (`character`) A remote dir path on AWS S3 where files will be stored.
         initialize = function(
         local_path = fs::path_wd("_cache", "tables"),
         remote_path = "s3://tidylab/github.observatory/tables/"
@@ -17,15 +16,25 @@ Ecosystem <- R6::R6Class(
 
             invisible(self)
         },
-        read_USER      = function() { return(private$read_remotely("USER")) },
-        read_REPO      = function() { return(private$read_remotely("REPO")) },
-        read_PACKAGE   = function() { return(private$read_remotely("PACKAGE")) },
+        #' @description Read the Github information of R Users.
+        read_USER = function() { return(private$read_remotely("USER")) },
+        #' @description Read the Github information of R Packages.
+        read_REPO = function() { return(private$read_remotely("REPO")) },
+        #' @description Read the CRAN information of R Packages.
+        read_PACKAGE = function() { return(private$read_remotely("PACKAGE")) },
+        #' @description Read who is following who in the R zoo.
         read_FOLLOWING = function() { return(private$read_remotely("FOLLOWING")) },
+        #' @description Read R packages "contributors", "stargazers", and "watchers".
         read_SPECTATOR = function() { return(private$read_remotely("SPECTATOR")) },
-        overwrite_USER      = function(value) { private$overwrite_remotely("USER", value); invisible(self) },
-        overwrite_REPO      = function(value) { private$overwrite_remotely("REPO", value); invisible(self) },
-        overwrite_PACKAGE   = function(value) { private$overwrite_remotely("PACKAGE", value); invisible(self) },
+        #' @description Overwrite the Github information of R Users.
+        overwrite_USER = function(value) { private$overwrite_remotely("USER", value); invisible(self) },
+        #' @description Overwrite the Github information of R Packages.
+        overwrite_REPO = function(value) { private$overwrite_remotely("REPO", value); invisible(self) },
+        #' @description Overwrite the CRAN information of R Packages.
+        overwrite_PACKAGE = function(value) { private$overwrite_remotely("PACKAGE", value); invisible(self) },
+        #' @description Overwrite who is following who in the R zoo.
         overwrite_FOLLOWING = function(value) { private$overwrite_remotely("FOLLOWING", value); invisible(self) },
+        #' @description Overwrite R packages "contributors", "stargazers", and "watchers".
         overwrite_SPECTATOR = function(value) { private$overwrite_remotely("SPECTATOR", value); invisible(self) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
