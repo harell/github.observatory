@@ -5,13 +5,13 @@
 QueryQueue <- R6::R6Class(
     cloneable = FALSE, public = list(
         initialize = function(path = fs::path_wd("_cache", "tables")){
-            private$depo <- Ecosystem$new(path)
+            private$eco <- Ecosystem$new(path)
             private$repo_db <- RepoQueryDB$new()
             private$user_db <- UserQueryDB$new()
         }
     ), private = list(
         # Private Fields ----------------------------------------------------------
-        depo = new.env(),
+        eco = new.env(),
         repo_db = new.env(),
         user_db = new.env(),
         null_query = c(),
@@ -27,7 +27,7 @@ QueryQueue <- R6::R6Class(
 
 # Class Methods -----------------------------------------------------------
 QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE, value = function() {
-    pkgs_on_cran <- private$depo$read_PACKAGE()
+    pkgs_on_cran <- private$eco$read_PACKAGE()
 
     invisible(
         pkgs_in_cache <- private$repo_db$load()
