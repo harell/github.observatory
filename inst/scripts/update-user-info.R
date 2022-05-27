@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("user_db")) user_db <- UserQueryDB$new()
-if(does_not_exist("depo")) depo <- Depository$new()
+if(does_not_exist("depo")) depo <- Ecosystem$new()
 
 
 # Load data ---------------------------------------------------------------

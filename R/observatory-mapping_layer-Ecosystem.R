@@ -1,11 +1,11 @@
-#' @title Github Explorer Depository
+#' @title Github Explorer Repository
 #' @param filter (`character`) either 'latest' or 'everything'. If 'latest' then
 #'   return the latest query of each entity. Otherwise, return all all records
 #'   (might include multiple records per entity).
 #' @keywords internal
 #' @export
 #' @noRd
-Depository <- R6::R6Class(
+Ecosystem <- R6::R6Class(
     classname = "Repository", lock_objects = FALSE, cloneable = FALSE, public = list(
         initialize = function(
         local_path = fs::path_wd("_cache", "tables"),
@@ -43,7 +43,7 @@ Depository <- R6::R6Class(
 
 
 # Remote Data Storage -----------------------------------------------------
-Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, value = function(key) {
+Ecosystem$set(which = "private", name = "read_remotely", overwrite = TRUE, value = function(key) {
     # Setup
     s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
     remote_path <- private$remote_path
@@ -63,7 +63,7 @@ Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, valu
     return(tbl)
 })
 
-Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
+Ecosystem$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
     assert_that("data.frame" %in% class(value))
 
     # Setup
@@ -90,5 +90,5 @@ Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE,
 
 
 # Low-level Methods -------------------------------------------------------
-Depository$set(which = "private", name = "read_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::read_csv, show_col_types = FALSE, progress = FALSE, lazy = FALSE)(...))
-Depository$set(which = "private", name = "write_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::write_csv, na = "", append = FALSE)(...))
+Ecosystem$set(which = "private", name = "read_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::read_csv, show_col_types = FALSE, progress = FALSE, lazy = FALSE)(...))
+Ecosystem$set(which = "private", name = "write_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::write_csv, na = "", append = FALSE)(...))
