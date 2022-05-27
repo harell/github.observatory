@@ -5,7 +5,7 @@
 QueryQueue <- R6::R6Class(
     cloneable = FALSE, public = list(
         initialize = function(path = fs::path_wd("_cache", "tables")){
-            private$depo <- Depository$new(path)
+            private$depo <- Ecosystem$new(path)
             private$repo_db <- RepoQueryDB$new()
             private$user_db <- UserQueryDB$new()
         }

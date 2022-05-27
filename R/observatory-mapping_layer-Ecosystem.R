@@ -1,12 +1,11 @@
-#' @title Github Explorer Depository
-#' @param filter (`character`) either 'latest' or 'everything'. If 'latest' then
-#'   return the latest query of each entity. Otherwise, return all all records
-#'   (might include multiple records per entity).
-#' @keywords internal
+#' @title Github Explorer Repository
+#' @param value (`data.frame`) Data to store in the Repository.
 #' @export
-#' @noRd
-Depository <- R6::R6Class(
+Ecosystem <- R6::R6Class(
     classname = "Repository", lock_objects = FALSE, cloneable = FALSE, public = list(
+        #' @description Instantiate an Repository object
+        #' @param local_path (`character`) A local dir path where files will be stored.
+        #' @param remote_path (`character`) A remote dir path on AWS S3 where files will be stored.
         initialize = function(
         local_path = fs::path_wd("_cache", "tables"),
         remote_path = "s3://tidylab/github.observatory/tables/"
@@ -17,15 +16,25 @@ Depository <- R6::R6Class(
 
             invisible(self)
         },
-        read_USER      = function() { return(private$read_remotely("USER")) },
-        read_REPO      = function() { return(private$read_remotely("REPO")) },
-        read_PACKAGE   = function() { return(private$read_remotely("PACKAGE")) },
+        #' @description Read the Github information of R Users.
+        read_USER = function() { return(private$read_remotely("USER")) },
+        #' @description Read the Github information of R Packages.
+        read_REPO = function() { return(private$read_remotely("REPO")) },
+        #' @description Read the CRAN information of R Packages.
+        read_PACKAGE = function() { return(private$read_remotely("PACKAGE")) },
+        #' @description Read who is following who in the R zoo.
         read_FOLLOWING = function() { return(private$read_remotely("FOLLOWING")) },
+        #' @description Read R packages "contributors", "stargazers", and "watchers".
         read_SPECTATOR = function() { return(private$read_remotely("SPECTATOR")) },
-        overwrite_USER      = function(value) { private$overwrite_remotely("USER", value); invisible(self) },
-        overwrite_REPO      = function(value) { private$overwrite_remotely("REPO", value); invisible(self) },
-        overwrite_PACKAGE   = function(value) { private$overwrite_remotely("PACKAGE", value); invisible(self) },
+        #' @description Overwrite the Github information of R Users.
+        overwrite_USER = function(value) { private$overwrite_remotely("USER", value); invisible(self) },
+        #' @description Overwrite the Github information of R Packages.
+        overwrite_REPO = function(value) { private$overwrite_remotely("REPO", value); invisible(self) },
+        #' @description Overwrite the CRAN information of R Packages.
+        overwrite_PACKAGE = function(value) { private$overwrite_remotely("PACKAGE", value); invisible(self) },
+        #' @description Overwrite who is following who in the R zoo.
         overwrite_FOLLOWING = function(value) { private$overwrite_remotely("FOLLOWING", value); invisible(self) },
+        #' @description Overwrite R packages "contributors", "stargazers", and "watchers".
         overwrite_SPECTATOR = function(value) { private$overwrite_remotely("SPECTATOR", value); invisible(self) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
@@ -43,7 +52,7 @@ Depository <- R6::R6Class(
 
 
 # Remote Data Storage -----------------------------------------------------
-Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, value = function(key) {
+Ecosystem$set(which = "private", name = "read_remotely", overwrite = TRUE, value = function(key) {
     # Setup
     s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
     remote_path <- private$remote_path
@@ -63,7 +72,7 @@ Depository$set(which = "private", name = "read_remotely", overwrite = TRUE, valu
     return(tbl)
 })
 
-Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
+Ecosystem$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
     assert_that("data.frame" %in% class(value))
 
     # Setup
@@ -90,5 +99,5 @@ Depository$set(which = "private", name = "overwrite_remotely", overwrite = TRUE,
 
 
 # Low-level Methods -------------------------------------------------------
-Depository$set(which = "private", name = "read_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::read_csv, show_col_types = FALSE, progress = FALSE, lazy = FALSE)(...))
-Depository$set(which = "private", name = "write_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::write_csv, na = "", append = FALSE)(...))
+Ecosystem$set(which = "private", name = "read_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::read_csv, show_col_types = FALSE, progress = FALSE, lazy = FALSE)(...))
+Ecosystem$set(which = "private", name = "write_csv", overwrite = TRUE, value = function(...) purrr::partial(readr::write_csv, na = "", append = FALSE)(...))
