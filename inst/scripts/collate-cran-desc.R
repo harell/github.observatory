@@ -1,6 +1,6 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-if(does_not_exist("depo")) depo <- Ecosystem$new()
+if(does_not_exist("eco")) eco<- Ecosystem$new()
 
 
 # Download CRAN packages list ---------------------------------------------
@@ -47,4 +47,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-depo$overwrite_PACKAGE(tidy_packages)
+eco$overwrite_PACKAGE(tidy_packages)
