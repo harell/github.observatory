@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("user_db")) user_db <- UserQueryDB$new()
-if(does_not_exist("eco")) eco<- Ecosystem$new()
+if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 
 
 # Load cached data --------------------------------------------------------
@@ -53,4 +53,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-eco$overwrite_USER(users_extra_info)
+ecos$overwrite_USER(users_extra_info)
