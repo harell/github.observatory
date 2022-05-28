@@ -4,7 +4,6 @@ test_that("Ecosystem constructor works", {
 })
 
 test_that("Ecosystem write functions work", {
-    # skip_localy()
     expect_s3_class(ecos$overwrite_USER(mtcars), "R6")
     expect_s3_class(ecos$overwrite_REPO(mtcars), "R6")
     expect_s3_class(ecos$overwrite_PACKAGE(PACKAGE), "R6")
@@ -13,7 +12,6 @@ test_that("Ecosystem write functions work", {
 })
 
 test_that("Ecosystem read functions work", {
-    # skip_localy()
     expect_s3_class(ecos$read_USER(), "data.frame")
     expect_s3_class(ecos$read_REPO(), "data.frame")
     expect_s3_class(ecos$read_PACKAGE(), "data.frame")
