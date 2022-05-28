@@ -12,9 +12,10 @@ Agent <- R6::R6Class(
             private$ecos <- ecos
         },
         #' @description Given a `user_id` suggests `n` packages the user might like.
-        #' @param user_id (`integer`) Github User ID
+        #' @param user_id (`integer`) Github User ID.
+        #' @param n (`integer`) How many recommendation should the function return.
         #' @return (`data.frame`)
-        recommend_packages_to_user = function(user_id, n) { return(private$.recommend_packages_to_user(user_id, n)) }
+        recommend_packages_to_user = function(user_id, n = 10L) { return(private$.recommend_packages_to_user(user_id, n)) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         ecos = new.env(),
@@ -26,6 +27,6 @@ Agent <- R6::R6Class(
 
 # Private Methods ---------------------------------------------------------
 Agent$set(which = "private", name = ".recommend_packages_to_user", overwrite = TRUE, value = function(user_id, n) {
-    mtcars
+    head(mtcars, n)
 })
 

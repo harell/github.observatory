@@ -2,7 +2,7 @@
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 if(does_not_exist("repo_db")) repo_db <- RepoQueryDB$new()
-if(does_not_exist("repo_queue")) repo_queue <- QueryQueue$new()$REPO
+if(does_not_exist("repo_queue")) repo_queue <- QueryQueue$new(ecos)$REPO
 pkgs_on_cran <- ecos$read_PACKAGE()
 
 
