@@ -19,3 +19,16 @@ file_not_exists <- purrr::negate(base::file.exists)
 #' @rdname utils-base
 #' @export
 `%not_in%` <- purrr::negate(`%in%`)
+
+
+#' @rdname utils-base
+#' @export
+permute <- function(x){
+    if(length(x) == 0){
+        return(sample(x))
+    } else if (length(x) == 1) {
+        return(x)
+    } else {
+        return(sample(x))
+    }
+}
