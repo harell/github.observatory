@@ -10,10 +10,18 @@ repo_login <- "tidylab/microservices"
 
 
 # Mock Data ---------------------------------------------------------------
+query_data <- list(
+    id = 280924484,
+    name = "clintools",
+    owner = list(login = "lilleoel", id = 68481897),
+    stargazers_count = 1
+)
+
 PACKAGE <- tibble::tribble(
     ~package,   ~full_name,
     "A3",       "cran/A3",
     "aaSEA",    "cran/aaSEA",
     "AATtools", "spiritspeak/AATtools"
 )
+
 

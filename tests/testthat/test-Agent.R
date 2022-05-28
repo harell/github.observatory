@@ -6,6 +6,8 @@ test_that("Agent constructor works", {
 
 # Packages Recommendation -------------------------------------------------
 test_that("recommend_packages_to_user works", {
-    expect_s3_class(agent$recommend_packages_to_user(user_id = user_login), "data.frame")
+    n <- 2
+    expect_s3_class(recommend_packages <- agent$recommend_packages_to_user(user_id = user_login, n = n), "data.frame")
+    expect_equal(nrow(recommend_packages), n)
 })
 

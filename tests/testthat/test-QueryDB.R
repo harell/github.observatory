@@ -1,12 +1,3 @@
-# Setup -------------------------------------------------------------------
-data <- list(
-    id = 280924484,
-    name = "clintools",
-    owner = list(login = "lilleoel", id = 68481897),
-    stargazers_count = 1
-)
-
-
 # Tests -------------------------------------------------------------------
 test_that("QueryDB constructor works", {
     expect_s3_class(query_db <<- QueryDB$new(local_path, immediate = FALSE), "R6")
@@ -16,11 +7,11 @@ test_that("QueryDB constructor works", {
 # Save and Load -----------------------------------------------------------
 test_that("QueryDB save() works", {
     expect_s3_class(query_db$save(
-        data = data,
+        data = query_data,
         entity = "repo",
         type = "overview",
-        id = data$id,
-        alias = data$name
+        id = query_data$id,
+        alias = query_data$name
     ), "R6")
 })
 
