@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("user_db")) user_db <- UserQueryDB$new()
-if(does_not_exist("depo")) depo <- Depository$new()
+if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 
 
 # Load cached data --------------------------------------------------------
@@ -31,4 +31,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-depo$overwrite_FOLLOWING(r_followers)
+ecos$overwrite_FOLLOWING(r_followers)

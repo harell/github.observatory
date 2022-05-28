@@ -1,17 +1,21 @@
 #' @title Query Queue
-#' @keywords internal
+#' @description
+#' ID Queues for Github entities to query.
+#' @family R Ecosystem classes
+#' @seealso \link[collections]{priority_queue}
 #' @export
-#' @noRd
 QueryQueue <- R6::R6Class(
     cloneable = FALSE, public = list(
-        initialize = function(path = fs::path_wd("_cache", "tables")){
-            private$depo <- Depository$new(path)
+        #' @description Instantiate a QueryQueue object
+        #' @param ecos (`Repository`) An \link{Ecosystem} object.
+        initialize = function(ecos = Ecosystem$new()){
+            private$ecos <- ecos
             private$repo_db <- RepoQueryDB$new()
             private$user_db <- UserQueryDB$new()
         }
     ), private = list(
         # Private Fields ----------------------------------------------------------
-        depo = new.env(),
+        ecos = new.env(),
         repo_db = new.env(),
         user_db = new.env(),
         null_query = c(),
@@ -19,7 +23,9 @@ QueryQueue <- R6::R6Class(
         generate_REPO_queue = function() collections::priority_queue(),
         generate_USER_queue = function() collections::priority_queue()
     ), active = list(
+        #' @field REPO (\link[collections]{priority_queue}) queue of Github R repos ids.
         REPO = function() private$generate_REPO_queue(),
+        #' @field USER (\link[collections]{priority_queue}) queue of Github R users ids.
         USER = function() private$generate_USER_queue()
     )
 )
@@ -27,7 +33,7 @@ QueryQueue <- R6::R6Class(
 
 # Class Methods -----------------------------------------------------------
 QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE, value = function() {
-    pkgs_on_cran <- private$depo$read_PACKAGE()
+    pkgs_on_cran <- private$ecos$read_PACKAGE()
 
     invisible(
         pkgs_in_cache <- private$repo_db$load()
@@ -38,7 +44,7 @@ QueryQueue$set(which = "private", name = "generate_REPO_queue", overwrite = TRUE
     new_pkgs <- setdiff(pkgs_on_cran$package, pkgs_in_cache)
 
     set.seed(2107)
-    if(length(new_pkgs) > 1) new_pkgs <- sample(new_pkgs)
+    new_pkgs <- permute(new_pkgs)
     if(github$is_on_ci()) new_pkgs <- head(new_pkgs, 1000)
 
     collections::priority_queue(
@@ -65,7 +71,7 @@ QueryQueue$set(which = "private", name = "generate_USER_queue", overwrite = TRUE
     new_users <- setdiff(ecosystem_users, existing_users)
 
     set.seed(2107)
-    if(length(new_users) > 1) new_users <- sample(new_users)
+    new_users <- permute(new_users)
     if(github$is_on_ci()) new_users <- head(new_users, 1000)
 
     collections::priority_queue(

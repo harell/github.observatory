@@ -1,7 +1,8 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
+if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 if(does_not_exist("user_db")) user_db <- UserQueryDB$new()
-if(does_not_exist("user_queue")) user_queue <- QueryQueue$new()$USER
+if(does_not_exist("user_queue")) user_queue <- QueryQueue$new(ecos)$USER
 
 
 # Inquire -----------------------------------------------------------------

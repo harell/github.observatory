@@ -1,12 +1,12 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("user_db")) user_db <- UserQueryDB$new()
-if(does_not_exist("depo")) depo <- Depository$new()
+if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 
 
 # Load data ---------------------------------------------------------------
-FOLLOWING <- depo$read_FOLLOWING()
-SPECTATOR <- depo$read_SPECTATOR()
+FOLLOWING <- ecos$read_FOLLOWING()
+SPECTATOR <- ecos$read_SPECTATOR()
 
 
 # Summarise R statistics --------------------------------------------------
@@ -45,7 +45,7 @@ SPECTATOR <- depo$read_SPECTATOR()
 
 # Update users -------------------------------------------------------------
 (
-    users <- depo$read_USER()
+    users <- ecos$read_USER()
     |> dplyr::select(-dplyr::starts_with("r_"))
     |> dplyr::left_join(followers, by = "id")
     |> dplyr::left_join(following, by = "id")
@@ -57,4 +57,4 @@ SPECTATOR <- depo$read_SPECTATOR()
 
 
 # Teardown ----------------------------------------------------------------
-depo$overwrite_USER(users)
+ecos$overwrite_USER(users)

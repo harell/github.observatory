@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("repo_db")) repo_db <- RepoQueryDB$new()
-if(does_not_exist("depo")) depo <- Depository$new()
+if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 
 
 # Load cached data --------------------------------------------------------
@@ -42,4 +42,4 @@ invisible(
 
 
 # Teardown ----------------------------------------------------------------
-depo$overwrite_REPO(unique_repos)
+ecos$overwrite_REPO(unique_repos)
