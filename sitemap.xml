@@ -16,7 +16,16 @@
     <loc>https://harell.github.io/github.observatory/index.html</loc>
   </url>
   <url>
+    <loc>https://harell.github.io/github.observatory/reference/Agent.html</loc>
+  </url>
+  <url>
+    <loc>https://harell.github.io/github.observatory/reference/Ecosystem.html</loc>
+  </url>
+  <url>
     <loc>https://harell.github.io/github.observatory/reference/QueryDB.html</loc>
+  </url>
+  <url>
+    <loc>https://harell.github.io/github.observatory/reference/QueryQueue.html</loc>
   </url>
   <url>
     <loc>https://harell.github.io/github.observatory/reference/assert.html</loc>
@@ -35,8 +44,5 @@
   </url>
   <url>
     <loc>https://harell.github.io/github.observatory/reference/observatory.html</loc>
-  </url>
-  <url>
-    <loc>https://harell.github.io/github.observatory/reference/utils-base.html</loc>
   </url>
 </urlset>
