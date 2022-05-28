@@ -7,9 +7,9 @@
 QueryQueue <- R6::R6Class(
     cloneable = FALSE, public = list(
         #' @description Instantiate a QueryQueue object
-        #' @param path (`character`) A path where \link{Ecosystem} stores the results.
-        initialize = function(path = fs::path_wd("_cache", "tables")){
-            private$ecos <- Ecosystem$new(path)
+        #' @param ecos (`Repository`) An \link{Ecosystem} object.
+        initialize = function(ecos = Ecosystem$new()){
+            private$ecos <- ecos
             private$repo_db <- RepoQueryDB$new()
             private$user_db <- UserQueryDB$new()
         }

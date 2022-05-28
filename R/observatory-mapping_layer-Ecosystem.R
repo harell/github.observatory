@@ -18,25 +18,25 @@ Ecosystem <- R6::R6Class(
             invisible(self)
         },
         #' @description Read the Github information of R Users.
-        read_USER = function() { return(private$read_remotely("USER")) },
+        read_USER = function() { return(private$read("USER")) },
         #' @description Read the Github information of R Packages.
-        read_REPO = function() { return(private$read_remotely("REPO")) },
+        read_REPO = function() { return(private$read("REPO")) },
         #' @description Read the CRAN information of R Packages.
-        read_PACKAGE = function() { return(private$read_remotely("PACKAGE")) },
+        read_PACKAGE = function() { return(private$read("PACKAGE")) },
         #' @description Read who is following who in the R zoo.
-        read_FOLLOWING = function() { return(private$read_remotely("FOLLOWING")) },
+        read_FOLLOWING = function() { return(private$read("FOLLOWING")) },
         #' @description Read R packages "contributors", "stargazers", and "watchers".
-        read_SPECTATOR = function() { return(private$read_remotely("SPECTATOR")) },
+        read_SPECTATOR = function() { return(private$read("SPECTATOR")) },
         #' @description Overwrite the Github information of R Users.
-        overwrite_USER = function(value) { private$overwrite_remotely("USER", value); invisible(self) },
+        overwrite_USER = function(value) { private$overwrite("USER", value); invisible(self) },
         #' @description Overwrite the Github information of R Packages.
-        overwrite_REPO = function(value) { private$overwrite_remotely("REPO", value); invisible(self) },
+        overwrite_REPO = function(value) { private$overwrite("REPO", value); invisible(self) },
         #' @description Overwrite the CRAN information of R Packages.
-        overwrite_PACKAGE = function(value) { private$overwrite_remotely("PACKAGE", value); invisible(self) },
+        overwrite_PACKAGE = function(value) { private$overwrite("PACKAGE", value); invisible(self) },
         #' @description Overwrite who is following who in the R zoo.
-        overwrite_FOLLOWING = function(value) { private$overwrite_remotely("FOLLOWING", value); invisible(self) },
+        overwrite_FOLLOWING = function(value) { private$overwrite("FOLLOWING", value); invisible(self) },
         #' @description Overwrite R packages "contributors", "stargazers", and "watchers".
-        overwrite_SPECTATOR = function(value) { private$overwrite_remotely("SPECTATOR", value); invisible(self) }
+        overwrite_SPECTATOR = function(value) { private$overwrite("SPECTATOR", value); invisible(self) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         local_path = ".",
@@ -45,15 +45,15 @@ Ecosystem <- R6::R6Class(
         # Private Methods ---------------------------------------------------------
         read_csv = function(...) { stop() },
         write_csv = function(...) { stop() },
-        read_remotely = function(key) { stop() },
-        overwrite_remotely = function(key, value) { stop() },
+        read = function(key) { stop() },
+        overwrite = function(key, value) { stop() },
         snapshot = function(key) { stop() }
     )
 )
 
 
 # Remote Data Storage -----------------------------------------------------
-Ecosystem$set(which = "private", name = "read_remotely", overwrite = TRUE, value = function(key) {
+Ecosystem$set(which = "private", name = "read", overwrite = TRUE, value = function(key) {
     # Setup
     s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
     remote_path <- private$remote_path
@@ -73,7 +73,7 @@ Ecosystem$set(which = "private", name = "read_remotely", overwrite = TRUE, value
     return(tbl)
 })
 
-Ecosystem$set(which = "private", name = "overwrite_remotely", overwrite = TRUE, value = function(key, value) {
+Ecosystem$set(which = "private", name = "overwrite", overwrite = TRUE, value = function(key, value) {
     assert_that("data.frame" %in% class(value))
 
     # Setup
