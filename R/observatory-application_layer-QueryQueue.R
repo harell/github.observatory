@@ -1,9 +1,13 @@
 #' @title Query Queue
-#' @keywords internal
+#' @description
+#' ID Queues for Github entities to query.
+#' @family R Ecosystem classes
+#' @seealso \link[collections]{priority_queue}
 #' @export
-#' @noRd
 QueryQueue <- R6::R6Class(
     cloneable = FALSE, public = list(
+        #' @description Instantiate an QueryQueue object
+        #' @param path (`character`) A path where \link{Ecosystem} stores the results.
         initialize = function(path = fs::path_wd("_cache", "tables")){
             private$ecos <- Ecosystem$new(path)
             private$repo_db <- RepoQueryDB$new()
@@ -19,7 +23,9 @@ QueryQueue <- R6::R6Class(
         generate_REPO_queue = function() collections::priority_queue(),
         generate_USER_queue = function() collections::priority_queue()
     ), active = list(
+        #' @field REPO (\link[collections]{priority_queue}) queue of Github R repos ids.
         REPO = function() private$generate_REPO_queue(),
+        #' @field USER (\link[collections]{priority_queue}) queue of Github R users ids.
         USER = function() private$generate_USER_queue()
     )
 )

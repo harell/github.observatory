@@ -1,5 +1,6 @@
 #' @title Github Explorer Repository
 #' @param value (`data.frame`) Data to store in the Repository.
+#' @family R Ecosystem classes
 #' @export
 Ecosystem <- R6::R6Class(
     classname = "Repository", lock_objects = FALSE, cloneable = FALSE, public = list(
