@@ -24,4 +24,9 @@ PACKAGE <- tibble::tribble(
     "AATtools", "spiritspeak/AATtools"
 )
 
-
+REPO <- tibble::tribble(
+    ~package,   ~id,
+    "A3",       1,
+    "aaSEA",    2,
+    "AATtools", 3
+)

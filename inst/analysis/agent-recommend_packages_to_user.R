@@ -33,11 +33,18 @@ n <- 10
         |> dplyr::filter(user_id %in% !!user_id)
         |> dplyr::distinct(repo_id)
         |> dplyr::pull(repo_id)
-    ), error = function(e) return(integer(0)))
+    ), error = function(e) return(0L))
 }
-\
+
 
 # Control Logic -----------------------------------------------------------
 repos_to_exclude <- .recommenders$utils$get_repos_to_exclude(ecos, user_id)
 
 repos_id <- .recommenders$repos2users$random(ecos, user_id, n, repos_to_exclude)
+
+
+(
+    metadata <- ecos$read_PACKAGE()
+    |> dplyr::select(-full_name)
+    |> dplyr::inner_join(ecos$read_REPO() |> dplyr::filter(id %in% repos_id), by = "package")
+)
