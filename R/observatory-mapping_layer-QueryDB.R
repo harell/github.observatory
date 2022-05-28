@@ -1,5 +1,7 @@
 #' @title Database for Queries
-#'
+#' @description
+#' Store queries as JSON strings inside of a CSV file.
+#' @family R Ecosystem classes
 #' @export
 QueryDB <- R6::R6Class(classname = "QueryDB", cloneable = FALSE, public = list(
     # Public Methods ----------------------------------------------------------
