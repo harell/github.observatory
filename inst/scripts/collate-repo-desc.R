@@ -1,9 +1,9 @@
 # Setup -------------------------------------------------------------------
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
-if(does_not_exist("depo")) depo <- Ecosystem$new()
+if(does_not_exist("eco")) eco<- Ecosystem$new()
 if(does_not_exist("repo_db")) repo_db <- RepoQueryDB$new()
 if(does_not_exist("repo_queue")) repo_queue <- QueryQueue$new()$REPO
-pkgs_on_cran <- depo$read_PACKAGE()
+pkgs_on_cran <- eco$read_PACKAGE()
 
 
 # Inquire -----------------------------------------------------------------
