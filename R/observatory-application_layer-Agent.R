@@ -1,4 +1,4 @@
-#' @title R Users and Packages Recommendation Engine
+#' @title Recommendation Engine for R Users and R Packages
 #' @description
 #' Recommend R Users on Github some R packages that they may like.
 #' @section packages to user methods:

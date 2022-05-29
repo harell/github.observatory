@@ -4,7 +4,7 @@
 #' @export
 Ecosystem <- R6::R6Class(
     classname = "Repository", lock_objects = FALSE, cloneable = FALSE, public = list(
-        #' @description Instantiate an Repository object
+        #' @description Instantiate a Repository object
         #' @param local_path (`character`) A local dir path where files will be stored.
         #' @param remote_path (`character`) A remote dir path on AWS S3 where files will be stored.
         initialize = function(
