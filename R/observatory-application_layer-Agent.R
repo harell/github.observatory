@@ -1,9 +1,19 @@
 #' @title Recommendation Engine for R Users and R Packages
 #' @description
 #' Recommend R Users on Github some R packages that they may like.
-#' @section packages to user methods:
+#'
+#' @param user_id (`integer`) Github User ID.
+#' @param repo_id (`integer`) Github Repo ID.
+#' @param n (`integer`) How many recommendation should the function return.
+#' @param degrees (`integer`) How many degrees of separation should be included? `1` are only the closest nodes. `Inf` returns all the graph.
+#'
+#' @section recommend_repos_to_user:
 #'
 #' * `random` returns the information of random packages
+#'
+#' @section recommend_users_to_user:
+#'
+#' * `random` returns the information of random users
 #'
 #' @family R Ecosystem classes
 #' @export
@@ -15,23 +25,29 @@ Agent <- R6::R6Class(
         initialize = function(ecos = Ecosystem$new()){
             private$ecos <- ecos
         },
-        #' @description Given a `user_id` suggests `n` packages the user might like.
-        #' @param user_id (`integer`) Github User ID.
-        #' @param n (`integer`) How many recommendation should the function return.
-        #' @param method (`character`) The recommendation filtering technique to employ. See **packages to user methods** section for details.
-        #' @return (`data.frame`)
-        recommend_packages_to_user = function(user_id, n, method) { return(private$.recommend_packages_to_user(user_id, n, method)) }
-    ), private = list(
+        #' @description Given a `user_id` suggests `n` repos the user might like.
+        #' @param method (`character`) The recommendation filtering technique to employ. See **recommend_repos_to_user** section for details.
+        recommend_repos_to_user = function(user_id, n, method) { return(private$.recommend_repos_to_user(user_id, n, method)) },
+        #' @description Given a `user_id` suggests `n` users the user might like.
+        #' @param method (`character`) The recommendation filtering technique to employ. See **recommend_users_to_user** section for details.
+        recommend_users_to_user = function(user_id, n, method) { stop() },
+        #' @description Given a `repo_id` find all linked packages in `degrees` degrees of separation.
+        #' @param method (`character`) The link type to employ. Either `depends` or `reverse depends`.
+        query_repos_graph = function(repo_id, degrees = 1, method) { stop() },
+        #' @description Given a `user_id` find all linked users in `degrees` degrees of separation.
+        #' @param method (`character`) The link type to employ. Either `followers` or `following`.
+        query_user_graph = function(user_id, degrees = 1, method) { stop() }
+        ), private = list(
         # Private Fields ----------------------------------------------------------
         ecos = new.env(),
         # Private Methods ---------------------------------------------------------
-        .recommend_packages_to_user = function(...) { stop() }
+        .recommend_repos_to_user = function(...) { stop() }
     )
 )
 
 
 # Private Methods ---------------------------------------------------------
-Agent$set(which = "private", name = ".recommend_packages_to_user", overwrite = TRUE, value = function(user_id, n, method) {
+Agent$set(which = "private", name = ".recommend_repos_to_user", overwrite = TRUE, value = function(user_id, n, method) {
     method <- match.arg(tolower(method), c("random"))
 
     repos_to_exclude <- .recommenders$utils$get_repos_to_exclude(ecos, user_id)
