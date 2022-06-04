@@ -33,15 +33,16 @@ Agent <- R6::R6Class(
         recommend_users_to_user = function(user_id, n, method) { stop() },
         #' @description Given a `repo_id` find all linked packages in `degrees` degrees of separation.
         #' @param method (`character`) The link type to employ. Either `depends` or `reverse depends`.
-        query_repos_graph = function(repo_id, degrees = 1, method) { stop() },
+        query_repos_graph = function(repo_id, degrees = 1, method) { return(private$.query_repos_graph(repo_id, degrees, method)) },
         #' @description Given a `user_id` find all linked users in `degrees` degrees of separation.
         #' @param method (`character`) The link type to employ. Either `followers` or `following`.
         query_user_graph = function(user_id, degrees = 1, method) { stop() }
-        ), private = list(
+    ), private = list(
         # Private Fields ----------------------------------------------------------
         ecos = new.env(),
         # Private Methods ---------------------------------------------------------
-        .recommend_repos_to_user = function(...) { stop() }
+        .recommend_repos_to_user = function(...) { stop() },
+        .query_repos_graph = function(...) { stop() }
     )
 )
 
@@ -50,17 +51,27 @@ Agent <- R6::R6Class(
 Agent$set(which = "private", name = ".recommend_repos_to_user", overwrite = TRUE, value = function(user_id, n, method) {
     method <- match.arg(tolower(method), c("random"))
 
-    repos_to_exclude <- .recommenders$utils$get_repos_to_exclude(ecos, user_id)
+    repos_to_exclude <- .recommenders$utils$get_repos2exclude(private$ecos, user_id)
 
     repos_id <- switch (method,
-        random = .recommenders$repos2users$random(ecos, user_id, n, repos_to_exclude)
+                        random = .recommenders$repos2users$random(private$ecos, user_id, n, repos_to_exclude)
     )
 
     return(
-        repos_info <- ecos$read_PACKAGE()
+        repos_info <- private$ecos$read_PACKAGE()
         |> dplyr::select(-full_name)
-        |> dplyr::inner_join(ecos$read_REPO() |> dplyr::filter(id %in% repos_id), by = "package")
+        |> dplyr::inner_join(private$ecos$read_REPO() |> dplyr::filter(id %in% repos_id), by = "package")
     )
+})
+
+Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, value = function(repo_id, degrees = 1, method) {
+    method <- match.arg(tolower(method), c("depends", "reverse depends"))
+
+    if(method == "depends"){
+        return(.recommenders$repos_graph$depends(private$ecos, repo_id, degrees))
+    } else if (method == "reverse depends") {
+        NULL
+    }
 })
 
 
@@ -69,6 +80,8 @@ Agent$set(which = "private", name = ".recommend_repos_to_user", overwrite = TRUE
 
 .recommenders$utils <- new.env()
 
+
+# recommend_repos_to_user -------------------------------------------------
 .recommenders$repos2users <- new.env()
 
 .recommenders$repos2users$random <- function(ecos, user_id, n, repos_to_exclude) {
@@ -83,11 +96,55 @@ Agent$set(which = "private", name = ".recommend_repos_to_user", overwrite = TRUE
     ), error = function(e) return(integer(0)))
 }
 
-.recommenders$utils$get_repos_to_exclude <- function(ecos, user_id) {
+
+# query_repos_graph -------------------------------------------------------
+.recommenders$repos_graph <- new.env()
+
+.recommenders$repos_graph$depends <- function(ecos, repo_id, degrees) {
+    result <- tibble::tibble(from = NA_character_, to = NA_character_)[0,]
+
+    tryCatch({
+        new_dependencies <- .recommenders$utils$map_repo2package(repo_id)
+        dependencies <- ecos$read_DEPENDENCY()
+
+
+        while(degrees > 0){
+            existing_dependencies <- unique(result$to)
+
+            result <- result |>
+                dplyr::bind_rows(dplyr::filter(dependencies, from %in% new_dependencies)) |>
+                dplyr::distinct()
+
+            all_dependencies <- unique(c(result$to, result$from))
+            new_dependencies <- setdiff(result$to, existing_dependencies)
+
+            degrees <- degrees - 1
+        }
+
+        return(result)
+
+    }, error = function(e) return(result))
+}
+
+
+# Utilities ---------------------------------------------------------------
+.recommenders$utils$get_repos2exclude <- function(ecos, user_id) {
     tryCatch(return(
-            ecos$read_SPECTATOR()
-            |> dplyr::filter(user_id %in% !!user_id)
-            |> dplyr::distinct(repo_id)
-            |> dplyr::pull(repo_id)
+        ecos$read_SPECTATOR()
+        |> dplyr::filter(user_id %in% !!user_id)
+        |> dplyr::distinct(repo_id)
+        |> dplyr::pull(repo_id)
     ), error = function(e) return(0L))
+}
+
+.recommenders$utils$map_repo2package <- function(repo_id){
+    return(
+        ecos$read_REPO()
+        |> dplyr::arrange(dplyr::desc(queried_at))
+        |> dplyr::group_by(id)
+        |> dplyr::slice_head(n = 1)
+        |> dplyr::ungroup()
+        |> dplyr::filter(id %in% repo_id)
+        |> dplyr::pull(package)
+    )
 }
