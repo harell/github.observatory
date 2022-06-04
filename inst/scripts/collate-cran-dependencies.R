@@ -3,48 +3,43 @@ pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 
 
-# Download CRAN packages list ---------------------------------------------
-pkg_desc <- tools::CRAN_package_db()
+# Helpers -----------------------------------------------------------------
+DependencyTable <- function(from = NA_character_, to = list()){
+    tibble::tibble(from = from, to = to)
+}
 
-invisible(
-    packages <- pkg_desc
-    |> observatory$standardise$col_names()
-    |> dplyr::transmute(
-        package = as.character(package),
-        full_name = dplyr::if_else(
-            github$is_valid_url(bug_reports),
-            github$extract$full_name(bug_reports),
-            github$compose$slug(owner = "cran", repo = package)
-        ),
-        full_name = tolower(full_name)
-    )
-    |> dplyr::distinct(package, .keep_all = TRUE)
+
+# Get CRAN Packages Names -------------------------------------------------
+all_packages <- ecos$read_PACKAGE()
+existing_packages <- tryCatch(
+    ecos$read_DEPENDENCY(),
+    error = function(e) return(tibble::tibble(from = NA_character_, to = NA_character_)[0,])
 )
+new_packages <- setdiff(
+    all_packages |> dplyr::distinct(package) |> dplyr::pull(),
+    existing_packages |> dplyr::distinct(from) |> dplyr::pull()
+)
+
+
+# Get CRAN Packages Dependencies ------------------------------------------
+dependencies <- tools::package_dependencies(new_packages, which =  c("Depends", "Imports"), recursive = FALSE)
 
 
 # Process data ------------------------------------------------------------
-## Create Bijection: One-to-One Relationship between 'package' and 'full_name'
-invisible(
-    tidy_packages <- packages
-    |> dplyr::add_count(full_name, sort = TRUE)
-    |> dplyr::mutate(n_char = nchar(package))
-    |> dplyr::arrange(dplyr::desc(n), n_char)
-    |> dplyr::group_by(full_name)
-    |> dplyr::mutate(index = seq(1, dplyr::n()))
-    |> dplyr::ungroup()
-    |> dplyr::mutate(full_name = dplyr::if_else(index == 1, full_name, github$compose$slug(owner = "cran", repo = package)))
-    |> dplyr::select(-n, -n_char, -index)
-    |> dplyr::arrange(package)
-)
+new_enteries <- tibble::tibble(from = NA_character_, to = list())[0,]
+for(i in seq_along(dependencies)){
+    new_enteries <- tibble::add_case(new_enteries, from = names(dependencies)[i], to = dependencies[i])
+}
+new_enteries <- new_enteries |> tidyr::unnest(to, keep_empty = TRUE, ptype = list(login = "character", id = "integer"))
 
-## Format repo names to have packages names
-invisible(
-    tidy_packages <- tidy_packages
-    |> dplyr::mutate(owner = github$extract$owner(full_name), repo = github$extract$repo(full_name))
-    |> dplyr::mutate(full_name = dplyr::if_else(tolower(package) == tolower(repo), github$compose$slug(owner, package), full_name))
-    |> dplyr::select(-owner, -repo)
+
+# Consolidate Data --------------------------------------------------------
+(
+    tidy_dependencies <- dplyr::bind_rows(existing_packages, new_enteries)
+    |> dplyr::distinct()
+    |> dplyr::arrange(from, to)
 )
 
 
 # Teardown ----------------------------------------------------------------
-ecos$overwrite_DEPENDENCY(tidy_packages)
+ecos$overwrite_DEPENDENCY(tidy_dependencies)
