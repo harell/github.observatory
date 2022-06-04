@@ -4,7 +4,7 @@ if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 
 
 # Config ------------------------------------------------------------------
-repo_id <- 19521307 # R6P
+repo_id <- 19521307 # R6
 degrees <- 1
 
 
@@ -27,20 +27,20 @@ degrees <- 1
 
 .recommenders$repos_graph <- new.env()
 
-.recommenders$repos_graph$depends <- function(ecos, repo_id, degrees) {
+.recommenders$repos_graph$reverse_depends <- function(ecos, repo_id, degrees) {
     new_dependencies <- .recommenders$utils$map_repo2package(repo_id)
     dependencies <- ecos$read_DEPENDENCY()
 
     result <- tibble::tibble(from = NA_character_, to = NA_character_)[0,]
     while(degrees > 0){
-        existing_dependencies <- unique(result$to)
+        existing_dependencies <- unique(result$from)
 
         result <- result |>
-            dplyr::bind_rows(dplyr::filter(dependencies, from %in% new_dependencies)) |>
+            dplyr::bind_rows(dplyr::filter(dependencies, to %in% new_dependencies)) |>
             dplyr::distinct()
 
-        all_dependencies <- unique(c(result$to, result$from))
-        new_dependencies <- setdiff(result$to, existing_dependencies)
+        all_dependencies <- unique(c(result$from, result$to))
+        new_dependencies <- setdiff(result$from, existing_dependencies)
         if(all(is.na(new_dependencies))) break
         degrees <- degrees - 1
     }
@@ -50,7 +50,7 @@ degrees <- 1
 
 
 # Control Logic -----------------------------------------------------------
-(deps <- .recommenders$repos_graph$depends(ecos, repo_id, degrees = 1))
-(deps <- .recommenders$repos_graph$depends(ecos, repo_id, degrees = 2))
-(deps <- .recommenders$repos_graph$depends(ecos, repo_id, degrees = 4))
+(deps <- .recommenders$repos_graph$reverse_depends(ecos, repo_id, degrees = 1))
+(deps <- .recommenders$repos_graph$reverse_depends(ecos, repo_id, degrees = 2))
+(deps <- .recommenders$repos_graph$reverse_depends(ecos, repo_id, degrees = 4))
 

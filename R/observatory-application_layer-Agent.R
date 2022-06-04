@@ -70,7 +70,7 @@ Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, valu
     if(method == "depends"){
         return(.recommenders$repos_graph$depends(private$ecos, repo_id, degrees))
     } else if (method == "reverse depends") {
-        NULL
+        return(.recommenders$repos_graph$reverse_depends(private$ecos, repo_id, degrees))
     }
 })
 
@@ -107,7 +107,6 @@ Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, valu
         new_dependencies <- .recommenders$utils$map_repo2package(repo_id)
         dependencies <- ecos$read_DEPENDENCY()
 
-
         while(degrees > 0){
             existing_dependencies <- unique(result$to)
 
@@ -117,6 +116,32 @@ Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, valu
 
             all_dependencies <- unique(c(result$to, result$from))
             new_dependencies <- setdiff(result$to, existing_dependencies)
+
+            degrees <- degrees - 1
+            if(all(is.na(new_dependencies))) break
+        }
+
+        return(result)
+
+    }, error = function(e) return(result))
+}
+
+.recommenders$repos_graph$reverse_depends <- function(ecos, repo_id, degrees) {
+    result <- tibble::tibble(from = NA_character_, to = NA_character_)[0,]
+
+    tryCatch({
+        new_dependencies <- .recommenders$utils$map_repo2package(repo_id)
+        dependencies <- ecos$read_DEPENDENCY()
+
+        while(degrees > 0){
+            existing_dependencies <- unique(result$from)
+
+            result <- result |>
+                dplyr::bind_rows(dplyr::filter(dependencies, to %in% new_dependencies)) |>
+                dplyr::distinct()
+
+            all_dependencies <- unique(c(result$from, result$to))
+            new_dependencies <- setdiff(result$from, existing_dependencies)
 
             degrees <- degrees - 1
             if(all(is.na(new_dependencies))) break
