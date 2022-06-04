@@ -119,6 +119,7 @@ Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, valu
             new_dependencies <- setdiff(result$to, existing_dependencies)
 
             degrees <- degrees - 1
+            if(all(is.na(new_dependencies))) break
         }
 
         return(result)

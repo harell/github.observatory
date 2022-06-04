@@ -10,11 +10,9 @@ test_that("recommend_repos_to_user works", {
 })
 
 test_that("query_repos_graph works", {
-    existing_repo_id <- 318095552
-    nonexisting_repo_id <- 1
-
+    repo_id <- 318095552
     expect_s3_class(
-        agent$query_repos_graph(repo_id = existing_repo_id, degrees = 1, method = "depends"),
+        agent$query_repos_graph(repo_id = repo_id, degrees = 2, method = "depends"),
         "data.frame"
     )
 })

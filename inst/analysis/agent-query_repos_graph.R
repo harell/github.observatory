@@ -4,7 +4,7 @@ if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 
 
 # Config ------------------------------------------------------------------
-repo_id <- 318095552 # R6P
+repo_id <- 19521307 # R6P
 degrees <- 1
 
 
@@ -41,7 +41,7 @@ degrees <- 1
 
         all_dependencies <- unique(c(result$to, result$from))
         new_dependencies <- setdiff(result$to, existing_dependencies)
-
+        if(all(is.na(new_dependencies))) break
         degrees <- degrees - 1
     }
 
@@ -50,7 +50,7 @@ degrees <- 1
 
 
 # Control Logic -----------------------------------------------------------
-(deps <- .recommenders$repos_graph$reverse_depends(ecos, repo_id, degrees = 1))
-(deps <- .recommenders$repos_graph$reverse_depends(ecos, repo_id, degrees = 2))
-(deps <- .recommenders$repos_graph$reverse_depends(ecos, repo_id, degrees = 4))
+(deps <- .recommenders$repos_graph$depends(ecos, repo_id, degrees = 1))
+(deps <- .recommenders$repos_graph$depends(ecos, repo_id, degrees = 2))
+(deps <- .recommenders$repos_graph$depends(ecos, repo_id, degrees = 4))
 
