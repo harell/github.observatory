@@ -23,6 +23,8 @@ Ecosystem <- R6::R6Class(
         read_REPO = function() { return(private$read("REPO")) },
         #' @description Read the CRAN information of R Packages.
         read_PACKAGE = function() { return(private$read("PACKAGE")) },
+        #' @description Read the CRAN package dependencies of R Packages.
+        read_DEPENDENCY = function() { return(private$read("DEPENDENCY")) },
         #' @description Read who is following who in the R zoo.
         read_FOLLOWING = function() { return(private$read("FOLLOWING")) },
         #' @description Read R packages "contributors", "stargazers", and "watchers".
@@ -33,6 +35,8 @@ Ecosystem <- R6::R6Class(
         overwrite_REPO = function(value) { private$overwrite("REPO", value); invisible(self) },
         #' @description Overwrite the CRAN information of R Packages.
         overwrite_PACKAGE = function(value) { private$overwrite("PACKAGE", value); invisible(self) },
+        #' @description Overwrite the CRAN package dependencies of R Packages.
+        overwrite_DEPENDENCY = function(value) { private$overwrite("DEPENDENCY", value); invisible(self) },
         #' @description Overwrite who is following who in the R zoo.
         overwrite_FOLLOWING = function(value) { private$overwrite("FOLLOWING", value); invisible(self) },
         #' @description Overwrite R packages "contributors", "stargazers", and "watchers".
