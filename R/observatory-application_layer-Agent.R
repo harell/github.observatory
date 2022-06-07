@@ -33,6 +33,7 @@ Agent <- R6::R6Class(
         recommend_users_to_user = function(user_id, n, method) { stop() },
         #' @description Given a `repo_id` find all linked packages in `degrees` degrees of separation.
         #' @param method (`character`) The link type to employ. Either `depends` or `reverse depends`.
+        #' @return (`data.frame`) A table with two columns `from` and `to`. If a repo has dependencies, then `from` = `to`. If the repo is dependent on a non-existing package repo, such as 'base', the dependency is discarded.
         query_repos_graph = function(repo_id, degrees = 1, method) { return(private$.query_repos_graph(repo_id, degrees, method)) },
         #' @description Given a `user_id` find all linked users in `degrees` degrees of separation.
         #' @param method (`character`) The link type to employ. Either `followers` or `following`.
@@ -116,8 +117,17 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
     result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
 
     tryCatch({
-        new_dependencies <- .recommenders$utils$map_repo2package(repo_id)
-        dependencies <- ecos$read_DEPENDENCY()
+        new_dependencies <- repo_id
+        repos <- ecos$read_REPO() |> dplyr::distinct(id, package)
+        invisible(
+            dependencies <- ecos$read_DEPENDENCY()
+            |> dplyr::mutate(to = dplyr::if_else(is.na(to), from, to))
+            |> dplyr::left_join(repos, by = c(from = "package"))
+            |> dplyr::transmute(from = id, to = to)
+            |> dplyr::left_join(repos, by = c(to = "package"))
+            |> dplyr::transmute(from = from, to = id)
+            |> tidyr::drop_na()
+        )
 
         while(degrees > 0){
             existing_dependencies <- unique(result$to)
@@ -133,7 +143,7 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             if(all(is.na(new_dependencies))) break
         }
 
-        return(.recommenders$utils$map_package2repo(result))
+        return(result)
 
     }, error = function(e) return(result))
 }
@@ -142,8 +152,17 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
     result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
 
     tryCatch({
-        new_dependencies <- .recommenders$utils$map_repo2package(repo_id)
-        dependencies <- ecos$read_DEPENDENCY()
+        new_dependencies <- repo_id
+        repos <- ecos$read_REPO() |> dplyr::distinct(id, package)
+        invisible(
+            dependencies <- ecos$read_DEPENDENCY()
+            |> dplyr::mutate(to = dplyr::if_else(is.na(to), from, to))
+            |> dplyr::left_join(repos, by = c(from = "package"))
+            |> dplyr::transmute(from = id, to = to)
+            |> dplyr::left_join(repos, by = c(to = "package"))
+            |> dplyr::transmute(from = from, to = id)
+            |> tidyr::drop_na()
+        )
 
         while(degrees > 0){
             existing_dependencies <- unique(result$from)
@@ -159,7 +178,7 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             if(all(is.na(new_dependencies))) break
         }
 
-        return(.recommenders$utils$map_package2repo(result))
+        return(result)
 
     }, error = function(e) return(result))
 }
@@ -185,28 +204,4 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
         |> dplyr::distinct(repo_id)
         |> dplyr::pull(repo_id)
     ), error = function(e) return(0L))
-}
-
-.recommenders$utils$map_repo2package <- function(repo_id){
-    return(
-        ecos$read_REPO()
-        |> dplyr::arrange(dplyr::desc(queried_at))
-        |> dplyr::group_by(id)
-        |> dplyr::slice_head(n = 1)
-        |> dplyr::ungroup()
-        |> dplyr::filter(id %in% repo_id)
-        |> dplyr::pull(package)
-    )
-}
-
-.recommenders$utils$map_package2repo <- function(package){
-    return(
-        ecos$read_REPO()
-        |> dplyr::arrange(dplyr::desc(queried_at))
-        |> dplyr::group_by(id)
-        |> dplyr::slice_head(n = 1)
-        |> dplyr::ungroup()
-        |> dplyr::filter(package %in% !!package)
-        |> dplyr::pull(id)
-    )
 }

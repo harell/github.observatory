@@ -7,11 +7,6 @@ if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 repo_id <- 19521307 # R6
 degrees <- 1
 
-debug(.recommenders$repos_graph$reverse_depends)
-
-agent <- Agent$new(ecos)
-agent$query_repos_graph(repo_id, degrees = 1, method = "dep")
-
 
 # Helpers -----------------------------------------------------------------
 .recommenders <- new.env()
@@ -32,26 +27,41 @@ agent$query_repos_graph(repo_id, degrees = 1, method = "dep")
 
 .recommenders$repos_graph <- new.env()
 
-.recommenders$repos_graph$reverse_depends <- function(ecos, repo_id, degrees) {
-    new_dependencies <- .recommenders$utils$map_repo2package(repo_id)
-    dependencies <- ecos$read_DEPENDENCY()
+.recommenders$repos_graph$depends <- function(ecos, repo_id, degrees) {
+    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
 
-    result <- tibble::tibble(from = NA_character_, to = NA_character_)[0,]
-    while(degrees > 0){
-        existing_dependencies <- unique(result$from)
+    tryCatch({
+        new_dependencies <- repo_id
+        repos <- ecos$read_REPO() |> dplyr::distinct(id, package)
+        invisible(
+            dependencies <- ecos$read_DEPENDENCY()
+            |> dplyr::mutate(to = dplyr::if_else(is.na(to), from, to))
+            |> dplyr::left_join(repos, by = c(from = "package"))
+            |> dplyr::transmute(from = id, to = to)
+            |> dplyr::left_join(repos, by = c(to = "package"))
+            |> dplyr::transmute(from = from, to = id)
+            |> tidyr::drop_na()
+        )
 
-        result <- result |>
-            dplyr::bind_rows(dplyr::filter(dependencies, to %in% new_dependencies)) |>
-            dplyr::distinct()
+        while(degrees > 0){
+            existing_dependencies <- unique(result$to)
 
-        all_dependencies <- unique(c(result$from, result$to))
-        new_dependencies <- setdiff(result$from, existing_dependencies)
-        if(all(is.na(new_dependencies))) break
-        degrees <- degrees - 1
-    }
+            result <- result |>
+                dplyr::bind_rows(dplyr::filter(dependencies, from %in% new_dependencies)) |>
+                dplyr::distinct()
 
-    return(result)
+            all_dependencies <- unique(c(result$to, result$from))
+            new_dependencies <- setdiff(result$to, existing_dependencies)
+
+            degrees <- degrees - 1
+            if(all(is.na(new_dependencies))) break
+        }
+
+        return(result)
+
+    }, error = function(e) return(result))
 }
+
 
 
 # Control Logic -----------------------------------------------------------
