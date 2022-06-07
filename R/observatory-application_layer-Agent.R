@@ -189,10 +189,54 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 
 .recommenders$users_graph$followers <- function(ecos, user_id, degrees) {
     result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
+
+    tryCatch({
+        new_users <- user_id
+        fellowship <- ecos$read_FOLLOWING()
+
+        while(degrees > 0){
+            existing_users <- unique(result$to)
+
+            result <- result |>
+                dplyr::bind_rows(dplyr::filter(fellowship, from %in% new_users)) |>
+                dplyr::distinct()
+
+            all_users <- unique(c(result$to, result$from))
+            new_users <- setdiff(result$to, existing_users)
+
+            degrees <- degrees - 1
+            if(all(is.na(new_users))) break
+        }
+
+        return(result)
+
+    }, error = function(e) return(result))
 }
 
 .recommenders$users_graph$following <- function(ecos, user_id, degrees) {
     result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
+
+    tryCatch({
+        new_users <- user_id
+        fellowship <- ecos$read_FOLLOWING()
+
+        while(degrees > 0){
+            existing_users <- unique(result$to)
+
+            result <- result |>
+                dplyr::bind_rows(dplyr::filter(fellowship, to %in% new_users)) |>
+                dplyr::distinct()
+
+            all_users <- unique(c(result$to, result$from))
+            new_users <- setdiff(result$from, existing_users)
+
+            degrees <- degrees - 1
+            if(all(is.na(new_users))) break
+        }
+
+        return(result)
+
+    }, error = function(e) return(result))
 }
 
 
