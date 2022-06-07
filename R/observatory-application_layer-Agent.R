@@ -113,7 +113,7 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 .recommenders$repos_graph <- new.env()
 
 .recommenders$repos_graph$depends <- function(ecos, repo_id, degrees) {
-    result <- tibble::tibble(from = NA_character_, to = NA_character_)[0,]
+    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
 
     tryCatch({
         new_dependencies <- .recommenders$utils$map_repo2package(repo_id)
@@ -133,13 +133,13 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             if(all(is.na(new_dependencies))) break
         }
 
-        return(result)
+        return(.recommenders$utils$map_package2repo(result))
 
     }, error = function(e) return(result))
 }
 
 .recommenders$repos_graph$reverse_depends <- function(ecos, repo_id, degrees) {
-    result <- tibble::tibble(from = NA_character_, to = NA_character_)[0,]
+    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
 
     tryCatch({
         new_dependencies <- .recommenders$utils$map_repo2package(repo_id)
@@ -159,7 +159,7 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             if(all(is.na(new_dependencies))) break
         }
 
-        return(result)
+        return(.recommenders$utils$map_package2repo(result))
 
     }, error = function(e) return(result))
 }
@@ -169,11 +169,11 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 .recommenders$users_graph <- new.env()
 
 .recommenders$users_graph$followers <- function(ecos, user_id, degrees) {
-    result <- tibble::tibble(from = NA_character_, to = NA_character_)[0,]
+    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
 }
 
 .recommenders$users_graph$following <- function(ecos, user_id, degrees) {
-    result <- tibble::tibble(from = NA_character_, to = NA_character_)[0,]
+    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
 }
 
 
@@ -196,5 +196,17 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
         |> dplyr::ungroup()
         |> dplyr::filter(id %in% repo_id)
         |> dplyr::pull(package)
+    )
+}
+
+.recommenders$utils$map_package2repo <- function(package){
+    return(
+        ecos$read_REPO()
+        |> dplyr::arrange(dplyr::desc(queried_at))
+        |> dplyr::group_by(id)
+        |> dplyr::slice_head(n = 1)
+        |> dplyr::ungroup()
+        |> dplyr::filter(package %in% !!package)
+        |> dplyr::pull(id)
     )
 }

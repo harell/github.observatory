@@ -7,6 +7,11 @@ if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 repo_id <- 19521307 # R6
 degrees <- 1
 
+debug(.recommenders$repos_graph$reverse_depends)
+
+agent <- Agent$new(ecos)
+agent$query_repos_graph(repo_id, degrees = 1, method = "dep")
+
 
 # Helpers -----------------------------------------------------------------
 .recommenders <- new.env()
@@ -53,4 +58,5 @@ degrees <- 1
 (deps <- .recommenders$repos_graph$reverse_depends(ecos, repo_id, degrees = 1))
 (deps <- .recommenders$repos_graph$reverse_depends(ecos, repo_id, degrees = 2))
 (deps <- .recommenders$repos_graph$reverse_depends(ecos, repo_id, degrees = 4))
+
 
