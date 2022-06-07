@@ -36,7 +36,7 @@ Agent <- R6::R6Class(
         query_repos_graph = function(repo_id, degrees = 1, method) { return(private$.query_repos_graph(repo_id, degrees, method)) },
         #' @description Given a `user_id` find all linked users in `degrees` degrees of separation.
         #' @param method (`character`) The link type to employ. Either `followers` or `following`.
-        query_user_graph = function(user_id, degrees = 1, method) { stop() }
+        query_users_graph = function(user_id, degrees = 1, method) { return(private$.query_users_graph(user_id, degrees, method)) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         ecos = new.env(),
@@ -53,8 +53,9 @@ Agent$set(which = "private", name = ".recommend_repos_to_user", overwrite = TRUE
 
     repos_to_exclude <- .recommenders$utils$get_repos2exclude(private$ecos, user_id)
 
-    repos_id <- switch (method,
-                        random = .recommenders$repos2users$random(private$ecos, user_id, n, repos_to_exclude)
+    repos_id <- switch (
+        method,
+        random = .recommenders$repos2users$random(private$ecos, user_id, n, repos_to_exclude)
     )
 
     return(
@@ -71,6 +72,17 @@ Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, valu
         return(.recommenders$repos_graph$depends(private$ecos, repo_id, degrees))
     } else if (method == "reverse depends") {
         return(.recommenders$repos_graph$reverse_depends(private$ecos, repo_id, degrees))
+    }
+})
+
+
+Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, value = function(user_id, degrees = 1, method) {
+    method <- match.arg(tolower(method), c("followers", "following"))
+
+    if(method == "followers"){
+        return(.recommenders$users_graph$followers(private$ecos, user_id, degrees))
+    } else if (method == "following") {
+        return(.recommenders$users_graph$following(private$ecos, user_id, degrees))
     }
 })
 
@@ -150,6 +162,18 @@ Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, valu
         return(result)
 
     }, error = function(e) return(result))
+}
+
+
+# query_users_graph -------------------------------------------------------
+.recommenders$users_graph <- new.env()
+
+.recommenders$users_graph$followers <- function(ecos, user_id, degrees) {
+    result <- tibble::tibble(from = NA_character_, to = NA_character_)[0,]
+}
+
+.recommenders$users_graph$following <- function(ecos, user_id, degrees) {
+    result <- tibble::tibble(from = NA_character_, to = NA_character_)[0,]
 }
 
 
