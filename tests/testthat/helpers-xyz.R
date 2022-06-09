@@ -6,6 +6,6 @@ skip_localy <- function() {if (testthat:::on_ci()) {return(invisible(TRUE))} els
 # list operations ---------------------------------------------------------
 select <- function(.x, ..., .strict = TRUE) {
     pos <- eval(parse(text = "tidyselect::eval_select(quote(c(...)), .x, strict = .strict)"))
-    rlang::set_names(.x[pos], names(pos))
+    eval(parse(text = "rlang::set_names(.x[pos], names(pos))"))
 }
 
