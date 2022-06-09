@@ -7,6 +7,9 @@ source <- purrr::partial(base::source, local = FALSE, echo = TRUE)
 print("Collate packages information from CRAN")
 source(system.file("scripts", "collate-cran-desc.R", package = "github.observatory", mustWork = TRUE))
 
+print("Collate packages dependencies from CRAN")
+source(system.file("scripts", "collate-cran-dependencies.R", package = "github.observatory", mustWork = TRUE))
+
 print("Collate packages information from GitHub")
 source(system.file("scripts", "collate-repo-desc.R", package = "github.observatory", mustWork = TRUE))
 
