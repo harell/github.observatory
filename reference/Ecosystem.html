@@ -18,7 +18,7 @@ Github Explorer Repository"><!-- mathjax --><script src="https://cdnjs.cloudflar
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">R Packages and Users Observatory</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.1</span>
       </span>
     </div>
 
@@ -69,20 +69,22 @@ Github Explorer Repository"><!-- mathjax --><script src="https://cdnjs.cloudflar
 <li><p><a href="#method-Repository-read_USER"><code>Ecosystem$read_USER()</code></a></p></li>
 <li><p><a href="#method-Repository-read_REPO"><code>Ecosystem$read_REPO()</code></a></p></li>
 <li><p><a href="#method-Repository-read_PACKAGE"><code>Ecosystem$read_PACKAGE()</code></a></p></li>
+<li><p><a href="#method-Repository-read_DEPENDENCY"><code>Ecosystem$read_DEPENDENCY()</code></a></p></li>
 <li><p><a href="#method-Repository-read_FOLLOWING"><code>Ecosystem$read_FOLLOWING()</code></a></p></li>
 <li><p><a href="#method-Repository-read_SPECTATOR"><code>Ecosystem$read_SPECTATOR()</code></a></p></li>
 <li><p><a href="#method-Repository-overwrite_USER"><code>Ecosystem$overwrite_USER()</code></a></p></li>
 <li><p><a href="#method-Repository-overwrite_REPO"><code>Ecosystem$overwrite_REPO()</code></a></p></li>
 <li><p><a href="#method-Repository-overwrite_PACKAGE"><code>Ecosystem$overwrite_PACKAGE()</code></a></p></li>
+<li><p><a href="#method-Repository-overwrite_DEPENDENCY"><code>Ecosystem$overwrite_DEPENDENCY()</code></a></p></li>
 <li><p><a href="#method-Repository-overwrite_FOLLOWING"><code>Ecosystem$overwrite_FOLLOWING()</code></a></p></li>
 <li><p><a href="#method-Repository-overwrite_SPECTATOR"><code>Ecosystem$overwrite_SPECTATOR()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-Repository-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
-<p>Instantiate an Repository object</p><div class="section">
+<p>Instantiate a Repository object</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span class="va"><a href="../reference/Ecosystem.html">Ecosystem</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
   local_path <span class="op">=</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path_wd</a></span><span class="op">(</span><span class="st">"_cache"</span>, <span class="st">"tables"</span><span class="op">)</span>,
-  remote_path <span class="op">=</span> <span class="st">"s3://tidylab/github.observatory/tables/"</span>
+  remote_path <span class="op">=</span> <span class="st">"s3://github.observatory/tables/"</span>
 <span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
@@ -123,10 +125,18 @@ Github Explorer Repository"><!-- mathjax --><script src="https://cdnjs.cloudflar
 </div>
 
 
+</div><p></p><hr><a id="method-Repository-read_DEPENDENCY"></a><div class="section">
+<h3 id="method-read-dependency-">Method <code>read_DEPENDENCY()</code><a class="anchor" aria-label="anchor" href="#method-read-dependency-"></a></h3>
+<p>Read the CRAN package dependencies of R Packages.</p><div class="section">
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">read_DEPENDENCY</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+</div>
+
+
 </div><p></p><hr><a id="method-Repository-read_FOLLOWING"></a><div class="section">
 <h3 id="method-read-following-">Method <code>read_FOLLOWING()</code><a class="anchor" aria-label="anchor" href="#method-read-following-"></a></h3>
 <p>Read who is following who in the R zoo.</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">read_FOLLOWING</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
@@ -134,7 +144,7 @@ Github Explorer Repository"><!-- mathjax --><script src="https://cdnjs.cloudflar
 </div><p></p><hr><a id="method-Repository-read_SPECTATOR"></a><div class="section">
 <h3 id="method-read-spectator-">Method <code>read_SPECTATOR()</code><a class="anchor" aria-label="anchor" href="#method-read-spectator-"></a></h3>
 <p>Read R packages "contributors", "stargazers", and "watchers".</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">read_SPECTATOR</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
@@ -142,7 +152,7 @@ Github Explorer Repository"><!-- mathjax --><script src="https://cdnjs.cloudflar
 </div><p></p><hr><a id="method-Repository-overwrite_USER"></a><div class="section">
 <h3 id="method-overwrite-user-">Method <code>overwrite_USER()</code><a class="anchor" aria-label="anchor" href="#method-overwrite-user-"></a></h3>
 <p>Overwrite the Github information of R Users.</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">overwrite_USER</span><span class="op">(</span><span class="va">value</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
@@ -158,7 +168,7 @@ Github Explorer Repository"><!-- mathjax --><script src="https://cdnjs.cloudflar
 </div><p></p><hr><a id="method-Repository-overwrite_REPO"></a><div class="section">
 <h3 id="method-overwrite-repo-">Method <code>overwrite_REPO()</code><a class="anchor" aria-label="anchor" href="#method-overwrite-repo-"></a></h3>
 <p>Overwrite the Github information of R Packages.</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">overwrite_REPO</span><span class="op">(</span><span class="va">value</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
@@ -174,7 +184,7 @@ Github Explorer Repository"><!-- mathjax --><script src="https://cdnjs.cloudflar
 </div><p></p><hr><a id="method-Repository-overwrite_PACKAGE"></a><div class="section">
 <h3 id="method-overwrite-package-">Method <code>overwrite_PACKAGE()</code><a class="anchor" aria-label="anchor" href="#method-overwrite-package-"></a></h3>
 <p>Overwrite the CRAN information of R Packages.</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">overwrite_PACKAGE</span><span class="op">(</span><span class="va">value</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
@@ -187,11 +197,11 @@ Github Explorer Repository"><!-- mathjax --><script src="https://cdnjs.cloudflar
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Repository-overwrite_FOLLOWING"></a><div class="section">
-<h3 id="method-overwrite-following-">Method <code>overwrite_FOLLOWING()</code><a class="anchor" aria-label="anchor" href="#method-overwrite-following-"></a></h3>
-<p>Overwrite who is following who in the R zoo.</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">overwrite_FOLLOWING</span><span class="op">(</span><span class="va">value</span><span class="op">)</span></code></pre></div><p></p></div>
+</div><p></p><hr><a id="method-Repository-overwrite_DEPENDENCY"></a><div class="section">
+<h3 id="method-overwrite-dependency-">Method <code>overwrite_DEPENDENCY()</code><a class="anchor" aria-label="anchor" href="#method-overwrite-dependency-"></a></h3>
+<p>Overwrite the CRAN package dependencies of R Packages.</p><div class="section">
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">overwrite_DEPENDENCY</span><span class="op">(</span><span class="va">value</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -203,15 +213,31 @@ Github Explorer Repository"><!-- mathjax --><script src="https://cdnjs.cloudflar
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Repository-overwrite_SPECTATOR"></a><div class="section">
-<h3 id="method-overwrite-spectator-">Method <code>overwrite_SPECTATOR()</code><a class="anchor" aria-label="anchor" href="#method-overwrite-spectator-"></a></h3>
-<p>Overwrite R packages "contributors", "stargazers", and "watchers".</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">overwrite_SPECTATOR</span><span class="op">(</span><span class="va">value</span><span class="op">)</span></code></pre></div><p></p></div>
+</div><p></p><hr><a id="method-Repository-overwrite_FOLLOWING"></a><div class="section">
+<h3 id="method-overwrite-following-">Method <code>overwrite_FOLLOWING()</code><a class="anchor" aria-label="anchor" href="#method-overwrite-following-"></a></h3>
+<p>Overwrite who is following who in the R zoo.</p><div class="section">
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">overwrite_FOLLOWING</span><span class="op">(</span><span class="va">value</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>value</code></dt>
+<dd><p>(<code>data.frame</code>) Data to store in the Repository.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div><p></p><hr><a id="method-Repository-overwrite_SPECTATOR"></a><div class="section">
+<h3 id="method-overwrite-spectator-">Method <code>overwrite_SPECTATOR()</code><a class="anchor" aria-label="anchor" href="#method-overwrite-spectator-"></a></h3>
+<p>Overwrite R packages "contributors", "stargazers", and "watchers".</p><div class="section">
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">Ecosystem</span><span class="op">$</span><span class="fu">overwrite_SPECTATOR</span><span class="op">(</span><span class="va">value</span><span class="op">)</span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>value</code></dt>
 <dd><p>(<code>data.frame</code>) Data to store in the Repository.</p></dd>
 
