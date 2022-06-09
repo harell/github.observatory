@@ -13,6 +13,3 @@ degrees <- 1
 (deps <- agent$query_users_graph(user_id, degrees = 1, method = "followers"))
 (deps <- agent$query_users_graph(user_id, degrees = 1, method = "following"))
 (deps <- agent$query_users_graph(user_id, degrees = 6, method = "following"))
-
-
-
