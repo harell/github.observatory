@@ -9,7 +9,7 @@ Ecosystem <- R6::R6Class(
         #' @param remote_path (`character`) A remote dir path on AWS S3 where files will be stored.
         initialize = function(
         local_path = fs::path_wd("_cache", "tables"),
-        remote_path = "s3://github.observatory/tables/"
+        remote_path = "s3://tidylab/github.observatory/tables/"
         ){
             private$remote_path <- as.character(remote_path)
             private$local_path <- as.character(local_path)
