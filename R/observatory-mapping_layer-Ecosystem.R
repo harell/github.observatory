@@ -15,6 +15,9 @@ Ecosystem <- R6::R6Class(
             private$local_path <- as.character(local_path)
             fs::dir_create(private$local_path)
 
+            private$s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
+            private$s3$sync_dir(local_path, remote_path)
+
             invisible(self)
         },
         #' @description Read the Github information of R Users.
@@ -43,6 +46,7 @@ Ecosystem <- R6::R6Class(
         overwrite_SPECTATOR = function(value) { private$overwrite("SPECTATOR", value); invisible(self) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
+        s3 = new.env(),
         local_path = ".",
         remote_path = ".",
         null_table = tibble::tibble(),
@@ -59,18 +63,12 @@ Ecosystem <- R6::R6Class(
 # Remote Data Storage -----------------------------------------------------
 Ecosystem$set(which = "private", name = "read", overwrite = TRUE, value = function(key) {
     # Setup
-    s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
     remote_path <- private$remote_path
     local_path <- private$local_path
 
     # Name File
     file_name <- fs::path(key, ext = "csv.bz2")
-    remote_file <- s3$path(remote_path, file_name)
     local_file <- fs::path(local_path, file_name)
-
-    # Sync file
-    are_files_synced <- isTRUE(as.integer(s3$file_size(remote_file)) == as.integer(fs::file_size(local_file)))
-    if(isFALSE(are_files_synced)) s3$file_copy(remote_file, local_path, overwrite = TRUE)
 
     # Read file
     tbl <- private$read_csv(bzfile(local_file))
@@ -81,7 +79,7 @@ Ecosystem$set(which = "private", name = "overwrite", overwrite = TRUE, value = f
     assert_that("data.frame" %in% class(value))
 
     # Setup
-    s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
+    s3 <- private$s3
     remote_path <- private$remote_path
     local_path <- private$local_path
 
@@ -94,11 +92,8 @@ Ecosystem$set(which = "private", name = "overwrite", overwrite = TRUE, value = f
     private$write_csv(value, bzfile(local_file))
 
     # Sync file
-    are_files_synced <- isTRUE(as.integer(s3$file_size(remote_file)) == as.integer(fs::file_size(local_file)))
-    if(isTRUE(are_files_synced)) return()
+    s3$sync_file(local_file, remote_file)
 
-    # Upload file
-    s3$file_copy(local_file, remote_path, overwrite = TRUE)
     return()
 })
 
