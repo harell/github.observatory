@@ -1,5 +1,6 @@
 # Tests -------------------------------------------------------------------
 test_that("QueryDB constructor works", {
+    fs::dir_delete(local_path)
     expect_s3_class(query_db <<- QueryDB$new(local_path, immediate = FALSE), "R6")
 })
 
