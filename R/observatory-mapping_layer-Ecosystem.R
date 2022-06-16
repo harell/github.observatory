@@ -15,9 +15,10 @@ Ecosystem <- R6::R6Class(
             private$local_path <- as.character(local_path)
             fs::dir_create(private$local_path)
 
-            private$s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
-            private$s3$sync_dir(local_path, remote_path)
+            s3 <- S3::S3$new(access_control_list = c("public-read", "private")[2])
+            S3$sync_dir(s3, local_path, remote_path)
 
+            private$s3 <- s3
             invisible(self)
         },
         #' @description Read the Github information of R Users.
@@ -92,7 +93,7 @@ Ecosystem$set(which = "private", name = "overwrite", overwrite = TRUE, value = f
     private$write_csv(value, bzfile(local_file))
 
     # Sync file
-    s3$sync_file(local_file, remote_file)
+    S3$sync_file(s3, local_file, remote_file)
 
     return()
 })
