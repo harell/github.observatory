@@ -127,25 +127,28 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             repo_id = as.integer(id)
         )
     ), error = function(e) return(null_table))
-
 }
 
 
 # recommend_users_to_user -------------------------------------------------
 .recommenders$users2users <- new.env()
 
-.recommenders$users2users$random <- function(ecos, user_id, n, users_to_exclude) {
+.recommenders$users2users$random <- function(ecos, user_id, n, users_to_exclude)
+{
     set.seed(2144)
-    return(0)
-    # tryCatch(return(
-    #     repos <- ecos$read_REPO()
-    #     |> dplyr::rename(repo_id = id)
-    #     |> dplyr::filter(repo_id %not_in% repos_to_exclude)
-    #     |> dplyr::sample_n(size = dplyr::n())
-    #     |> dplyr::pull(repo_id)
-    #     |> head(n)
-    # ), error = function(e) return(integer(0)))
+    null_table <- tibble::tibble(rank = NA_integer_, user_id = NA_integer_)[0,]
+
+    tryCatch(return(
+        users <- ecos$read_USER()
+        |> dplyr::filter(id %not_in% users_to_exclude)
+        |> dplyr::slice_sample(n = n)
+        |> dplyr::transmute(
+            rank    = as.integer(1:dplyr::n()),
+            user_id = as.integer(id)
+        )
+    ), error = function(e) return(null_table))
 }
+
 
 # query_repos_graph -------------------------------------------------------
 .recommenders$repos_graph <- new.env()
