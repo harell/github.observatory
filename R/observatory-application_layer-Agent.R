@@ -36,7 +36,9 @@ Agent <- R6::R6Class(
         #' @return (`data.frame`) A table with two columns `from` and `to`. If a repo has dependencies, then `from` = `to`. If the repo is dependent on a non-existing package repo, such as 'base', the dependency is discarded.
         query_repos_graph = function(repo_id, degrees = 1, method) { return(private$.query_repos_graph(repo_id, degrees, method)) },
         #' @description Given a `user_id` find all linked users in `degrees` degrees of separation.
-        #' @param method (`character`) The link type to employ. Either `followers` or `following`.
+        #' @param method (`character`) The link type to employ. Either
+        #' (1) `followers` What users are following `user_id`?; or
+        #' (2) `following` What users is `user_id` following?.
         query_users_graph = function(user_id, degrees = 1, method) { return(private$.query_users_graph(user_id, degrees, method)) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
@@ -198,11 +200,11 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             existing_users <- unique(result$to)
 
             result <- result |>
-                dplyr::bind_rows(dplyr::filter(fellowship, from %in% new_users)) |>
+                dplyr::bind_rows(dplyr::filter(fellowship, to %in% new_users)) |>
                 dplyr::distinct()
 
             all_users <- unique(c(result$to, result$from))
-            new_users <- setdiff(result$to, existing_users)
+            new_users <- setdiff(result$from, existing_users)
 
             degrees <- degrees - 1
             if(all(is.na(new_users))) break
@@ -224,11 +226,11 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             existing_users <- unique(result$to)
 
             result <- result |>
-                dplyr::bind_rows(dplyr::filter(fellowship, to %in% new_users)) |>
+                dplyr::bind_rows(dplyr::filter(fellowship, from %in% new_users)) |>
                 dplyr::distinct()
 
             all_users <- unique(c(result$to, result$from))
-            new_users <- setdiff(result$from, existing_users)
+            new_users <- setdiff(result$to, existing_users)
 
             degrees <- degrees - 1
             if(all(is.na(new_users))) break

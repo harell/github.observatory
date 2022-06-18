@@ -24,15 +24,16 @@ test_that("query_repos_graph works", {
 })
 
 test_that("query_users_graph works", {
-    # repo_id <- 7226303 # harell
-    # expect_s3_class(
-    #     agent$query_users_graph(user_id = user_id, degrees = 2, method = "followers"),
-    #     "data.frame"
-    # )
+    # user_id <- 4196 # hadley
+    user_id <- 7226303 # harell
 
-    repo_id <- 4196 # hadley
     expect_s3_class(
-        agent$query_users_graph(user_id = user_id, degrees = 2, method = "following"),
+        agent$query_users_graph(user_id = user_id, degrees = 1, method = "followers"),
+        "data.frame"
+    )
+
+    expect_s3_class(
+        agent$query_users_graph(user_id = user_id, degrees = 1, method = "following"),
         "data.frame"
     )
 })
