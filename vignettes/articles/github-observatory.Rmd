@@ -1,0 +1,103 @@
+---
+title: "Get Started"
+---
+
+```{r, include = FALSE}
+source(file.path(usethis::proj_get(), "vignettes",  "_common.R"))
+print_banner <- function(msg) print(bannerCommenter::banner(msg, numLines = 2))
+```
+
+## Setup
+
+1.  Set AWS credentials
+
+```{r, eval=FALSE, echo=TRUE}
+Sys.setenv(
+    AWS_ACCESS_KEY_ID = "<your-access-key-id>",
+    AWS_SECRET_ACCESS_KEY= "<your-secret>",
+    AWS_REGION = "ap-southeast-2"
+)
+```
+
+2.  `github.observatory` gives easy access to the project database through a **Repository** object named `Ecosystem`. To access the database, instantiate a **Ecosystem** object.
+
+```{r, eval=TRUE, echo=TRUE}
+ecos <- Ecosystem$new()
+```
+
+## Terminolegy
+
+-   ***Package***
+-   ***Repo***
+-   ***User*** . There are two ways to identify a **User**:
+    -   `user_login` this is a mutable name of the Github account chosen by the **User**. It is apparent in the Github URL. For example, <https://github.com/harell> corresponds to `user_login` = `harell`; and
+    -   `user_id` this is an immutable number assign by Github when the to the **User** account. `user_id` is not readily available and has to be deduced from an API call.
+
+```{r, message=TRUE}
+message("Among the two options to identify a **User**, `user_id` is preferable as it cannot be changed. See the *Mapping Entities* section for how to locate `user_id` with `user_login`.")
+```
+
+## Ecosystem Overview
+
+```{r get_available_tables}
+invisible(
+    available_tables <- ls(ecos, sorted = FALSE)
+    |> setdiff(c("finalize", "initialize"))
+    |> purrr::keep(~stringr::str_detect(.x, "^read_"))
+    |> stringr::str_remove("^read_")
+)
+
+print_tables <- function() glue::glue_collapse(
+  paste0("`", available_tables, "`"), 
+  sep = ", ", last = " and "
+)
+```
+
+The **Ecosystem** gives access to `r print_tables()` tables.
+
+```{r, message=TRUE}
+message("See the tables content at the Appendix")
+```
+
+## Mapping Entities
+
+### Github User ID and Login
+
+Finding a `user_id` with `user_login`
+
+```{r, echo=TRUE, cache=TRUE}
+user_login <- "harell"
+(
+    user_id <- ecos$read_USER()
+    |> dplyr::filter(login %in% user_login)
+    |> dplyr::pull(id)
+)
+```
+
+## Agent Functions
+
+The Recommendation Agent has four functions:
+
+1.  `recommend_repos_to_user` Given a `user_id` suggests `n` repos the user might like;
+2.  `recommend_users_to_user` Given a `user_id` suggests `n` users the user might like;
+3.  `query_repos_graph` Given a `repo_id` and a `method`, find all linked packages in `degrees` degrees of separation. and
+4.  `query_users_graph` Given a `user_id` and a `method`, find all linked users in `degrees` degrees of separation.
+
+
+## Appendix
+
+### Ecosystem Tables Overview
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("https://imgur.com/i6eN9td.png")
+```
+
+```{r render-remote-tables-data-glimpse, results='markup', cache=TRUE}
+for(tbl_name in available_tables){
+  print_banner(tbl_name)
+  invisible(
+    ecos[[paste0("read_", tbl_name)]]()
+    |> dplyr::glimpse()
+  )
+}
+```

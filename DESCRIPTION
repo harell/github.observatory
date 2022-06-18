@@ -37,6 +37,7 @@ Suggests:
     httr,
     Matrix,
     progress,
+    rmarkdown,
     testthat,
     usethis,
     withr
