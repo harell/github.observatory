@@ -102,9 +102,72 @@
 <code class="sourceCode R"><span class="va">ecos</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Ecosystem.html">Ecosystem</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="database-overview">Database Overview<a class="anchor" aria-label="anchor" href="#database-overview"></a>
+<h2 id="terminolegy">Terminolegy<a class="anchor" aria-label="anchor" href="#terminolegy"></a>
+</h2>
+<ul>
+<li><strong><em>Package</em></strong></li>
+<li><strong><em>Repo</em></strong></li>
+<li>
+<strong><em>User</em></strong> . There are two ways to identify a <strong>User</strong>:
+<ul>
+<li>
+<code>user_login</code> this is a mutable name of the Github account chosen by the <strong>User</strong>. It is apparent in the Github URL. For example, <a href="https://github.com/harell" class="external-link uri">https://github.com/harell</a> corresponds to <code>user_login</code> = <code>harell</code>; and</li>
+<li>
+<code>user_id</code> this is an immutable number assign by Github when the to the <strong>User</strong> account. <code>user_id</code> is not readily available and has to be deduced from an API call.</li>
+</ul>
+</li>
+</ul>
+<div class="alert alert-info">
+<p><strong>Tip:</strong> Among the two options to identify a <strong>User</strong>, <code>user_id</code> is preferable as it cannot be changed. See the <em>Mapping Entities</em> section for how to locate <code>user_id</code> with <code>user_login</code>.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="ecosystem-overview">Ecosystem Overview<a class="anchor" aria-label="anchor" href="#ecosystem-overview"></a>
 </h2>
 <p>The <strong>Ecosystem</strong> gives access to <code>SPECTATOR</code>, <code>FOLLOWING</code>, <code>DEPENDENCY</code>, <code>PACKAGE</code>, <code>REPO</code> and <code>USER</code> tables.</p>
+<div class="alert alert-info">
+<p><strong>Tip:</strong> See the tables content at the Appendix</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="mapping-entities">Mapping Entities<a class="anchor" aria-label="anchor" href="#mapping-entities"></a>
+</h2>
+<div class="section level3">
+<h3 id="github-user-id-and-login">Github User ID and Login<a class="anchor" aria-label="anchor" href="#github-user-id-and-login"></a>
+</h3>
+<p>Finding a <code>user_id</code> with <code>user_login</code></p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">user_login</span> <span class="op">&lt;-</span> <span class="st">"harell"</span>
+<span class="op">(</span>
+    <span class="va">user_id</span> <span class="op">&lt;-</span> <span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>
+    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">login</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">user_login</span><span class="op">)</span>
+    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="co">#&gt; [1] 7226303</span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="agent-functions">Agent Functions<a class="anchor" aria-label="anchor" href="#agent-functions"></a>
+</h2>
+<p>The Recommendation Agent has four functions:</p>
+<ol style="list-style-type: decimal">
+<li>
+<code>recommend_repos_to_user</code> Given a <code>user_id</code> suggests <code>n</code> repos the user might like;</li>
+<li>
+<code>recommend_users_to_user</code> Given a <code>user_id</code> suggests <code>n</code> users the user might like;</li>
+<li>
+<code>query_repos_graph</code> Given a <code>repo_id</code> and a <code>method</code>, find all linked packages in <code>degrees</code> degrees of separation. and</li>
+<li>
+<code>query_users_graph</code> Given a <code>user_id</code> and a <code>method</code>, find all linked users in <code>degrees</code> degrees of separation.</li>
+</ol>
+</div>
+<div class="section level2">
+<h2 id="appendix">Appendix<a class="anchor" aria-label="anchor" href="#appendix"></a>
+</h2>
+<div class="section level3">
+<h3 id="ecosystem-tables-overview">Ecosystem Tables Overview<a class="anchor" aria-label="anchor" href="#ecosystem-tables-overview"></a>
+</h3>
+<p><img src="https://imgur.com/i6eN9td.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span class="co">#&gt; </span>
 <span class="co">#&gt; #################################################################</span>
 <span class="co">#&gt; #################################################################</span>
@@ -114,7 +177,7 @@
 <span class="co">#&gt; #################################################################</span>
 <span class="co">#&gt; #################################################################</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 10</span>
+<span class="co">#&gt; Rows: 540,922</span>
 <span class="co">#&gt; Columns: 3</span>
 <span class="co">#&gt; $ repo_id   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 229300588, 229300588, 229300588, 229300588, 229300588, 22930…</span>
 <span class="co">#&gt; $ user_id   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1295691, 22343390, 5751387, 129519, 330744, 872262, 1295691,…</span>
@@ -128,7 +191,7 @@
 <span class="co">#&gt; #################################################################</span>
 <span class="co">#&gt; #################################################################</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 10</span>
+<span class="co">#&gt; Rows: 884,425</span>
 <span class="co">#&gt; Columns: 2</span>
 <span class="co">#&gt; $ from <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 20690573, 64336901, 64336901, 64336901, 64336901, 64336901, 64336…</span>
 <span class="co">#&gt; $ to   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 747110, 315403, 1448326, 3877631, 4693889, 5847527, 7598563, 9595…</span>
@@ -141,7 +204,7 @@
 <span class="co">#&gt; ##################################################################</span>
 <span class="co">#&gt; ##################################################################</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 10</span>
+<span class="co">#&gt; Rows: 93,563</span>
 <span class="co">#&gt; Columns: 2</span>
 <span class="co">#&gt; $ from <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "A3", "A3", "aaSEA", "aaSEA", "aaSEA", "aaSEA", "aaSEA", "aaSEA",…</span>
 <span class="co">#&gt; $ to   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "pbapply", "xtable", "Bios2cor", "DT", "Hmisc", "magrittr", "netw…</span>
@@ -154,7 +217,7 @@
 <span class="co">#&gt; #################################################################</span>
 <span class="co">#&gt; #################################################################</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 10</span>
+<span class="co">#&gt; Rows: 18,432</span>
 <span class="co">#&gt; Columns: 2</span>
 <span class="co">#&gt; $ package   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "A3", "aaSEA", "AATtools", "ABACUS", "abbreviate", "abbyyR",…</span>
 <span class="co">#&gt; $ full_name <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "cran/A3", "cran/aaSEA", "spiritspeak/AATtools", "cran/ABACU…</span>
@@ -167,7 +230,7 @@
 <span class="co">#&gt; ##################################################################</span>
 <span class="co">#&gt; ##################################################################</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 10</span>
+<span class="co">#&gt; Rows: 18,833</span>
 <span class="co">#&gt; Columns: 15</span>
 <span class="co">#&gt; $ id               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 229300588, 503421023, 147167467, 497172198, 368823136…</span>
 <span class="co">#&gt; $ package          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "dsims", "r3js", "itemanalysis", "concom", "PointedSD…</span>
@@ -175,15 +238,15 @@
 <span class="co">#&gt; $ owner_type       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Organization", "Organization", "Organization", "User…</span>
 <span class="co">#&gt; $ owner_id         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4293301, 6899542, 6899542, 4466543, 81858712, 6899542…</span>
 <span class="co">#&gt; $ html_url         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://github.com/DistanceDevelopment/dsims", "http…</span>
-<span class="co">#&gt; $ stargazers_count <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1, 5, 0, 10, 25, 1, 0</span>
-<span class="co">#&gt; $ watchers_count   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 7, 2, 2, 1, 4, 2, 2, 6, 2, 2</span>
-<span class="co">#&gt; $ forks_count      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0, 0, 0, 2, 7, 0, 0</span>
+<span class="co">#&gt; $ stargazers_count <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1, 5, 0, 10, 25, 1, 0, 9, 0, 81, 0, 0, 0, 0,…</span>
+<span class="co">#&gt; $ watchers_count   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 7, 2, 2, 1, 4, 2, 2, 6, 2, 2, 3, 2, 4, 1, 2, 2, 2, 1,…</span>
+<span class="co">#&gt; $ forks_count      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0, 0, 0, 2, 7, 0, 0, 2, 0, 2, 0, 0, 0, 0, 1,…</span>
 <span class="co">#&gt; $ language         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "R", "JavaScript", "R", "R", "R", "R", "R", "R", "R",…</span>
-<span class="co">#&gt; $ homepage         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA</span>
-<span class="co">#&gt; $ created_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2019-12-20, 2022-06-14, 2018-09-03, 2022-05-28, 2021-…</span>
-<span class="co">#&gt; $ updated_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2021-11-02, 2022-06-14, 2022-06-14, 2022-05-28, 2022-…</span>
-<span class="co">#&gt; $ queried_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 2022-…</span>
-<span class="co">#&gt; $ processed_at     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 2022-…</span>
+<span class="co">#&gt; $ homepage         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "https://robi…</span>
+<span class="co">#&gt; $ created_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2019-12-20, 2022-06-14, 2018-09-03, 2022-05-28, 2021…</span>
+<span class="co">#&gt; $ updated_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2021-11-02, 2022-06-14, 2022-06-14, 2022-05-28, 2022…</span>
+<span class="co">#&gt; $ queried_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 2022…</span>
+<span class="co">#&gt; $ processed_at     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 2022…</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ##################################################################</span>
 <span class="co">#&gt; ##################################################################</span>
@@ -193,25 +256,26 @@
 <span class="co">#&gt; ##################################################################</span>
 <span class="co">#&gt; ##################################################################</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 10</span>
+<span class="co">#&gt; Rows: 141,306</span>
 <span class="co">#&gt; Columns: 17</span>
 <span class="co">#&gt; $ id                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 20690573, 64336901, 5138911, 44448349, 25771971, 6…</span>
 <span class="co">#&gt; $ login               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "ZLoverty", "johannelemaire", "adamdennett", "Aman…</span>
 <span class="co">#&gt; $ avatar_url          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://avatars.githubusercontent.com/u/20690573?…</span>
 <span class="co">#&gt; $ html_url            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://github.com/ZLoverty", "https://github.com…</span>
 <span class="co">#&gt; $ name                <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Zhengyang Liu", "Johanne Lemaire", "Adam Dennett"…</span>
-<span class="co">#&gt; $ public_repos        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 13, 1, 18, 7, 7, 2, 14, 4, 4, 9</span>
-<span class="co">#&gt; $ followers           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4, 0, 21, 7, 12, 4, 13, 1, 50, 3</span>
-<span class="co">#&gt; $ following           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 23, 5, 11, 5, 4, 4, 3, 86, 6</span>
-<span class="co">#&gt; $ r_followers         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 8, 1, 6, 0, 3, 0, 3, 0</span>
-<span class="co">#&gt; $ r_following         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 9, 3, 1, 5, 0, 1, 2, 5, 0</span>
-<span class="co">#&gt; $ r_contributor_count <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 1, 0, 1, 1, 1, 0, 0, 0</span>
-<span class="co">#&gt; $ r_stargazer_count   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 0, 0, 0, 1, 1, 1</span>
-<span class="co">#&gt; $ r_watcher_count     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 1, 0</span>
-<span class="co">#&gt; $ created_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2016-07-27, 2020-04-25, 2013-08-01, 2018-10-24, 20…</span>
-<span class="co">#&gt; $ updated_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-13, 2022-06-04, 2022-06-14, 2022-06-12, 20…</span>
-<span class="co">#&gt; $ queried_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 20…</span>
-<span class="co">#&gt; $ processed_at        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 20…</span></code></pre>
+<span class="co">#&gt; $ public_repos        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 13, 1, 18, 7, 7, 2, 14, 4, 4, 9, 2, 5, 19, 6, 6, 3…</span>
+<span class="co">#&gt; $ followers           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4, 0, 21, 7, 12, 4, 13, 1, 50, 3, 0, 0, 89, 15, 0,…</span>
+<span class="co">#&gt; $ following           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 23, 5, 11, 5, 4, 4, 3, 86, 6, 0, 0, 197, 15, 4,…</span>
+<span class="co">#&gt; $ r_followers         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 8, 1, 6, 0, 3, 0, 3, 0, 0, 0, 5, 3, 0, 0, 0,…</span>
+<span class="co">#&gt; $ r_following         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 9, 3, 1, 5, 0, 1, 2, 5, 0, 0, 0, 4, 2, 2, 1, 0,…</span>
+<span class="co">#&gt; $ r_contributor_count <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0,…</span>
+<span class="co">#&gt; $ r_stargazer_count   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1,…</span>
+<span class="co">#&gt; $ r_watcher_count     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0,…</span>
+<span class="co">#&gt; $ created_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2016-07-27, 2020-04-25, 2013-08-01, 2018-10-24, 2…</span>
+<span class="co">#&gt; $ updated_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-13, 2022-06-04, 2022-06-14, 2022-06-12, 2…</span>
+<span class="co">#&gt; $ queried_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 2…</span>
+<span class="co">#&gt; $ processed_at        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 2…</span></code></pre>
+</div>
 </div>
   </div>
 
