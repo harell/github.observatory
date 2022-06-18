@@ -52,6 +52,7 @@ Agent <- R6::R6Class(
 
 # Private Methods ---------------------------------------------------------
 Agent$set(which = "private", name = ".recommend_repos_to_user", overwrite = TRUE, value = function(user_id, n, method) {
+    assert_that(assertthat::is.count(user_id), assertthat::is.count(n))
     method <- match.arg(tolower(method), c("random"))
 
     repos_to_exclude <- .recommenders$utils$get_repos2exclude(private$ecos, user_id)
@@ -66,6 +67,7 @@ Agent$set(which = "private", name = ".recommend_repos_to_user", overwrite = TRUE
 
 Agent$set(which = "private", name = ".recommend_users_to_user", overwrite = TRUE, value = function(user_id, n, method) {
     method <- match.arg(tolower(method), c("random"))
+    assert_that(assertthat::is.count(user_id), assertthat::is.count(n))
 
     # users_to_exclude <- .recommenders$utils$get_users2exclude(private$ecos, user_id)
     users_to_exclude <- integer(0)
@@ -79,6 +81,8 @@ Agent$set(which = "private", name = ".recommend_users_to_user", overwrite = TRUE
 })
 
 Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, value = function(repo_id, degrees = 1, method) {
+    assert_that(assertthat::is.count(repo_id), assertthat::is.count(degrees))
+
     method <- match.arg(tolower(method), c("depends", "reverse depends"))
 
     if(method == "depends"){
@@ -90,6 +94,7 @@ Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, valu
 
 
 Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, value = function(user_id, degrees = 1, method) {
+    assert_that(assertthat::is.count(user_id), assertthat::is.count(degrees))
     method <- match.arg(tolower(method), c("followers", "following"))
 
     if(method == "followers"){
