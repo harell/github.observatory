@@ -69,7 +69,7 @@ Agent$set(which = "private", name = ".recommend_users_to_user", overwrite = TRUE
     method <- match.arg(tolower(method), c("random"))
     assert_that(assertthat::is.count(user_id), assertthat::is.count(n))
 
-    # users_to_exclude <- .recommenders$utils$get_users2exclude(private$ecos, user_id)
+    users_to_exclude <- .recommenders$utils$get_users2exclude(private$ecos, user_id)
     users_to_exclude <- integer(0)
 
     users_id <- switch (
@@ -287,5 +287,14 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
         |> dplyr::filter(user_id %in% !!user_id)
         |> dplyr::distinct(repo_id)
         |> dplyr::pull(repo_id)
+    ), error = function(e) return(0L))
+}
+
+.recommenders$utils$get_users2exclude <- function(ecos, user_id) {
+    tryCatch(return(
+        ecos$read_FOLLOWING()
+        |> dplyr::filter(from %in% !!user_id)
+        |> dplyr::distinct(to)
+        |> dplyr::pull(to)
     ), error = function(e) return(0L))
 }
