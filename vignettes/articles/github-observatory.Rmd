@@ -1,0 +1,56 @@
+---
+title: "Get Started"
+---
+
+```{r, include = FALSE}
+source(file.path(usethis::proj_get(), "vignettes",  "_common.R"))
+print_banner <- function(msg) print(bannerCommenter::banner(msg, numLines = 2))
+```
+
+## Setup
+
+1. Set AWS credentials
+
+```{r, eval=FALSE, echo=TRUE}
+Sys.setenv(
+    AWS_ACCESS_KEY_ID = "<your-access-key-id>",
+    AWS_SECRET_ACCESS_KEY= "<your-secret>",
+    AWS_REGION = "ap-southeast-2"
+)
+```
+
+2. `github.observatory` gives easy access to the project database through a **Repository**
+object named `Ecosystem`. To access the database, instantiate a **Ecosystem** object.
+
+```{r, eval=TRUE, echo=TRUE}
+ecos <- Ecosystem$new()
+```
+
+## Database Overview
+
+```{r get_available_tables}
+invisible(
+    available_tables <- ls(ecos, sorted = FALSE)
+    |> setdiff(c("finalize", "initialize"))
+    |> purrr::keep(~stringr::str_detect(.x, "^read_"))
+    |> stringr::str_remove("^read_")
+)
+
+print_tables <- function() glue::glue_collapse(
+  paste0("`", available_tables, "`"), 
+  sep = ", ", last = " and "
+)
+```
+
+The **Ecosystem** gives access to `r print_tables()` tables.
+
+```{r render-remote-tables-data-glimpse, results='markup', cache=TRUE}
+for(tbl_name in available_tables){
+  print_banner(tbl_name)
+  invisible(
+    ecos[[paste0("read_", tbl_name)]]()
+    |> head(n = 10)
+    |> dplyr::glimpse()
+  )
+}
+```

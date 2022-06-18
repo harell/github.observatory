@@ -34,9 +34,11 @@ Imports:
     tidyr
 Suggests: 
     bannerCommenter,
+    gt,
     httr,
     Matrix,
     progress,
+    rmarkdown,
     testthat,
     usethis,
     withr
