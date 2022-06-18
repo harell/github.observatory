@@ -26,7 +26,7 @@ PACKAGE <- tibble::tribble(
 
 REPO <- tibble::tribble(
     ~package,   ~id,
-    "A3",       1,
-    "aaSEA",    2,
-    "AATtools", 3
+    "A3",       236595665,
+    "aaSEA",    82898383,
+    "AATtools", 189174085
 )

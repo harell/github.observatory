@@ -9,6 +9,12 @@ test_that("recommend_repos_to_user works", {
     expect_equal(nrow(recommend_packages), n)
 })
 
+# test_that("recommend_users_to_user works", {
+#     n <- 2
+#     expect_s3_class(recommend_packages <- agent$recommend_users_to_user(user_id = user_id, n = n, method = "random"), "data.frame")
+#     # expect_equal(nrow(recommend_packages), n)
+# })
+
 test_that("query_repos_graph works", {
     repo_id <- 318095552 # R6P
     expect_s3_class(

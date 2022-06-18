@@ -30,7 +30,7 @@ Agent <- R6::R6Class(
         recommend_repos_to_user = function(user_id, n, method) { return(private$.recommend_repos_to_user(user_id, n, method)) },
         #' @description Given a `user_id` suggests `n` users the user might like.
         #' @param method (`character`) The recommendation filtering technique to employ. See **recommend_users_to_user** section for details.
-        recommend_users_to_user = function(user_id, n, method) { stop() },
+        recommend_users_to_user = function(user_id, n, method) { return(private$.recommend_users_to_user(user_id, n, method)) },
         #' @description Given a `repo_id` find all linked packages in `degrees` degrees of separation.
         #' @param method (`character`) The link type to employ. Either `depends` or `reverse depends`.
         #' @return (`data.frame`) A table with two columns `from` and `to`. If a repo has dependencies, then `from` = `to`. If the repo is dependent on a non-existing package repo, such as 'base', the dependency is discarded.
@@ -61,11 +61,21 @@ Agent$set(which = "private", name = ".recommend_repos_to_user", overwrite = TRUE
         random = .recommenders$repos2users$random(private$ecos, user_id, n, repos_to_exclude)
     )
 
-    return(
-        repos_info <- private$ecos$read_PACKAGE()
-        |> dplyr::select(-full_name)
-        |> dplyr::inner_join(private$ecos$read_REPO() |> dplyr::filter(id %in% repos_id), by = "package")
+    return(repos_id)
+})
+
+Agent$set(which = "private", name = ".recommend_users_to_user", overwrite = TRUE, value = function(user_id, n, method) {
+    method <- match.arg(tolower(method), c("random"))
+
+    # users_to_exclude <- .recommenders$utils$get_users2exclude(private$ecos, user_id)
+    users_to_exclude <- integer(0)
+
+    users_id <- switch (
+        method,
+        random = .recommenders$users2users$random(private$ecos, user_id, n, users_to_exclude)
     )
+
+    return(users_id)
 })
 
 Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, value = function(repo_id, degrees = 1, method) {
@@ -101,16 +111,36 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 
 .recommenders$repos2users$random <- function(ecos, user_id, n, repos_to_exclude) {
     set.seed(2144)
+    null_table <- tibble::tibble(rank = NA_integer_, repo_id = NA_integer_)[0,]
+
     tryCatch(return(
         repos <- ecos$read_REPO()
-        |> dplyr::rename(repo_id = id)
-        |> dplyr::filter(repo_id %not_in% repos_to_exclude)
-        |> dplyr::sample_n(size = dplyr::n())
-        |> dplyr::pull(repo_id)
-        |> head(n)
-    ), error = function(e) return(integer(0)))
+        |> dplyr::filter(id %not_in% repos_to_exclude)
+        |> dplyr::slice_sample(n = n)
+        |> dplyr::transmute(
+            rank    = as.integer(1:dplyr::n()),
+            repo_id = as.integer(id)
+        )
+    ), error = function(e) return(null_table))
+
 }
 
+
+# recommend_users_to_user -------------------------------------------------
+.recommenders$users2users <- new.env()
+
+.recommenders$users2users$random <- function(ecos, user_id, n, users_to_exclude) {
+    set.seed(2144)
+    return(0)
+    # tryCatch(return(
+    #     repos <- ecos$read_REPO()
+    #     |> dplyr::rename(repo_id = id)
+    #     |> dplyr::filter(repo_id %not_in% repos_to_exclude)
+    #     |> dplyr::sample_n(size = dplyr::n())
+    #     |> dplyr::pull(repo_id)
+    #     |> head(n)
+    # ), error = function(e) return(integer(0)))
+}
 
 # query_repos_graph -------------------------------------------------------
 .recommenders$repos_graph <- new.env()
