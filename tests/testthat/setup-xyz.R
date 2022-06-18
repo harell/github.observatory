@@ -30,3 +30,18 @@ REPO <- tibble::tribble(
     "aaSEA",    82898383,
     "AATtools", 189174085
 )
+
+USER <- tibble::tribble(
+    ~login,       ~id,
+    "hadley",     4196,
+    "jjallaire",  104391,
+    "jcheng5",    129551,
+    "harell",     7226303,
+    "juliasilge", 12505835
+)
+
+FOLLOWING <- tibble::tribble(
+    ~from,   ~to,
+    7226303, 4196
+)
+

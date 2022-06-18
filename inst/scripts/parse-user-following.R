@@ -14,7 +14,7 @@ invisible(
 
 
 # Parse following ---------------------------------------------------------
-core_members <- c(hadley = 4196, jjallaire = 104391, jcheng5 = 129551, juliasilge = 129551)
+core_members <- c(hadley = 4196, jjallaire = 104391, jcheng5 = 129551, juliasilge = 12505835)
 
 invisible(
     all_followers <- queries
