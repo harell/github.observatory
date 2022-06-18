@@ -10,6 +10,12 @@
     <loc>https://harell.github.io/github.observatory/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://harell.github.io/github.observatory/articles/github-observatory.html</loc>
+  </url>
+  <url>
+    <loc>https://harell.github.io/github.observatory/articles/index.html</loc>
+  </url>
+  <url>
     <loc>https://harell.github.io/github.observatory/authors.html</loc>
   </url>
   <url>
@@ -26,6 +32,9 @@
   </url>
   <url>
     <loc>https://harell.github.io/github.observatory/reference/QueryQueue.html</loc>
+  </url>
+  <url>
+    <loc>https://harell.github.io/github.observatory/reference/S3.html</loc>
   </url>
   <url>
     <loc>https://harell.github.io/github.observatory/reference/assert.html</loc>
