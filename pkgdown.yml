@@ -3,7 +3,7 @@ pkgdown: 2.0.4
 pkgdown_sha: ~
 articles:
   github-observatory: github-observatory.html
-last_built: 2022-06-18T09:24Z
+last_built: 2022-06-18T09:27Z
 urls:
   reference: https://harell.github.io/github.observatory/reference
   article: https://harell.github.io/github.observatory/articles
