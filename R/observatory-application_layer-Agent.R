@@ -154,7 +154,7 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 .recommenders$repos_graph <- new.env()
 
 .recommenders$repos_graph$depends <- function(ecos, repo_id, degrees) {
-    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
+    result <- tibble::tibble(degree = 0, from = repo_id, to = repo_id)
 
     tryCatch({
         new_dependencies <- repo_id
@@ -169,17 +169,20 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             |> tidyr::drop_na()
         )
 
-        while(degrees > 0){
+        for(degree in seq_len(degrees)){
             existing_dependencies <- unique(result$to)
 
-            result <- result |>
-                dplyr::bind_rows(dplyr::filter(dependencies, from %in% new_dependencies)) |>
-                dplyr::distinct()
+            invisible(
+                new_result <- dependencies
+                |> dplyr::filter(from %in% new_dependencies)
+                |> dplyr::transmute(degree = degree, from = from, to = to)
+            )
+
+            result <- dplyr::bind_rows(result, new_result) |> dplyr::distinct()
 
             all_dependencies <- unique(c(result$to, result$from))
             new_dependencies <- setdiff(result$to, existing_dependencies)
 
-            degrees <- degrees - 1
             if(all(is.na(new_dependencies))) break
         }
 
@@ -189,7 +192,7 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 }
 
 .recommenders$repos_graph$reverse_depends <- function(ecos, repo_id, degrees) {
-    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
+    result <- tibble::tibble(degree = 0, from = repo_id, to = repo_id)
 
     tryCatch({
         new_dependencies <- repo_id
@@ -204,17 +207,20 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             |> tidyr::drop_na()
         )
 
-        while(degrees > 0){
+        for(degree in seq_len(degrees)){
             existing_dependencies <- unique(result$from)
 
-            result <- result |>
-                dplyr::bind_rows(dplyr::filter(dependencies, to %in% new_dependencies)) |>
-                dplyr::distinct()
+            invisible(
+                new_result <- dependencies
+                |> dplyr::filter(to %in% new_dependencies)
+                |> dplyr::transmute(degree = degree, from = from, to = to)
+            )
+
+            result <- dplyr::bind_rows(result, new_result) |> dplyr::distinct()
 
             all_dependencies <- unique(c(result$from, result$to))
             new_dependencies <- setdiff(result$from, existing_dependencies)
 
-            degrees <- degrees - 1
             if(all(is.na(new_dependencies))) break
         }
 
@@ -228,23 +234,26 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 .recommenders$users_graph <- new.env()
 
 .recommenders$users_graph$followers <- function(ecos, user_id, degrees) {
-    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
+    result <- tibble::tibble(degree = 0, from = user_id, to = user_id)
 
     tryCatch({
         new_users <- user_id
         fellowship <- ecos$read_FOLLOWING()
 
-        while(degrees > 0){
+        for(degree in seq_len(degrees)){
             existing_users <- unique(result$to)
 
-            result <- result |>
-                dplyr::bind_rows(dplyr::filter(fellowship, to %in% new_users)) |>
-                dplyr::distinct()
+            invisible(
+                new_result <- fellowship
+                |> dplyr::filter(to %in% new_users)
+                |> dplyr::transmute(degree = degree, from = from, to = to)
+            )
+
+            result <- dplyr::bind_rows(result, new_result) |> dplyr::distinct()
 
             all_users <- unique(c(result$to, result$from))
             new_users <- setdiff(result$from, existing_users)
 
-            degrees <- degrees - 1
             if(all(is.na(new_users))) break
         }
 
@@ -254,23 +263,26 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 }
 
 .recommenders$users_graph$following <- function(ecos, user_id, degrees) {
-    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
+    result <- tibble::tibble(degree = 0, from = user_id, to = user_id)
 
     tryCatch({
         new_users <- user_id
         fellowship <- ecos$read_FOLLOWING()
 
-        while(degrees > 0){
+        for(degree in seq_len(degrees)){
             existing_users <- unique(result$to)
 
-            result <- result |>
-                dplyr::bind_rows(dplyr::filter(fellowship, from %in% new_users)) |>
-                dplyr::distinct()
+            invisible(
+                new_result <- fellowship
+                |> dplyr::filter(from %in% new_users)
+                |> dplyr::transmute(degree = degree, from = from, to = to)
+            )
+
+            result <- dplyr::bind_rows(result, new_result) |> dplyr::distinct()
 
             all_users <- unique(c(result$to, result$from))
             new_users <- setdiff(result$to, existing_users)
 
-            degrees <- degrees - 1
             if(all(is.na(new_users))) break
         }
 
