@@ -14,7 +14,13 @@ invisible(
 
 
 # Parse following ---------------------------------------------------------
-core_members <- c(hadley = 4196, jjallaire = 104391, jcheng5 = 129551, juliasilge = 12505835)
+invisible(
+    spectators <- ecos$read_SPECTATOR()
+    |> dplyr::filter(user_role %in% "stargazer")
+    |> dplyr::distinct(user_id)
+    |> dplyr::pull(user_id)
+)
+
 
 invisible(
     all_followers <- queries
@@ -28,7 +34,7 @@ invisible(
 
 invisible(
     r_followers <- all_followers
-    |> dplyr::filter(to %in% from | to %in% core_members)
+    |> dplyr::filter(to %in% spectators, from %in% spectators)
 )
 
 
