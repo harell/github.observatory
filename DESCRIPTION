@@ -34,7 +34,6 @@ Imports:
     tidyr
 Suggests: 
     bannerCommenter,
-    gt,
     httr,
     Matrix,
     progress,
