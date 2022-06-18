@@ -26,7 +26,22 @@ PACKAGE <- tibble::tribble(
 
 REPO <- tibble::tribble(
     ~package,   ~id,
-    "A3",       1,
-    "aaSEA",    2,
-    "AATtools", 3
+    "A3",       236595665,
+    "aaSEA",    82898383,
+    "AATtools", 189174085
 )
+
+USER <- tibble::tribble(
+    ~login,       ~id,
+    "hadley",     4196,
+    "jjallaire",  104391,
+    "jcheng5",    129551,
+    "harell",     7226303,
+    "juliasilge", 12505835
+)
+
+FOLLOWING <- tibble::tribble(
+    ~from,   ~to,
+    7226303, 4196
+)
+
