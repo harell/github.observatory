@@ -24,3 +24,13 @@ You can install `github.observatory` by using:
 install.packages("remotes")
 remotes::install_github("harell/github.observatory")
 ```
+
+Set AWS credentials
+
+``` r
+Sys.setenv(
+    AWS_ACCESS_KEY_ID = "<your-access-key-id>",
+    AWS_SECRET_ACCESS_KEY= "<your-secret>",
+    AWS_REGION = "ap-southeast-2"
+)
+```
