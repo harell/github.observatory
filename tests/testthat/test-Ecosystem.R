@@ -4,11 +4,11 @@ test_that("Ecosystem constructor works", {
 })
 
 test_that("Ecosystem write functions work", {
-    expect_s3_class(ecos$overwrite_USER(mtcars), "R6")
+    expect_s3_class(ecos$overwrite_USER(USER), "R6")
     expect_s3_class(ecos$overwrite_REPO(REPO), "R6")
     expect_s3_class(ecos$overwrite_PACKAGE(PACKAGE), "R6")
     expect_s3_class(ecos$overwrite_DEPENDENCY(mtcars), "R6")
-    expect_s3_class(ecos$overwrite_FOLLOWING(mtcars), "R6")
+    expect_s3_class(ecos$overwrite_FOLLOWING(FOLLOWING), "R6")
     expect_s3_class(ecos$overwrite_SPECTATOR(mtcars), "R6")
 })
 

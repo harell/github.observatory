@@ -5,8 +5,15 @@ test_that("Agent constructor works", {
 
 test_that("recommend_repos_to_user works", {
     n <- 2
-    expect_s3_class(recommend_packages <- agent$recommend_repos_to_user(user_id = user_login, n = n, method = "random"), "data.frame")
+    user_id <- 7226303 # harell
+    expect_s3_class(recommend_packages <- agent$recommend_repos_to_user(user_id = user_id, n = n, method = "random"), "data.frame")
     expect_equal(nrow(recommend_packages), n)
+})
+
+test_that("recommend_users_to_user works", {
+    n <- 2
+    expect_s3_class(recommend_users <- agent$recommend_users_to_user(user_id = user_id, n = n, method = "random"), "data.frame")
+    expect_equal(nrow(recommend_users), n)
 })
 
 test_that("query_repos_graph works", {
@@ -24,15 +31,15 @@ test_that("query_repos_graph works", {
 })
 
 test_that("query_users_graph works", {
-    # repo_id <- 7226303 # harell
-    # expect_s3_class(
-    #     agent$query_users_graph(user_id = user_id, degrees = 2, method = "followers"),
-    #     "data.frame"
-    # )
+    user_id <- 7226303 # harell
 
-    repo_id <- 4196 # hadley
     expect_s3_class(
-        agent$query_users_graph(user_id = user_id, degrees = 2, method = "following"),
+        agent$query_users_graph(user_id = user_id, degrees = 1, method = "followers"),
+        "data.frame"
+    )
+
+    expect_s3_class(
+        agent$query_users_graph(user_id = user_id, degrees = 1, method = "following"),
         "data.frame"
     )
 })

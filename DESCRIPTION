@@ -28,7 +28,7 @@ Imports:
     purrr,
     R6,
     readr,
-    S3,
+    S3 (>= 0.2.0),
     snakecase,
     tibble,
     tidyr
@@ -37,6 +37,7 @@ Suggests:
     httr,
     Matrix,
     progress,
+    rmarkdown,
     testthat,
     usethis,
     withr

@@ -30,13 +30,15 @@ Agent <- R6::R6Class(
         recommend_repos_to_user = function(user_id, n, method) { return(private$.recommend_repos_to_user(user_id, n, method)) },
         #' @description Given a `user_id` suggests `n` users the user might like.
         #' @param method (`character`) The recommendation filtering technique to employ. See **recommend_users_to_user** section for details.
-        recommend_users_to_user = function(user_id, n, method) { stop() },
+        recommend_users_to_user = function(user_id, n, method) { return(private$.recommend_users_to_user(user_id, n, method)) },
         #' @description Given a `repo_id` find all linked packages in `degrees` degrees of separation.
         #' @param method (`character`) The link type to employ. Either `depends` or `reverse depends`.
         #' @return (`data.frame`) A table with two columns `from` and `to`. If a repo has dependencies, then `from` = `to`. If the repo is dependent on a non-existing package repo, such as 'base', the dependency is discarded.
         query_repos_graph = function(repo_id, degrees = 1, method) { return(private$.query_repos_graph(repo_id, degrees, method)) },
         #' @description Given a `user_id` find all linked users in `degrees` degrees of separation.
-        #' @param method (`character`) The link type to employ. Either `followers` or `following`.
+        #' @param method (`character`) The link type to employ. Either
+        #' (1) `followers` What users are following `user_id`?; or
+        #' (2) `following` What users is `user_id` following?.
         query_users_graph = function(user_id, degrees = 1, method) { return(private$.query_users_graph(user_id, degrees, method)) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
@@ -50,6 +52,7 @@ Agent <- R6::R6Class(
 
 # Private Methods ---------------------------------------------------------
 Agent$set(which = "private", name = ".recommend_repos_to_user", overwrite = TRUE, value = function(user_id, n, method) {
+    assert_that(assertthat::is.count(user_id), assertthat::is.count(n))
     method <- match.arg(tolower(method), c("random"))
 
     repos_to_exclude <- .recommenders$utils$get_repos2exclude(private$ecos, user_id)
@@ -59,14 +62,27 @@ Agent$set(which = "private", name = ".recommend_repos_to_user", overwrite = TRUE
         random = .recommenders$repos2users$random(private$ecos, user_id, n, repos_to_exclude)
     )
 
-    return(
-        repos_info <- private$ecos$read_PACKAGE()
-        |> dplyr::select(-full_name)
-        |> dplyr::inner_join(private$ecos$read_REPO() |> dplyr::filter(id %in% repos_id), by = "package")
+    return(repos_id)
+})
+
+Agent$set(which = "private", name = ".recommend_users_to_user", overwrite = TRUE, value = function(user_id, n, method) {
+    method <- match.arg(tolower(method), c("random"))
+    assert_that(assertthat::is.count(user_id), assertthat::is.count(n))
+
+    users_to_exclude <- .recommenders$utils$get_users2exclude(private$ecos, user_id)
+    users_to_exclude <- integer(0)
+
+    users_id <- switch (
+        method,
+        random = .recommenders$users2users$random(private$ecos, user_id, n, users_to_exclude)
     )
+
+    return(users_id)
 })
 
 Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, value = function(repo_id, degrees = 1, method) {
+    assert_that(assertthat::is.count(repo_id), assertthat::is.count(degrees))
+
     method <- match.arg(tolower(method), c("depends", "reverse depends"))
 
     if(method == "depends"){
@@ -78,6 +94,7 @@ Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, valu
 
 
 Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, value = function(user_id, degrees = 1, method) {
+    assert_that(assertthat::is.count(user_id), assertthat::is.count(degrees))
     method <- match.arg(tolower(method), c("followers", "following"))
 
     if(method == "followers"){
@@ -99,14 +116,37 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 
 .recommenders$repos2users$random <- function(ecos, user_id, n, repos_to_exclude) {
     set.seed(2144)
+    null_table <- tibble::tibble(rank = NA_integer_, repo_id = NA_integer_)[0,]
+
     tryCatch(return(
         repos <- ecos$read_REPO()
-        |> dplyr::rename(repo_id = id)
-        |> dplyr::filter(repo_id %not_in% repos_to_exclude)
-        |> dplyr::sample_n(size = dplyr::n())
-        |> dplyr::pull(repo_id)
-        |> head(n)
-    ), error = function(e) return(integer(0)))
+        |> dplyr::filter(id %not_in% repos_to_exclude)
+        |> dplyr::slice_sample(n = n)
+        |> dplyr::transmute(
+            rank    = as.integer(1:dplyr::n()),
+            repo_id = as.integer(id)
+        )
+    ), error = function(e) return(null_table))
+}
+
+
+# recommend_users_to_user -------------------------------------------------
+.recommenders$users2users <- new.env()
+
+.recommenders$users2users$random <- function(ecos, user_id, n, users_to_exclude)
+{
+    set.seed(2144)
+    null_table <- tibble::tibble(rank = NA_integer_, user_id = NA_integer_)[0,]
+
+    tryCatch(return(
+        users <- ecos$read_USER()
+        |> dplyr::filter(id %not_in% users_to_exclude)
+        |> dplyr::slice_sample(n = n)
+        |> dplyr::transmute(
+            rank    = as.integer(1:dplyr::n()),
+            user_id = as.integer(id)
+        )
+    ), error = function(e) return(null_table))
 }
 
 
@@ -114,7 +154,7 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 .recommenders$repos_graph <- new.env()
 
 .recommenders$repos_graph$depends <- function(ecos, repo_id, degrees) {
-    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
+    result <- tibble::tibble(degree = 0, from = repo_id, to = repo_id)
 
     tryCatch({
         new_dependencies <- repo_id
@@ -129,17 +169,20 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             |> tidyr::drop_na()
         )
 
-        while(degrees > 0){
+        for(degree in seq_len(degrees)){
             existing_dependencies <- unique(result$to)
 
-            result <- result |>
-                dplyr::bind_rows(dplyr::filter(dependencies, from %in% new_dependencies)) |>
-                dplyr::distinct()
+            invisible(
+                new_result <- dependencies
+                |> dplyr::filter(from %in% new_dependencies)
+                |> dplyr::transmute(degree = degree, from = from, to = to)
+            )
+
+            result <- dplyr::bind_rows(result, new_result) |> dplyr::distinct()
 
             all_dependencies <- unique(c(result$to, result$from))
             new_dependencies <- setdiff(result$to, existing_dependencies)
 
-            degrees <- degrees - 1
             if(all(is.na(new_dependencies))) break
         }
 
@@ -149,7 +192,7 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 }
 
 .recommenders$repos_graph$reverse_depends <- function(ecos, repo_id, degrees) {
-    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
+    result <- tibble::tibble(degree = 0, from = repo_id, to = repo_id)
 
     tryCatch({
         new_dependencies <- repo_id
@@ -164,17 +207,20 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
             |> tidyr::drop_na()
         )
 
-        while(degrees > 0){
+        for(degree in seq_len(degrees)){
             existing_dependencies <- unique(result$from)
 
-            result <- result |>
-                dplyr::bind_rows(dplyr::filter(dependencies, to %in% new_dependencies)) |>
-                dplyr::distinct()
+            invisible(
+                new_result <- dependencies
+                |> dplyr::filter(to %in% new_dependencies)
+                |> dplyr::transmute(degree = degree, from = from, to = to)
+            )
+
+            result <- dplyr::bind_rows(result, new_result) |> dplyr::distinct()
 
             all_dependencies <- unique(c(result$from, result$to))
             new_dependencies <- setdiff(result$from, existing_dependencies)
 
-            degrees <- degrees - 1
             if(all(is.na(new_dependencies))) break
         }
 
@@ -188,23 +234,26 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 .recommenders$users_graph <- new.env()
 
 .recommenders$users_graph$followers <- function(ecos, user_id, degrees) {
-    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
+    result <- tibble::tibble(degree = 0, from = user_id, to = user_id)
 
     tryCatch({
         new_users <- user_id
         fellowship <- ecos$read_FOLLOWING()
 
-        while(degrees > 0){
+        for(degree in seq_len(degrees)){
             existing_users <- unique(result$to)
 
-            result <- result |>
-                dplyr::bind_rows(dplyr::filter(fellowship, from %in% new_users)) |>
-                dplyr::distinct()
+            invisible(
+                new_result <- fellowship
+                |> dplyr::filter(to %in% new_users)
+                |> dplyr::transmute(degree = degree, from = from, to = to)
+            )
+
+            result <- dplyr::bind_rows(result, new_result) |> dplyr::distinct()
 
             all_users <- unique(c(result$to, result$from))
-            new_users <- setdiff(result$to, existing_users)
+            new_users <- setdiff(result$from, existing_users)
 
-            degrees <- degrees - 1
             if(all(is.na(new_users))) break
         }
 
@@ -214,23 +263,26 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
 }
 
 .recommenders$users_graph$following <- function(ecos, user_id, degrees) {
-    result <- tibble::tibble(from = NA_integer_, to = NA_integer_)[0,]
+    result <- tibble::tibble(degree = 0, from = user_id, to = user_id)
 
     tryCatch({
         new_users <- user_id
         fellowship <- ecos$read_FOLLOWING()
 
-        while(degrees > 0){
+        for(degree in seq_len(degrees)){
             existing_users <- unique(result$to)
 
-            result <- result |>
-                dplyr::bind_rows(dplyr::filter(fellowship, to %in% new_users)) |>
-                dplyr::distinct()
+            invisible(
+                new_result <- fellowship
+                |> dplyr::filter(from %in% new_users)
+                |> dplyr::transmute(degree = degree, from = from, to = to)
+            )
+
+            result <- dplyr::bind_rows(result, new_result) |> dplyr::distinct()
 
             all_users <- unique(c(result$to, result$from))
-            new_users <- setdiff(result$from, existing_users)
+            new_users <- setdiff(result$to, existing_users)
 
-            degrees <- degrees - 1
             if(all(is.na(new_users))) break
         }
 
@@ -247,5 +299,14 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
         |> dplyr::filter(user_id %in% !!user_id)
         |> dplyr::distinct(repo_id)
         |> dplyr::pull(repo_id)
+    ), error = function(e) return(0L))
+}
+
+.recommenders$utils$get_users2exclude <- function(ecos, user_id) {
+    tryCatch(return(
+        ecos$read_FOLLOWING()
+        |> dplyr::filter(from %in% !!user_id)
+        |> dplyr::distinct(to)
+        |> dplyr::pull(to)
     ), error = function(e) return(0L))
 }
