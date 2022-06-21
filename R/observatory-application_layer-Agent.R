@@ -32,7 +32,9 @@ Agent <- R6::R6Class(
         #' @param method (`character`) The recommendation filtering technique to employ. See **recommend_users_to_user** section for details.
         recommend_users_to_user = function(user_id, n, method) { return(private$.recommend_users_to_user(user_id, n, method)) },
         #' @description Given a `repo_id` find all linked packages in `degrees` degrees of separation.
-        #' @param method (`character`) The link type to employ. Either `depends` or `reverse depends`.
+        #' @param method (`character`) The link type to employ. Either
+        #' (1) `depends` returns the package dependencies (as appears in its DESCRIPTION file); or
+        #' (2) `reverse depends` returns packages that are dependent on `repo_id`.
         #' @return (`data.frame`) A table with two columns `from` and `to`. If a repo has dependencies, then `from` = `to`. If the repo is dependent on a non-existing package repo, such as 'base', the dependency is discarded.
         query_repos_graph = function(repo_id, degrees = 1, method) { return(private$.query_repos_graph(repo_id, degrees, method)) },
         #' @description Given a `user_id` find all linked users in `degrees` degrees of separation.
