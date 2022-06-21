@@ -201,7 +201,7 @@
 <h3 id="recommend-repos-to-a-user">Recommend Repos to a User<a class="anchor" aria-label="anchor" href="#recommend-repos-to-a-user"></a>
 </h3>
 <ol style="list-style-type: decimal">
-<li>Recommend 5 <strong>Repo</strong>s to a user</li>
+<li>Recommend 5 <strong>Repo</strong>s to a user (see <code>Agent</code> help file for supported methods)</li>
 </ol>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">suggested_repos</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">recommend_repos_to_user</span><span class="op">(</span><span class="va">user_id</span>, n <span class="op">=</span> <span class="fl">5</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span>
@@ -233,6 +233,44 @@
 <span class="co">#&gt; <span style="color: #949494;"># … with 8 more variables: watchers_count &lt;dbl&gt;, forks_count &lt;dbl&gt;,</span></span>
 <span class="co">#&gt; <span style="color: #949494;">#   language &lt;chr&gt;, homepage &lt;chr&gt;, created_at &lt;date&gt;, updated_at &lt;date&gt;,</span></span>
 <span class="co">#&gt; <span style="color: #949494;">#   queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="recommend-users-to-a-user">Recommend Users to a User<a class="anchor" aria-label="anchor" href="#recommend-users-to-a-user"></a>
+</h3>
+<ol style="list-style-type: decimal">
+<li>Recommend 5 <strong>User</strong>s to a user (see <code>Agent</code> help file for supported methods)</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">suggested_users</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">recommend_users_to_user</span><span class="op">(</span><span class="va">user_id</span>, n <span class="op">=</span> <span class="fl">5</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">suggested_users</span><span class="op">)</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span>
+<span class="co">#&gt;    rank  user_id</span>
+<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1  2<span style="text-decoration: underline;">274</span>404</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2 11<span style="text-decoration: underline;">069</span>501</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3 21<span style="text-decoration: underline;">048</span>957</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4 11<span style="text-decoration: underline;">415</span>813</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     5 12<span style="text-decoration: underline;">070</span>126</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Add details to the recommended <strong>User</strong>s</li>
+</ol>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span>
+    <span class="va">suggested_users</span>
+    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"user_id"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 18</span></span>
+<span class="co">#&gt;    rank user_id login avatar_url html_url name  public_repos followers following</span>
+<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1  2.27<span style="color: #949494;">e</span>6 Jerr… https://a… https:/… Jerr…            8         2         5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2  1.11<span style="color: #949494;">e</span>7 chri… https://a… https:/… Chri…            5         7        12</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3  2.10<span style="color: #949494;">e</span>7 lu-16 https://a… https:/… Lu              10         7        24</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4  1.14<span style="color: #949494;">e</span>7 ital… https://a… https:/… Ital…           13        13         7</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     5  1.21<span style="color: #949494;">e</span>7 wds15 https://a… https:/… <span style="color: #BB0000;">NA</span>              12        21         0</span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 9 more variables: r_followers &lt;dbl&gt;, r_following &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   r_contributor_count &lt;dbl&gt;, r_stargazer_count &lt;dbl&gt;, r_watcher_count &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   created_at &lt;date&gt;, updated_at &lt;date&gt;, queried_at &lt;date&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   processed_at &lt;date&gt;</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
