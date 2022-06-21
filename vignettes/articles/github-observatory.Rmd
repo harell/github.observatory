@@ -9,7 +9,14 @@ print_banner <- function(msg) print(bannerCommenter::banner(msg, numLines = 2))
 
 ## Setup
 
-1.  Set AWS credentials
+1. Install `github.observatory` by using:
+
+```{r, eval=FALSE, echo=TRUE}
+install.packages("remotes")
+remotes::install_github("harell/github.observatory")
+```
+
+2. Set AWS credentials
 
 ```{r, eval=FALSE, echo=TRUE}
 Sys.setenv(
@@ -19,7 +26,7 @@ Sys.setenv(
 )
 ```
 
-2.  `github.observatory` gives easy access to the project database through a **Repository** object named `Ecosystem`. To access the database, instantiate a **Ecosystem** object.
+3.  `github.observatory` gives easy access to the project database through a **Repository** object named `Ecosystem`. To access the database, instantiate a **Ecosystem** object.
 
 ```{r, eval=TRUE, echo=TRUE}
 ecos <- Ecosystem$new()
@@ -27,15 +34,21 @@ ecos <- Ecosystem$new()
 
 ## Terminology
 
+### Entities
+
 -   ***Package:*** An R package that is available on [CRAN](https://cran.r-project.org/web/packages/available_packages_by_name.html). For example, `dplyr`.
 -   ***Repo**:* A Github reposetory that corresponds to a **Package**. For example, [tidyverse/dplyr](https://github.com/tidyverse/dplyr).
--   ***User*** . A Github user. There are two ways to identify a **User**:
+-   ***User***: A Github user. There are two ways to identify a **User**:
     -   `user_login` this is a mutable name of the Github account chosen by the **User**. It is apparent in the Github URL. For example, <https://github.com/harell> corresponds to `user_login` = `harell`; and
     -   `user_id` this is an immutable number assign by Github when the **User** creates an account. `user_id` is not readily available and has to be deduced from an API call. For example, `user_id` = `7226303`, corresponds to `user_login` = `harell` , and the respective API call is <https://api.github.com/user/7226303>.
 
 ```{r, message=TRUE}
 message("Among the two options to identify a **User**, `user_id` is preferable as it stays the same throughout the life of GitHub. See the *Mapping Entities* section for how to locate `user_id` with `user_login`.")
 ```
+
+### Roles
+
+-   ***Stargazer***: A **User** that give a ★ (star) to a **Repo**.
 
 ## Ecosystem Overview
 
