@@ -115,7 +115,7 @@ The Recommendation Agent has four functions:
 
 ### Recommend Repos to a User
 
-1. Recommend 5 **Repo**s to a user
+1. Recommend 5 **Repo**s to a user (see `Agent` help file for supported methods)
 
 ```{r, echo=TRUE, cache=TRUE}
 suggested_repos <- agent$recommend_repos_to_user(user_id, n = 5, method = "random")
@@ -130,6 +130,25 @@ print(suggested_repos)
     |> dplyr::left_join(ecos$read_REPO(), by = c("repo_id" = "id"))
 )
 ```
+
+### Recommend Users to a User
+
+1. Recommend 5 **User**s to a user (see `Agent` help file for supported methods)
+
+```{r, echo=TRUE, cache=TRUE}
+suggested_users <- agent$recommend_users_to_user(user_id, n = 5, method = "random")
+print(suggested_users)
+```
+
+2. Add details to the recommended **User**s
+
+```{r, echo=TRUE, cache=TRUE}
+(
+    suggested_users
+    |> dplyr::left_join(ecos$read_USER(), by = c("user_id" = "id"))
+)
+```
+
 
 ## Appendix
 
