@@ -26,7 +26,7 @@ Sys.setenv(
 )
 ```
 
-3.  `github.observatory` gives easy access to the project database through a **Repository** object named ***Ecosystem***. To access the database, instantiate a **Ecosystem** object.
+3.  `github.observatory` gives easy access to the project database through a [**Repository** object](https://tidylab.github.io/R6P/reference/Repository.html) named ***Ecosystem***. To access the database, instantiate a **Ecosystem** object.
 
 ```{r, eval=TRUE, echo=TRUE}
 ecos <- Ecosystem$new()
@@ -192,6 +192,52 @@ print(repo_rev_dep)
 (
     repo_rev_dep
     |> dplyr::left_join(ecos$read_REPO(), by = c("from" = "id"))
+)
+```
+
+### Query Users Graph
+
+To query the repo graph, you need to supply three input arguments:
+
+* `repo_id`: See *Mapping Entities* for how to map a package name to repo_id);
+* `degree`: How many [neighbourhood](https://en.wikipedia.org/wiki/Neighbourhood_(graph_theory)) to retrieve?
+* `method`: Either `followers` or `following`
+    * `followers` What users are following `user_id`?; or
+    * `following` hat users is `user_id` following?
+
+#### Query user followers
+
+1. Find who is following `user_id`
+
+```{r, echo=TRUE, cache=TRUE}
+user_followers <- agent$query_users_graph(user_id, degrees = 1, method = "followers")
+print(user_followers)
+```
+
+2. Add details to `user_id` followers
+
+```{r, echo=TRUE, cache=TRUE}
+(
+    user_followers
+    |> dplyr::left_join(ecos$read_USER(), by = c("from" = "id"))
+)
+```
+
+#### Query user following
+
+1. Find who is `user_id` following 
+
+```{r, echo=TRUE, cache=TRUE}
+user_following <- agent$query_users_graph(user_id, degrees = 1, method = "following")
+print(user_following)
+```
+
+2. Add details to those who `user_id` is following
+
+```{r, echo=TRUE, cache=TRUE}
+(
+    user_following
+    |> dplyr::left_join(ecos$read_USER(), by = c("to" = "id"))
 )
 ```
 
