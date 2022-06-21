@@ -26,10 +26,16 @@ Sys.setenv(
 )
 ```
 
-3.  `github.observatory` gives easy access to the project database through a **Repository** object named `Ecosystem`. To access the database, instantiate a **Ecosystem** object.
+3.  `github.observatory` gives easy access to the project database through a **Repository** object named ***Ecosystem***. To access the database, instantiate a **Ecosystem** object.
 
 ```{r, eval=TRUE, echo=TRUE}
 ecos <- Ecosystem$new()
+```
+
+4. Instantiate a Recommendation ***Agent***. See *Agent Functions* for details. 
+
+```{r, eval=TRUE, echo=TRUE}
+agent <- Agent$new(ecos)
 ```
 
 ## Terminology
@@ -74,7 +80,7 @@ message("See the tables content at the Appendix")
 
 ## Mapping Entities
 
-### Github User ID and Login
+### Github User ID to User Login
 
 Finding a `user_id` with `user_login`
 
@@ -87,6 +93,17 @@ user_login <- "harell"
 )
 ```
 
+### CRAN Package to Github Repo ID
+
+```{r, echo=TRUE, cache=TRUE}
+cran_package <- "dplyr"
+(
+    repo_id <- ecos$read_REPO()
+    |> dplyr::filter(package %in% cran_package)
+    |> dplyr::pull(id)
+)
+```
+
 ## Agent Functions
 
 The Recommendation Agent has four functions:
@@ -95,6 +112,24 @@ The Recommendation Agent has four functions:
 2.  `recommend_users_to_user` Given a `user_id` suggests `n` users the user might like;
 3.  `query_repos_graph` Given a `repo_id` and a `method`, find all linked packages in `degrees` degrees of separation. and
 4.  `query_users_graph` Given a `user_id` and a `method`, find all linked users in `degrees` degrees of separation.
+
+### Recommend Repos to a User
+
+1. Recommend 5 **Repo**s to a user
+
+```{r, echo=TRUE, cache=TRUE}
+suggested_repos <- agent$recommend_repos_to_user(user_id, n = 5, method = "random")
+print(suggested_repos)
+```
+
+2. Add details to the recommended **Repo**s
+
+```{r, echo=TRUE, cache=TRUE}
+(
+    suggested_repos
+    |> dplyr::left_join(ecos$read_REPO(), by = c("repo_id" = "id"))
+)
+```
 
 ## Appendix
 
