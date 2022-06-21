@@ -102,7 +102,7 @@
 <span class="op">)</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>
-<code>github.observatory</code> gives easy access to the project database through a <strong>Repository</strong> object named <strong><em>Ecosystem</em></strong>. To access the database, instantiate a <strong>Ecosystem</strong> object.</li>
+<code>github.observatory</code> gives easy access to the project database through a <a href="https://tidylab.github.io/R6P/reference/Repository.html" class="external-link"><strong>Repository</strong> object</a> named <strong><em>Ecosystem</em></strong>. To access the database, instantiate a <strong>Ecosystem</strong> object.</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ecos</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Ecosystem.html">Ecosystem</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></code></pre></div>
@@ -390,6 +390,116 @@
 <span class="co">#&gt; <span style="color: #949494;">#   watchers_count &lt;dbl&gt;, forks_count &lt;dbl&gt;, language &lt;chr&gt;, homepage &lt;chr&gt;,</span></span>
 <span class="co">#&gt; <span style="color: #949494;">#   created_at &lt;date&gt;, updated_at &lt;date&gt;, queried_at &lt;date&gt;,</span></span>
 <span class="co">#&gt; <span style="color: #949494;">#   processed_at &lt;date&gt;</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="query-users-graph">Query Users Graph<a class="anchor" aria-label="anchor" href="#query-users-graph"></a>
+</h3>
+<p>To query the repo graph, you need to supply three input arguments:</p>
+<ul>
+<li>
+<code>repo_id</code>: See <em>Mapping Entities</em> for how to map a package name to repo_id);</li>
+<li>
+<code>degree</code>: How many <a href="https://en.wikipedia.org/wiki/Neighbourhood_(graph_theory)" class="external-link">neighbourhood</a> to retrieve?</li>
+<li>
+<code>method</code>: Either <code>followers</code> or <code>following</code>
+<ul>
+<li>
+<code>followers</code> What users are following <code>user_id</code>?; or</li>
+<li>
+<code>following</code> hat users is <code>user_id</code> following?</li>
+</ul>
+</li>
+</ul>
+<div class="section level4">
+<h4 id="query-user-followers">Query user followers<a class="anchor" aria-label="anchor" href="#query-user-followers"></a>
+</h4>
+<ol style="list-style-type: decimal">
+<li>Find who is following <code>user_id</code>
+</li>
+</ol>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">user_followers</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_users_graph</span><span class="op">(</span><span class="va">user_id</span>, degrees <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"followers"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">user_followers</span><span class="op">)</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span>
+<span class="co">#&gt;   degree     from      to</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      0  7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>      1 52<span style="text-decoration: underline;">979</span>198 7<span style="text-decoration: underline;">226</span>303</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      1 31<span style="text-decoration: underline;">113</span>760 7<span style="text-decoration: underline;">226</span>303</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      1 10<span style="text-decoration: underline;">200</span>210 7<span style="text-decoration: underline;">226</span>303</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>      1  3<span style="text-decoration: underline;">811</span>321 7<span style="text-decoration: underline;">226</span>303</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">6</span>      1  6<span style="text-decoration: underline;">518</span>676 7<span style="text-decoration: underline;">226</span>303</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Add details to <code>user_id</code> followers</li>
+</ol>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span>
+    <span class="va">user_followers</span>
+    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"from"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 19</span></span>
+<span class="co">#&gt;   degree     from      to login avatar_url html_url name  public_repos followers</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      0  7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303 hare… https://a… https:/… <span style="color: #BB0000;">NA</span>              13         6</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>      1 52<span style="text-decoration: underline;">979</span>198 7<span style="text-decoration: underline;">226</span>303 ange… https://a… https:/… Ange…            6         9</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      1 31<span style="text-decoration: underline;">113</span>760 7<span style="text-decoration: underline;">226</span>303 rfdo… https://a… https:/… Rodr…            9        37</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      1 10<span style="text-decoration: underline;">200</span>210 7<span style="text-decoration: underline;">226</span>303 asds… https://a… https:/… <span style="color: #BB0000;">NA</span>              22         5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>      1  3<span style="text-decoration: underline;">811</span>321 7<span style="text-decoration: underline;">226</span>303 mask… https://a… https:/… Am             344        82</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">6</span>      1  6<span style="text-decoration: underline;">518</span>676 7<span style="text-decoration: underline;">226</span>303 bcga… https://a… https:/… Brya…           19        41</span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 10 more variables: following &lt;dbl&gt;, r_followers &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   r_following &lt;dbl&gt;, r_contributor_count &lt;dbl&gt;, r_stargazer_count &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   r_watcher_count &lt;dbl&gt;, created_at &lt;date&gt;, updated_at &lt;date&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="query-user-following">Query user following<a class="anchor" aria-label="anchor" href="#query-user-following"></a>
+</h4>
+<ol style="list-style-type: decimal">
+<li>Find who is <code>user_id</code> following</li>
+</ol>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">user_following</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_users_graph</span><span class="op">(</span><span class="va">user_id</span>, degrees <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"following"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">user_following</span><span class="op">)</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 55 × 3</span></span>
+<span class="co">#&gt;    degree    from      to</span>
+<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0 7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 7<span style="text-decoration: underline;">226</span>303    <span style="text-decoration: underline;">4</span>196</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">86</span>978</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">93</span>231</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">104</span>391</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">129</span>551</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">205</span>275</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">216</span>319</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">227</span>097</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">470</span>418</span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 45 more rows</span></span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Add details to those who <code>user_id</code> is following</li>
+</ol>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span>
+    <span class="va">user_following</span>
+    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"to"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 55 × 19</span></span>
+<span class="co">#&gt;    degree    from      to login avatar_url html_url name  public_repos followers</span>
+<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0 7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303 hare… https://a… https:/… <span style="color: #BB0000;">NA</span>              13         6</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 7<span style="text-decoration: underline;">226</span>303    <span style="text-decoration: underline;">4</span>196 hadl… https://a… https:/… Hadl…          176     <span style="text-decoration: underline;">22</span>465</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">86</span>978 wch   https://a… https:/… Wins…          125      <span style="text-decoration: underline;">1</span>326</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">93</span>231 schl… https://a… https:/… Barr…          186       221</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">104</span>391 jjal… https://a… https:/… J j …          138      <span style="text-decoration: underline;">1</span>498</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">129</span>551 jche… https://a… https:/… Joe …          159      <span style="text-decoration: underline;">1</span>780</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">205</span>275 jimh… https://a… https:/… Jim …          454      <span style="text-decoration: underline;">1</span>481</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">216</span>319 jero… https://a… https:/… Jero…          303      <span style="text-decoration: underline;">1</span>550</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">227</span>097 kohs… https://a… https:/… Kohs…           43        61</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">470</span>418 jmcp… https://a… https:/… Jona…           39       389</span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 45 more rows, and 10 more variables: following &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   r_followers &lt;dbl&gt;, r_following &lt;dbl&gt;, r_contributor_count &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   r_stargazer_count &lt;dbl&gt;, r_watcher_count &lt;dbl&gt;, created_at &lt;date&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   updated_at &lt;date&gt;, queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></code></pre></div>
 </div>
 </div>
 </div>
