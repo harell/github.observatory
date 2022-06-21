@@ -86,39 +86,59 @@
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
 <ol style="list-style-type: decimal">
-<li>Set AWS credentials</li>
+<li>Install <code>github.observatory</code> by using:</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"harell/github.observatory"</span><span class="op">)</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Set AWS credentials</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>
     AWS_ACCESS_KEY_ID <span class="op">=</span> <span class="st">"&lt;your-access-key-id&gt;"</span>,
     AWS_SECRET_ACCESS_KEY<span class="op">=</span> <span class="st">"&lt;your-secret&gt;"</span>,
     AWS_REGION <span class="op">=</span> <span class="st">"ap-southeast-2"</span>
 <span class="op">)</span></code></pre></div>
-<ol start="2" style="list-style-type: decimal">
+<ol start="3" style="list-style-type: decimal">
 <li>
 <code>github.observatory</code> gives easy access to the project database through a <strong>Repository</strong> object named <code>Ecosystem</code>. To access the database, instantiate a <strong>Ecosystem</strong> object.</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ecos</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Ecosystem.html">Ecosystem</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="terminolegy">Terminolegy<a class="anchor" aria-label="anchor" href="#terminolegy"></a>
+<h2 id="terminology">Terminology<a class="anchor" aria-label="anchor" href="#terminology"></a>
 </h2>
+<div class="section level3">
+<h3 id="entities">Entities<a class="anchor" aria-label="anchor" href="#entities"></a>
+</h3>
 <ul>
-<li><strong><em>Package</em></strong></li>
-<li><strong><em>Repo</em></strong></li>
 <li>
-<strong><em>User</em></strong> . There are two ways to identify a <strong>User</strong>:
+<strong><em>Package:</em></strong> An R package that is available on <a href="https://cran.r-project.org/web/packages/available_packages_by_name.html" class="external-link">CRAN</a>. For example, <code>dplyr</code>.</li>
+<li>
+<em><strong>Repo</strong>:</em> A Github reposetory that corresponds to a <strong>Package</strong>. For example, <a href="https://github.com/tidyverse/dplyr" class="external-link">tidyverse/dplyr</a>.</li>
+<li>
+<strong><em>User</em></strong>: A Github user. There are two ways to identify a <strong>User</strong>:
 <ul>
 <li>
 <code>user_login</code> this is a mutable name of the Github account chosen by the <strong>User</strong>. It is apparent in the Github URL. For example, <a href="https://github.com/harell" class="external-link uri">https://github.com/harell</a> corresponds to <code>user_login</code> = <code>harell</code>; and</li>
 <li>
-<code>user_id</code> this is an immutable number assign by Github when the to the <strong>User</strong> account. <code>user_id</code> is not readily available and has to be deduced from an API call.</li>
+<code>user_id</code> this is an immutable number assign by Github when the <strong>User</strong> creates an account. <code>user_id</code> is not readily available and has to be deduced from an API call. For example, <code>user_id</code> = <code>7226303</code>, corresponds to <code>user_login</code> = <code>harell</code> , and the respective API call is <a href="https://api.github.com/user/7226303" class="external-link uri">https://api.github.com/user/7226303</a>.</li>
 </ul>
 </li>
 </ul>
 <div class="alert alert-info">
-<p><strong>Tip:</strong> Among the two options to identify a <strong>User</strong>, <code>user_id</code> is preferable as it cannot be changed. See the <em>Mapping Entities</em> section for how to locate <code>user_id</code> with <code>user_login</code>.</p>
+<p><strong>Tip:</strong> Among the two options to identify a <strong>User</strong>, <code>user_id</code> is preferable as it stays the same throughout the life of GitHub. See the <em>Mapping Entities</em> section for how to locate <code>user_id</code> with <code>user_login</code>.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="roles">Roles<a class="anchor" aria-label="anchor" href="#roles"></a>
+</h3>
+<ul>
+<li>
+<strong><em>Stargazer</em></strong>: A <strong>User</strong> that give a ★ (star) to a <strong>Repo</strong>.</li>
+</ul>
 </div>
 </div>
 <div class="section level2">
@@ -136,7 +156,7 @@
 <h3 id="github-user-id-and-login">Github User ID and Login<a class="anchor" aria-label="anchor" href="#github-user-id-and-login"></a>
 </h3>
 <p>Finding a <code>user_id</code> with <code>user_login</code></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">user_login</span> <span class="op">&lt;-</span> <span class="st">"harell"</span>
 <span class="op">(</span>
     <span class="va">user_id</span> <span class="op">&lt;-</span> <span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>
@@ -191,10 +211,10 @@
 <span class="co">#&gt; #################################################################</span>
 <span class="co">#&gt; #################################################################</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 884,425</span>
+<span class="co">#&gt; Rows: 851,860</span>
 <span class="co">#&gt; Columns: 2</span>
 <span class="co">#&gt; $ from <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 20690573, 64336901, 64336901, 64336901, 64336901, 64336901, 64336…</span>
-<span class="co">#&gt; $ to   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 747110, 315403, 1448326, 3877631, 4693889, 5847527, 7598563, 9595…</span>
+<span class="co">#&gt; $ to   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 747110, 315403, 1395960, 1448326, 3877631, 4693889, 5847527, 7598…</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ##################################################################</span>
 <span class="co">#&gt; ##################################################################</span>
