@@ -25,16 +25,16 @@ Sys.setenv(
 ecos <- Ecosystem$new()
 ```
 
-## Terminolegy
+## Terminology
 
--   ***Package***
--   ***Repo***
--   ***User*** . There are two ways to identify a **User**:
+-   ***Package:*** An R package that is available on [CRAN](https://cran.r-project.org/web/packages/available_packages_by_name.html). For example, `dplyr`.
+-   ***Repo**:* A Github reposetory that corresponds to a **Package**. For example, [tidyverse/dplyr](https://github.com/tidyverse/dplyr).
+-   ***User*** . A Github user. There are two ways to identify a **User**:
     -   `user_login` this is a mutable name of the Github account chosen by the **User**. It is apparent in the Github URL. For example, <https://github.com/harell> corresponds to `user_login` = `harell`; and
-    -   `user_id` this is an immutable number assign by Github when the to the **User** account. `user_id` is not readily available and has to be deduced from an API call.
+    -   `user_id` this is an immutable number assign by Github when the **User** creates an account. `user_id` is not readily available and has to be deduced from an API call. For example, `user_id` = `7226303`, corresponds to `user_login` = `harell` , and the respective API call is <https://api.github.com/user/7226303>.
 
 ```{r, message=TRUE}
-message("Among the two options to identify a **User**, `user_id` is preferable as it cannot be changed. See the *Mapping Entities* section for how to locate `user_id` with `user_login`.")
+message("Among the two options to identify a **User**, `user_id` is preferable as it stays the same throughout the life of GitHub. See the *Mapping Entities* section for how to locate `user_id` with `user_login`.")
 ```
 
 ## Ecosystem Overview
@@ -82,7 +82,6 @@ The Recommendation Agent has four functions:
 2.  `recommend_users_to_user` Given a `user_id` suggests `n` users the user might like;
 3.  `query_repos_graph` Given a `repo_id` and a `method`, find all linked packages in `degrees` degrees of separation. and
 4.  `query_users_graph` Given a `user_id` and a `method`, find all linked users in `degrees` degrees of separation.
-
 
 ## Appendix
 
