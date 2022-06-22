@@ -203,7 +203,7 @@ To query the repo graph, you need to supply three input arguments:
 * `degree`: How many [neighbourhood](https://en.wikipedia.org/wiki/Neighbourhood_(graph_theory)) to retrieve?
 * `method`: Either `followers` or `following`
     * `followers` What users are following `user_id`?; or
-    * `following` hat users is `user_id` following?
+    * `following` What users is `user_id` following?
 
 #### Query user followers
 

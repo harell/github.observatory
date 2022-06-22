@@ -7,14 +7,6 @@
 #' @param n (`integer`) How many recommendation should the function return.
 #' @param degrees (`integer`) How many degrees of separation should be included? `1` are only the closest nodes. `Inf` returns all the graph.
 #'
-#' @section recommend_repos_to_user:
-#'
-#' * `random` returns the information of random packages
-#'
-#' @section recommend_users_to_user:
-#'
-#' * `random` returns the information of random users
-#'
 #' @family R Ecosystem classes
 #' @export
 Agent <- R6::R6Class(
@@ -26,10 +18,12 @@ Agent <- R6::R6Class(
             private$ecos <- ecos
         },
         #' @description Given a `user_id` suggests `n` repos the user might like.
-        #' @param method (`character`) The recommendation filtering technique to employ. See **recommend_repos_to_user** section for details.
+        #' @param method (`character`) The recommendation filtering technique to employ:
+        #' (1) `random` returns of repos ids at random
         recommend_repos_to_user = function(user_id, n, method) { return(private$.recommend_repos_to_user(user_id, n, method)) },
         #' @description Given a `user_id` suggests `n` users the user might like.
-        #' @param method (`character`) The recommendation filtering technique to employ. See **recommend_users_to_user** section for details.
+        #' @param method (`character`) The recommendation filtering technique to employ:
+        #' (1) `random` returns of users ids at random
         recommend_users_to_user = function(user_id, n, method) { return(private$.recommend_users_to_user(user_id, n, method)) },
         #' @description Given a `repo_id` find all linked packages in `degrees` degrees of separation.
         #' @param method (`character`) The link type to employ. Either
