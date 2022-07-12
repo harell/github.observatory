@@ -66,7 +66,6 @@ Agent$set(which = "private", name = ".recommend_users_to_user", overwrite = TRUE
     assert_that(assertthat::is.count(user_id), assertthat::is.count(n))
 
     users_to_exclude <- .recommenders$utils$get_users2exclude(private$ecos, user_id)
-    users_to_exclude <- integer(0)
 
     users_id <- switch (
         method,
