@@ -4,16 +4,9 @@
 #'
 #' @param user_id (`integer`) Github User ID.
 #' @param repo_id (`integer`) Github Repo ID.
+#' @param package (`charcter`) CRAN package name.
 #' @param n (`integer`) How many recommendation should the function return.
 #' @param degrees (`integer`) How many degrees of separation should be included? `1` are only the closest nodes. `Inf` returns all the graph.
-#'
-#' @section recommend_repos_to_user:
-#'
-#' * `random` returns the information of random packages
-#'
-#' @section recommend_users_to_user:
-#'
-#' * `random` returns the information of random users
 #'
 #' @family R Ecosystem classes
 #' @export
@@ -26,10 +19,12 @@ Agent <- R6::R6Class(
             private$ecos <- ecos
         },
         #' @description Given a `user_id` suggests `n` repos the user might like.
-        #' @param method (`character`) The recommendation filtering technique to employ. See **recommend_repos_to_user** section for details.
+        #' @param method (`character`) The recommendation filtering technique to employ:
+        #' (1) `random` returns of repos ids at random
         recommend_repos_to_user = function(user_id, n, method) { return(private$.recommend_repos_to_user(user_id, n, method)) },
         #' @description Given a `user_id` suggests `n` users the user might like.
-        #' @param method (`character`) The recommendation filtering technique to employ. See **recommend_users_to_user** section for details.
+        #' @param method (`character`) The recommendation filtering technique to employ:
+        #' (1) `random` returns of users ids at random
         recommend_users_to_user = function(user_id, n, method) { return(private$.recommend_users_to_user(user_id, n, method)) },
         #' @description Given a `repo_id` find all linked packages in `degrees` degrees of separation.
         #' @param method (`character`) The link type to employ. Either
@@ -41,7 +36,11 @@ Agent <- R6::R6Class(
         #' @param method (`character`) The link type to employ. Either
         #' (1) `followers` What users are following `user_id`?; or
         #' (2) `following` What users is `user_id` following?.
-        query_users_graph = function(user_id, degrees = 1, method) { return(private$.query_users_graph(user_id, degrees, method)) }
+        query_users_graph = function(user_id, degrees = 1, method) { return(private$.query_users_graph(user_id, degrees, method)) },
+        #' @description Given a CRAN `package` name, and a particular `statistic` (a function of the data sample), return the value of the requested attribute.
+        #' @param statistic (`character`) The information value to calculate
+        #' (1) `monthly downloads` The number of downloads from the RStudio CRAN mirror
+        query_package_stats = function(package, statistic) { return(private$.query_package_stats(package, statistic)) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         ecos = new.env(),
@@ -72,7 +71,6 @@ Agent$set(which = "private", name = ".recommend_users_to_user", overwrite = TRUE
     assert_that(assertthat::is.count(user_id), assertthat::is.count(n))
 
     users_to_exclude <- .recommenders$utils$get_users2exclude(private$ecos, user_id)
-    users_to_exclude <- integer(0)
 
     users_id <- switch (
         method,
@@ -94,7 +92,6 @@ Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, valu
     }
 })
 
-
 Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, value = function(user_id, degrees = 1, method) {
     assert_that(assertthat::is.count(user_id), assertthat::is.count(degrees))
     method <- match.arg(tolower(method), c("followers", "following"))
@@ -104,6 +101,25 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
     } else if (method == "following") {
         return(.recommenders$users_graph$following(private$ecos, user_id, degrees))
     }
+})
+
+Agent$set(which = "private", name = ".query_package_stats", overwrite = TRUE, value = function(package, statistic) {
+    assert_that(assertthat::is.string(package), assertthat::is.string(statistic))
+
+    method <- match.arg(tolower(statistic), c("monthly downloads"))
+
+    stats <- cranlogs::cran_downloads(package, from = "2017-01-01", to = "last-day")
+    return(
+        stats
+        |> dplyr::transmute(
+            date = lubridate::floor_date(date, "1 month"),
+            downloads = count,
+            package = package
+        )
+        |> dplyr::count(date, package, wt = downloads, name = "downloads")
+        |> dplyr::filter(date != lubridate::floor_date(Sys.Date(), "1 month"))
+        |> tibble::as_tibble()
+    )
 })
 
 
