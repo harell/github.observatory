@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">R Packages and Users Observatory</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -50,6 +50,9 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -89,28 +92,28 @@
 <li>Install <code>github.observatory</code> by using:</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"harell/github.observatory"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"harell/github.observatory"</span><span class="op">)</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Set AWS credentials in order to get access to the curated data</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>
-    AWS_ACCESS_KEY_ID <span class="op">=</span> <span class="st">"&lt;your-access-key-id&gt;"</span>,
-    AWS_SECRET_ACCESS_KEY<span class="op">=</span> <span class="st">"&lt;your-secret&gt;"</span>,
-    AWS_REGION <span class="op">=</span> <span class="st">"ap-southeast-2"</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span></span>
+<span>    AWS_ACCESS_KEY_ID <span class="op">=</span> <span class="st">"&lt;your-access-key-id&gt;"</span>,</span>
+<span>    AWS_SECRET_ACCESS_KEY<span class="op">=</span> <span class="st">"&lt;your-secret&gt;"</span>,</span>
+<span>    AWS_REGION <span class="op">=</span> <span class="st">"ap-southeast-2"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>
 <code>github.observatory</code> gives easy access to the project database through a <a href="https://tidylab.github.io/R6P/reference/Repository.html" class="external-link"><strong>Repository</strong> object</a> named <strong><em>Ecosystem</em></strong>. To access the database, instantiate a <strong>Ecosystem</strong> object.</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ecos</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Ecosystem.html">Ecosystem</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ecos</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Ecosystem.html">Ecosystem</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Instantiate a Recommendation <strong><em>Agent</em></strong>. See <em>Agent Functions</em> for details.</li>
 </ol>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agent</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Agent.html">Agent</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">ecos</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">agent</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Agent.html">Agent</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">ecos</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="terminology">Terminology<a class="anchor" aria-label="anchor" href="#terminology"></a>
@@ -163,41 +166,43 @@
 </h3>
 <p>Finding a <code>user_id</code> with <code>user_login</code></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">user_login</span> <span class="op">&lt;-</span> <span class="st">"harell"</span>
-<span class="op">(</span>
-    <span class="va">user_id</span> <span class="op">&lt;-</span> <span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>
-    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">login</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">user_login</span><span class="op">)</span>
-    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="co">#&gt; [1] 7226303</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">user_login</span> <span class="op">&lt;-</span> <span class="st">"harell"</span></span>
+<span><span class="op">(</span></span>
+<span>    <span class="va">user_id</span> <span class="op">&lt;-</span> <span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">login</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">user_login</span><span class="op">)</span></span>
+<span>    <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 7226303</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="package-cran-package-name-to-repo_id">
 <code>package</code> (CRAN package name) to <code>repo_id</code><a class="anchor" aria-label="anchor" href="#package-cran-package-name-to-repo_id"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cran_package</span> <span class="op">&lt;-</span> <span class="st">"dplyr"</span>
-<span class="op">(</span>
-    <span class="va">repo_id</span> <span class="op">&lt;-</span> <span class="va">ecos</span><span class="op">$</span><span class="fu">read_REPO</span><span class="op">(</span><span class="op">)</span>
-    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">package</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">cran_package</span><span class="op">)</span>
-    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="co">#&gt; [1] 6427813</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cran_package</span> <span class="op">&lt;-</span> <span class="st">"dplyr"</span></span>
+<span><span class="op">(</span></span>
+<span>    <span class="va">repo_id</span> <span class="op">&lt;-</span> <span class="va">ecos</span><span class="op">$</span><span class="fu">read_REPO</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">package</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">cran_package</span><span class="op">)</span></span>
+<span>    <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 6427813</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="agent-functions">Agent Functions<a class="anchor" aria-label="anchor" href="#agent-functions"></a>
 </h2>
-<p>The Recommendation Agent has four functions:</p>
+<p>The Recommendation Agent has five functions:</p>
 <ol style="list-style-type: decimal">
 <li>
 <code>recommend_repos_to_user</code> Given a <code>user_id</code> suggests <code>n</code> repos the user might like;</li>
 <li>
 <code>recommend_users_to_user</code> Given a <code>user_id</code> suggests <code>n</code> users the user might like;</li>
 <li>
-<code>query_repos_graph</code> Given a <code>repo_id</code> and a <code>method</code>, find all linked packages in <code>degrees</code> degrees of separation. and</li>
+<code>query_repos_graph</code> Given a <code>repo_id</code> and a <code>method</code>, find all linked packages in <code>degrees</code> degrees of separation;</li>
 <li>
-<code>query_users_graph</code> Given a <code>user_id</code> and a <code>method</code>, find all linked users in <code>degrees</code> degrees of separation.</li>
+<code>query_users_graph</code> Given a <code>user_id</code> and a <code>method</code>, find all linked users in <code>degrees</code> degrees of separation; and</li>
+<li>
+<code>query_package_stats</code> Given a CRAN <code>package</code> name, and a particular <code>statistic</code> (a function of the data sample), return the value of the requested attribute.</li>
 </ol>
 <div class="section level3">
 <h3 id="recommend-repos-to-a-user">Recommend Repos to a User<a class="anchor" aria-label="anchor" href="#recommend-repos-to-a-user"></a>
@@ -206,35 +211,35 @@
 <li>Recommend 5 <strong>Repo</strong>s to a user (see <code>Agent</code> help file for supported methods)</li>
 </ol>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">suggested_repos</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">recommend_repos_to_user</span><span class="op">(</span><span class="va">user_id</span>, n <span class="op">=</span> <span class="fl">5</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">suggested_repos</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span>
-<span class="co">#&gt;    rank   repo_id</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1 236<span style="text-decoration: underline;">632</span>959</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2 164<span style="text-decoration: underline;">911</span>840</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3 236<span style="text-decoration: underline;">960</span>460</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4  72<span style="text-decoration: underline;">349</span>017</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     5 386<span style="text-decoration: underline;">342</span>330</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">suggested_repos</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">recommend_repos_to_user</span><span class="op">(</span><span class="va">user_id</span>, n <span class="op">=</span> <span class="fl">5</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">suggested_repos</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span></span>
+<span><span class="co">#&gt;    rank   repo_id</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1 302<span style="text-decoration: underline;">287</span>423</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2 117<span style="text-decoration: underline;">861</span>877</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3  28<span style="text-decoration: underline;">145</span>342</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4 308<span style="text-decoration: underline;">463</span>829</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     5 255<span style="text-decoration: underline;">877</span>129</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Add details to the recommended <strong>Repo</strong>s</li>
 </ol>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span>
-    <span class="va">suggested_repos</span>
-    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_REPO</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"repo_id"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 16</span></span>
-<span class="co">#&gt;    rank  repo_id package full_name owner_type owner_id html_url stargazers_count</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1   2.37<span style="color: #949494;">e</span>8 nosoi   cran/nos… Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…                0</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2   1.65<span style="color: #949494;">e</span>8 tbd     cran/tbd  Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…                0</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3   2.37<span style="color: #949494;">e</span>8 yap     cran/yap  Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…                0</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4   7.23<span style="color: #949494;">e</span>7 predic… leeper/p… User        3<span style="text-decoration: underline;">505</span>428 https:/…               85</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     5   3.86<span style="color: #949494;">e</span>8 DCLEAR  cran/dcl… Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…                0</span>
-<span class="co">#&gt; <span style="color: #949494;"># … with 8 more variables: watchers_count &lt;dbl&gt;, forks_count &lt;dbl&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   language &lt;chr&gt;, homepage &lt;chr&gt;, created_at &lt;date&gt;, updated_at &lt;date&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span></span>
+<span>    <span class="va">suggested_repos</span></span>
+<span>    <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_REPO</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"repo_id"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 16</span></span></span>
+<span><span class="co">#&gt;    rank  repo_id package full_name owner_type owner_id html_url stargazers_count</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1   3.02<span style="color: #949494;">e</span>8 mcmcen… bisaloo/… User       10<span style="text-decoration: underline;">783</span>929 https:/…                1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2   1.18<span style="color: #949494;">e</span>8 lmerTe… runehaub… User        5<span style="text-decoration: underline;">217</span>453 https:/…               36</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3   2.81<span style="color: #949494;">e</span>7 igraph… igraph/i… Organizat…  3<span style="text-decoration: underline;">735</span>184 https:/…               45</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4   3.08<span style="color: #949494;">e</span>8 censo2… ropensci… Organizat…  1<span style="text-decoration: underline;">200</span>269 https:/…               19</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     5   2.56<span style="color: #949494;">e</span>8 mlr3be… mlr-org/… Organizat… 12<span style="text-decoration: underline;">941</span>794 https:/…                8</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 8 more variables: watchers_count &lt;dbl&gt;, forks_count &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   language &lt;chr&gt;, homepage &lt;chr&gt;, created_at &lt;date&gt;, updated_at &lt;date&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="recommend-users-to-a-user">Recommend Users to a User<a class="anchor" aria-label="anchor" href="#recommend-users-to-a-user"></a>
@@ -243,36 +248,36 @@
 <li>Recommend 5 <strong>User</strong>s to a user (see <code>Agent</code> help file for supported methods)</li>
 </ol>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">suggested_users</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">recommend_users_to_user</span><span class="op">(</span><span class="va">user_id</span>, n <span class="op">=</span> <span class="fl">5</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">suggested_users</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span>
-<span class="co">#&gt;    rank  user_id</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1  2<span style="text-decoration: underline;">274</span>404</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2 11<span style="text-decoration: underline;">069</span>501</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3 21<span style="text-decoration: underline;">048</span>957</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4 11<span style="text-decoration: underline;">415</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     5 12<span style="text-decoration: underline;">070</span>126</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">suggested_users</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">recommend_users_to_user</span><span class="op">(</span><span class="va">user_id</span>, n <span class="op">=</span> <span class="fl">5</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">suggested_users</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span></span>
+<span><span class="co">#&gt;    rank  user_id</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1 26<span style="text-decoration: underline;">463</span>953</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2 22<span style="text-decoration: underline;">375</span>427</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3 46<span style="text-decoration: underline;">222</span>195</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4  8<span style="text-decoration: underline;">527</span>082</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     5 13<span style="text-decoration: underline;">743</span>685</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Add details to the recommended <strong>User</strong>s</li>
 </ol>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span>
-    <span class="va">suggested_users</span>
-    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"user_id"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 18</span></span>
-<span class="co">#&gt;    rank user_id login avatar_url html_url name  public_repos followers following</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1  2.27<span style="color: #949494;">e</span>6 Jerr… https://a… https:/… Jerr…            8         2         5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2  1.11<span style="color: #949494;">e</span>7 chri… https://a… https:/… Chri…            5         7        12</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3  2.10<span style="color: #949494;">e</span>7 lu-16 https://a… https:/… Lu              10         7        24</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4  1.14<span style="color: #949494;">e</span>7 ital… https://a… https:/… Ital…           13        13         7</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     5  1.21<span style="color: #949494;">e</span>7 wds15 https://a… https:/… <span style="color: #BB0000;">NA</span>              12        21         0</span>
-<span class="co">#&gt; <span style="color: #949494;"># … with 9 more variables: r_followers &lt;dbl&gt;, r_following &lt;dbl&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   r_contributor_count &lt;dbl&gt;, r_stargazer_count &lt;dbl&gt;, r_watcher_count &lt;dbl&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   created_at &lt;date&gt;, updated_at &lt;date&gt;, queried_at &lt;date&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   processed_at &lt;date&gt;</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span></span>
+<span>    <span class="va">suggested_users</span></span>
+<span>    <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"user_id"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 18</span></span></span>
+<span><span class="co">#&gt;    rank user_id login avatar_url html_url name  public_repos followers following</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1  2.65<span style="color: #949494;">e</span>7 maxi… https://a… https:/… Maxi…           15        11        30</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2  2.24<span style="color: #949494;">e</span>7 ediab https://a… https:/… Elias            1         5        24</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3  4.62<span style="color: #949494;">e</span>7 yang… https://a… https:/… Yi Y…           57         0        15</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4  8.53<span style="color: #949494;">e</span>6 psyg… https://a… https:/… Mh M…           75         4        36</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     5  1.37<span style="color: #949494;">e</span>7 cici… https://a… https:/… <span style="color: #BB0000;">NA</span>               6         2        49</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 9 more variables: r_followers &lt;dbl&gt;, r_following &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   r_contributor_count &lt;dbl&gt;, r_stargazer_count &lt;dbl&gt;, r_watcher_count &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   created_at &lt;date&gt;, updated_at &lt;date&gt;, queried_at &lt;date&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   processed_at &lt;date&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="query-repos-graph">Query Repos Graph<a class="anchor" aria-label="anchor" href="#query-repos-graph"></a>
@@ -300,47 +305,47 @@
 <li>Find the dependencies of a package</li>
 </ol>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">repo_dep</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_repos_graph</span><span class="op">(</span><span class="va">repo_id</span>, degrees <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"depends"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">repo_dep</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 11 × 3</span></span>
-<span class="co">#&gt;    degree    from        to</span>
-<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0 6<span style="text-decoration: underline;">427</span>813   6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 6<span style="text-decoration: underline;">427</span>813 137<span style="text-decoration: underline;">095</span>400</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1 6<span style="text-decoration: underline;">427</span>813  77<span style="text-decoration: underline;">250</span>656</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 6<span style="text-decoration: underline;">427</span>813 163<span style="text-decoration: underline;">315</span>535</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 6<span style="text-decoration: underline;">427</span>813  15<span style="text-decoration: underline;">564</span>525</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1 6<span style="text-decoration: underline;">427</span>813  91<span style="text-decoration: underline;">374</span>446</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 6<span style="text-decoration: underline;">427</span>813  19<span style="text-decoration: underline;">521</span>307</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1 6<span style="text-decoration: underline;">427</span>813  73<span style="text-decoration: underline;">098</span>312</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 6<span style="text-decoration: underline;">427</span>813  45<span style="text-decoration: underline;">148</span>983</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 6<span style="text-decoration: underline;">427</span>813  92<span style="text-decoration: underline;">205</span>415</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">11</span>      1 6<span style="text-decoration: underline;">427</span>813  67<span style="text-decoration: underline;">548</span>397</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">repo_dep</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_repos_graph</span><span class="op">(</span><span class="va">repo_id</span>, degrees <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"depends"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">repo_dep</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 11 × 3</span></span></span>
+<span><span class="co">#&gt;    degree    from        to</span></span>
+<span><span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0 6<span style="text-decoration: underline;">427</span>813   6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 6<span style="text-decoration: underline;">427</span>813 137<span style="text-decoration: underline;">095</span>400</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1 6<span style="text-decoration: underline;">427</span>813  77<span style="text-decoration: underline;">250</span>656</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 6<span style="text-decoration: underline;">427</span>813 163<span style="text-decoration: underline;">315</span>535</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 6<span style="text-decoration: underline;">427</span>813  15<span style="text-decoration: underline;">564</span>525</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1 6<span style="text-decoration: underline;">427</span>813  91<span style="text-decoration: underline;">374</span>446</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 6<span style="text-decoration: underline;">427</span>813  19<span style="text-decoration: underline;">521</span>307</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1 6<span style="text-decoration: underline;">427</span>813  73<span style="text-decoration: underline;">098</span>312</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 6<span style="text-decoration: underline;">427</span>813  45<span style="text-decoration: underline;">148</span>983</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 6<span style="text-decoration: underline;">427</span>813  92<span style="text-decoration: underline;">205</span>415</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span>      1 6<span style="text-decoration: underline;">427</span>813  67<span style="text-decoration: underline;">548</span>397</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Add details to the <strong>Package</strong> dependencies</li>
 </ol>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span>
-    <span class="va">repo_dep</span>
-    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_REPO</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"to"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 11 × 17</span></span>
-<span class="co">#&gt;    degree    from        to package    full_name    owner_type owner_id html_url</span>
-<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0 6<span style="text-decoration: underline;">427</span>813   6<span style="text-decoration: underline;">427</span>813 dplyr      tidyverse/d… Organizat… 22<span style="text-decoration: underline;">032</span>646 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 6<span style="text-decoration: underline;">427</span>813 137<span style="text-decoration: underline;">095</span>400 generics   r-lib/gener… Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1 6<span style="text-decoration: underline;">427</span>813  77<span style="text-decoration: underline;">250</span>656 glue       tidyverse/g… Organizat… 22<span style="text-decoration: underline;">032</span>646 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 6<span style="text-decoration: underline;">427</span>813 163<span style="text-decoration: underline;">315</span>535 lifecycle  r-lib/lifec… Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 6<span style="text-decoration: underline;">427</span>813  15<span style="text-decoration: underline;">564</span>525 magrittr   tidyverse/m… Organizat… 22<span style="text-decoration: underline;">032</span>646 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1 6<span style="text-decoration: underline;">427</span>813  91<span style="text-decoration: underline;">374</span>446 pillar     r-lib/pillar Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 6<span style="text-decoration: underline;">427</span>813  19<span style="text-decoration: underline;">521</span>307 R6         r-lib/r6     Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1 6<span style="text-decoration: underline;">427</span>813  73<span style="text-decoration: underline;">098</span>312 rlang      r-lib/rlang  Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 6<span style="text-decoration: underline;">427</span>813  45<span style="text-decoration: underline;">148</span>983 tibble     tidyverse/t… Organizat… 22<span style="text-decoration: underline;">032</span>646 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 6<span style="text-decoration: underline;">427</span>813  92<span style="text-decoration: underline;">205</span>415 tidyselect r-lib/tidys… Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">11</span>      1 6<span style="text-decoration: underline;">427</span>813  67<span style="text-decoration: underline;">548</span>397 vctrs      r-lib/vctrs  Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span>
-<span class="co">#&gt; <span style="color: #949494;"># … with 9 more variables: stargazers_count &lt;dbl&gt;, watchers_count &lt;dbl&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   forks_count &lt;dbl&gt;, language &lt;chr&gt;, homepage &lt;chr&gt;, created_at &lt;date&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   updated_at &lt;date&gt;, queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span></span>
+<span>    <span class="va">repo_dep</span></span>
+<span>    <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_REPO</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"to"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 11 × 17</span></span></span>
+<span><span class="co">#&gt;    degree    from        to package    full_name    owner_type owner_id html_url</span></span>
+<span><span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0 6<span style="text-decoration: underline;">427</span>813   6<span style="text-decoration: underline;">427</span>813 dplyr      tidyverse/d… Organizat… 22<span style="text-decoration: underline;">032</span>646 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 6<span style="text-decoration: underline;">427</span>813 137<span style="text-decoration: underline;">095</span>400 generics   r-lib/gener… Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1 6<span style="text-decoration: underline;">427</span>813  77<span style="text-decoration: underline;">250</span>656 glue       tidyverse/g… Organizat… 22<span style="text-decoration: underline;">032</span>646 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 6<span style="text-decoration: underline;">427</span>813 163<span style="text-decoration: underline;">315</span>535 lifecycle  r-lib/lifec… Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 6<span style="text-decoration: underline;">427</span>813  15<span style="text-decoration: underline;">564</span>525 magrittr   tidyverse/m… Organizat… 22<span style="text-decoration: underline;">032</span>646 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1 6<span style="text-decoration: underline;">427</span>813  91<span style="text-decoration: underline;">374</span>446 pillar     r-lib/pillar Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 6<span style="text-decoration: underline;">427</span>813  19<span style="text-decoration: underline;">521</span>307 R6         r-lib/r6     Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1 6<span style="text-decoration: underline;">427</span>813  73<span style="text-decoration: underline;">098</span>312 rlang      r-lib/rlang  Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 6<span style="text-decoration: underline;">427</span>813  45<span style="text-decoration: underline;">148</span>983 tibble     tidyverse/t… Organizat… 22<span style="text-decoration: underline;">032</span>646 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 6<span style="text-decoration: underline;">427</span>813  92<span style="text-decoration: underline;">205</span>415 tidyselect r-lib/tidys… Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span>      1 6<span style="text-decoration: underline;">427</span>813  67<span style="text-decoration: underline;">548</span>397 vctrs      r-lib/vctrs  Organizat… 22<span style="text-decoration: underline;">618</span>716 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 9 more variables: stargazers_count &lt;dbl&gt;, watchers_count &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   forks_count &lt;dbl&gt;, language &lt;chr&gt;, homepage &lt;chr&gt;, created_at &lt;date&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   updated_at &lt;date&gt;, queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="query-package-reverse-dependencies">Query package reverse dependencies<a class="anchor" aria-label="anchor" href="#query-package-reverse-dependencies"></a>
@@ -349,47 +354,47 @@
 <li>Find the reverse dependencies of a package</li>
 </ol>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">repo_rev_dep</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_repos_graph</span><span class="op">(</span><span class="va">repo_id</span>, degrees <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"reverse"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">repo_rev_dep</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 2,587 × 3</span></span>
-<span class="co">#&gt;    degree      from      to</span>
-<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0   6<span style="text-decoration: underline;">427</span>813 6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 221<span style="text-decoration: underline;">466</span>628 6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1  78<span style="text-decoration: underline;">038</span>172 6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 340<span style="text-decoration: underline;">095</span>903 6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 201<span style="text-decoration: underline;">294</span>705 6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1  80<span style="text-decoration: underline;">061</span>030 6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 447<span style="text-decoration: underline;">452</span>022 6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1  39<span style="text-decoration: underline;">196</span>192 6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 334<span style="text-decoration: underline;">079</span>562 6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 244<span style="text-decoration: underline;">196</span>790 6<span style="text-decoration: underline;">427</span>813</span>
-<span class="co">#&gt; <span style="color: #949494;"># … with 2,577 more rows</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">repo_rev_dep</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_repos_graph</span><span class="op">(</span><span class="va">repo_id</span>, degrees <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"reverse"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">repo_rev_dep</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2,592 × 3</span></span></span>
+<span><span class="co">#&gt;    degree      from      to</span></span>
+<span><span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0   6<span style="text-decoration: underline;">427</span>813 6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 221<span style="text-decoration: underline;">466</span>628 6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1  78<span style="text-decoration: underline;">038</span>172 6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 340<span style="text-decoration: underline;">095</span>903 6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 201<span style="text-decoration: underline;">294</span>705 6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1  80<span style="text-decoration: underline;">061</span>030 6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 447<span style="text-decoration: underline;">452</span>022 6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1  39<span style="text-decoration: underline;">196</span>192 6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 334<span style="text-decoration: underline;">079</span>562 6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 244<span style="text-decoration: underline;">196</span>790 6<span style="text-decoration: underline;">427</span>813</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 2,582 more rows</span></span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Add details to the <strong>Package</strong> dependencies</li>
 </ol>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span>
-    <span class="va">repo_rev_dep</span>
-    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_REPO</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"from"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 2,587 × 17</span></span>
-<span class="co">#&gt;    degree      from      to package       full_name owner_type owner_id html_url</span>
-<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0   6<span style="text-decoration: underline;">427</span>813 6<span style="text-decoration: underline;">427</span>813 dplyr         tidyvers… Organizat… 22<span style="text-decoration: underline;">032</span>646 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 221<span style="text-decoration: underline;">466</span>628 6<span style="text-decoration: underline;">427</span>813 AATtools      spiritsp… User       35<span style="text-decoration: underline;">294</span>148 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1  78<span style="text-decoration: underline;">038</span>172 6<span style="text-decoration: underline;">427</span>813 abjutils      cran/abj… Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 340<span style="text-decoration: underline;">095</span>903 6<span style="text-decoration: underline;">427</span>813 academictwit… cjbarrie… User       29<span style="text-decoration: underline;">574</span>597 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 201<span style="text-decoration: underline;">294</span>705 6<span style="text-decoration: underline;">427</span>813 accept        cran/acc… Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1  80<span style="text-decoration: underline;">061</span>030 6<span style="text-decoration: underline;">427</span>813 accucor       xiaoyang… User       14<span style="text-decoration: underline;">297</span>111 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 447<span style="text-decoration: underline;">452</span>022 6<span style="text-decoration: underline;">427</span>813 ACDC          cran/acdc Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1  39<span style="text-decoration: underline;">196</span>192 6<span style="text-decoration: underline;">427</span>813 ACDm          cran/acdm Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 334<span style="text-decoration: underline;">079</span>562 6<span style="text-decoration: underline;">427</span>813 acroname      cran/acr… Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 244<span style="text-decoration: underline;">196</span>790 6<span style="text-decoration: underline;">427</span>813 ActCR         junruidi… User       14<span style="text-decoration: underline;">096</span>626 https:/…</span>
-<span class="co">#&gt; <span style="color: #949494;"># … with 2,577 more rows, and 9 more variables: stargazers_count &lt;dbl&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   watchers_count &lt;dbl&gt;, forks_count &lt;dbl&gt;, language &lt;chr&gt;, homepage &lt;chr&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   created_at &lt;date&gt;, updated_at &lt;date&gt;, queried_at &lt;date&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   processed_at &lt;date&gt;</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span></span>
+<span>    <span class="va">repo_rev_dep</span></span>
+<span>    <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_REPO</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"from"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2,592 × 17</span></span></span>
+<span><span class="co">#&gt;    degree      from      to package       full_name owner_type owner_id html_url</span></span>
+<span><span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0   6<span style="text-decoration: underline;">427</span>813 6<span style="text-decoration: underline;">427</span>813 dplyr         tidyvers… Organizat… 22<span style="text-decoration: underline;">032</span>646 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 221<span style="text-decoration: underline;">466</span>628 6<span style="text-decoration: underline;">427</span>813 AATtools      spiritsp… User       35<span style="text-decoration: underline;">294</span>148 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1  78<span style="text-decoration: underline;">038</span>172 6<span style="text-decoration: underline;">427</span>813 abjutils      cran/abj… Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 340<span style="text-decoration: underline;">095</span>903 6<span style="text-decoration: underline;">427</span>813 academictwit… cjbarrie… User       29<span style="text-decoration: underline;">574</span>597 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 201<span style="text-decoration: underline;">294</span>705 6<span style="text-decoration: underline;">427</span>813 accept        cran/acc… Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1  80<span style="text-decoration: underline;">061</span>030 6<span style="text-decoration: underline;">427</span>813 accucor       xiaoyang… User       14<span style="text-decoration: underline;">297</span>111 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 447<span style="text-decoration: underline;">452</span>022 6<span style="text-decoration: underline;">427</span>813 ACDC          cran/acdc Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1  39<span style="text-decoration: underline;">196</span>192 6<span style="text-decoration: underline;">427</span>813 ACDm          cran/acdm Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 334<span style="text-decoration: underline;">079</span>562 6<span style="text-decoration: underline;">427</span>813 acroname      cran/acr… Organizat…  6<span style="text-decoration: underline;">899</span>542 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 244<span style="text-decoration: underline;">196</span>790 6<span style="text-decoration: underline;">427</span>813 ActCR         junruidi… User       14<span style="text-decoration: underline;">096</span>626 https:/…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 2,582 more rows, and 9 more variables: stargazers_count &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   watchers_count &lt;dbl&gt;, forks_count &lt;dbl&gt;, language &lt;chr&gt;, homepage &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   created_at &lt;date&gt;, updated_at &lt;date&gt;, queried_at &lt;date&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   processed_at &lt;date&gt;</span></span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -407,7 +412,7 @@
 <li>
 <code>followers</code> What users are following <code>user_id</code>?; or</li>
 <li>
-<code>following</code> hat users is <code>user_id</code> following?</li>
+<code>following</code> What users is <code>user_id</code> following?</li>
 </ul>
 </li>
 </ul>
@@ -419,38 +424,38 @@
 </li>
 </ol>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">user_followers</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_users_graph</span><span class="op">(</span><span class="va">user_id</span>, degrees <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"followers"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">user_followers</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span>
-<span class="co">#&gt;   degree     from      to</span>
-<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      0  7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>      1 52<span style="text-decoration: underline;">979</span>198 7<span style="text-decoration: underline;">226</span>303</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      1 31<span style="text-decoration: underline;">113</span>760 7<span style="text-decoration: underline;">226</span>303</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      1 10<span style="text-decoration: underline;">200</span>210 7<span style="text-decoration: underline;">226</span>303</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>      1  3<span style="text-decoration: underline;">811</span>321 7<span style="text-decoration: underline;">226</span>303</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">6</span>      1  6<span style="text-decoration: underline;">518</span>676 7<span style="text-decoration: underline;">226</span>303</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">user_followers</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_users_graph</span><span class="op">(</span><span class="va">user_id</span>, degrees <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"followers"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">user_followers</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">#&gt;   degree     from      to</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      0  7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>      1 52<span style="text-decoration: underline;">979</span>198 7<span style="text-decoration: underline;">226</span>303</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      1 31<span style="text-decoration: underline;">113</span>760 7<span style="text-decoration: underline;">226</span>303</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      1 10<span style="text-decoration: underline;">200</span>210 7<span style="text-decoration: underline;">226</span>303</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>      1  3<span style="text-decoration: underline;">811</span>321 7<span style="text-decoration: underline;">226</span>303</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>      1  6<span style="text-decoration: underline;">518</span>676 7<span style="text-decoration: underline;">226</span>303</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Add details to <code>user_id</code> followers</li>
 </ol>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span>
-    <span class="va">user_followers</span>
-    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"from"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 19</span></span>
-<span class="co">#&gt;   degree     from      to login avatar_url html_url name  public_repos followers</span>
-<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      0  7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303 hare… https://a… https:/… <span style="color: #BB0000;">NA</span>              13         6</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>      1 52<span style="text-decoration: underline;">979</span>198 7<span style="text-decoration: underline;">226</span>303 ange… https://a… https:/… Ange…            6         9</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      1 31<span style="text-decoration: underline;">113</span>760 7<span style="text-decoration: underline;">226</span>303 rfdo… https://a… https:/… Rodr…            9        37</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      1 10<span style="text-decoration: underline;">200</span>210 7<span style="text-decoration: underline;">226</span>303 asds… https://a… https:/… <span style="color: #BB0000;">NA</span>              22         5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>      1  3<span style="text-decoration: underline;">811</span>321 7<span style="text-decoration: underline;">226</span>303 mask… https://a… https:/… Am             344        82</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">6</span>      1  6<span style="text-decoration: underline;">518</span>676 7<span style="text-decoration: underline;">226</span>303 bcga… https://a… https:/… Brya…           19        41</span>
-<span class="co">#&gt; <span style="color: #949494;"># … with 10 more variables: following &lt;dbl&gt;, r_followers &lt;dbl&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   r_following &lt;dbl&gt;, r_contributor_count &lt;dbl&gt;, r_stargazer_count &lt;dbl&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   r_watcher_count &lt;dbl&gt;, created_at &lt;date&gt;, updated_at &lt;date&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span></span>
+<span>    <span class="va">user_followers</span></span>
+<span>    <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"from"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 19</span></span></span>
+<span><span class="co">#&gt;   degree     from      to login avatar_url html_url name  public_repos followers</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      0  7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303 hare… https://a… https:/… <span style="color: #BB0000;">NA</span>              13         6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>      1 52<span style="text-decoration: underline;">979</span>198 7<span style="text-decoration: underline;">226</span>303 ange… https://a… https:/… Ange…            6         9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      1 31<span style="text-decoration: underline;">113</span>760 7<span style="text-decoration: underline;">226</span>303 rfdo… https://a… https:/… Rodr…            9        37</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      1 10<span style="text-decoration: underline;">200</span>210 7<span style="text-decoration: underline;">226</span>303 asds… https://a… https:/… <span style="color: #BB0000;">NA</span>              22         5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>      1  3<span style="text-decoration: underline;">811</span>321 7<span style="text-decoration: underline;">226</span>303 mask… https://a… https:/… Am             344        82</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>      1  6<span style="text-decoration: underline;">518</span>676 7<span style="text-decoration: underline;">226</span>303 bcga… https://a… https:/… Brya…           19        41</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 10 more variables: following &lt;dbl&gt;, r_followers &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   r_following &lt;dbl&gt;, r_contributor_count &lt;dbl&gt;, r_stargazer_count &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   r_watcher_count &lt;dbl&gt;, created_at &lt;date&gt;, updated_at &lt;date&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="query-user-following">Query user following<a class="anchor" aria-label="anchor" href="#query-user-following"></a>
@@ -459,47 +464,86 @@
 <li>Find who is <code>user_id</code> following</li>
 </ol>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">user_following</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_users_graph</span><span class="op">(</span><span class="va">user_id</span>, degrees <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"following"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">user_following</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 55 × 3</span></span>
-<span class="co">#&gt;    degree    from      to</span>
-<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0 7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 7<span style="text-decoration: underline;">226</span>303    <span style="text-decoration: underline;">4</span>196</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">86</span>978</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">93</span>231</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">104</span>391</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">129</span>551</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">205</span>275</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">216</span>319</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">227</span>097</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">470</span>418</span>
-<span class="co">#&gt; <span style="color: #949494;"># … with 45 more rows</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">user_following</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_users_graph</span><span class="op">(</span><span class="va">user_id</span>, degrees <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"following"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">user_following</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 56 × 3</span></span></span>
+<span><span class="co">#&gt;    degree    from      to</span></span>
+<span><span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0 7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 7<span style="text-decoration: underline;">226</span>303    <span style="text-decoration: underline;">4</span>196</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">86</span>978</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">93</span>231</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">104</span>391</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">129</span>551</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">205</span>275</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">216</span>319</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">227</span>097</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">470</span>418</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 46 more rows</span></span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Add details to those who <code>user_id</code> is following</li>
 </ol>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span>
-    <span class="va">user_following</span>
-    |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"to"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 55 × 19</span></span>
-<span class="co">#&gt;    degree    from      to login avatar_url html_url name  public_repos followers</span>
-<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0 7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303 hare… https://a… https:/… <span style="color: #BB0000;">NA</span>              13         6</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 7<span style="text-decoration: underline;">226</span>303    <span style="text-decoration: underline;">4</span>196 hadl… https://a… https:/… Hadl…          176     <span style="text-decoration: underline;">22</span>465</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">86</span>978 wch   https://a… https:/… Wins…          125      <span style="text-decoration: underline;">1</span>326</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">93</span>231 schl… https://a… https:/… Barr…          186       221</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">104</span>391 jjal… https://a… https:/… J j …          138      <span style="text-decoration: underline;">1</span>498</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">129</span>551 jche… https://a… https:/… Joe …          159      <span style="text-decoration: underline;">1</span>780</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">205</span>275 jimh… https://a… https:/… Jim …          454      <span style="text-decoration: underline;">1</span>481</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">216</span>319 jero… https://a… https:/… Jero…          303      <span style="text-decoration: underline;">1</span>550</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">227</span>097 kohs… https://a… https:/… Kohs…           43        61</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">470</span>418 jmcp… https://a… https:/… Jona…           39       389</span>
-<span class="co">#&gt; <span style="color: #949494;"># … with 45 more rows, and 10 more variables: following &lt;dbl&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   r_followers &lt;dbl&gt;, r_following &lt;dbl&gt;, r_contributor_count &lt;dbl&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   r_stargazer_count &lt;dbl&gt;, r_watcher_count &lt;dbl&gt;, created_at &lt;date&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   updated_at &lt;date&gt;, queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span></span>
+<span>    <span class="va">user_following</span></span>
+<span>    <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ecos</span><span class="op">$</span><span class="fu">read_USER</span><span class="op">(</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"to"</span> <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 56 × 19</span></span></span>
+<span><span class="co">#&gt;    degree    from      to login avatar_url html_url name  public_repos followers</span></span>
+<span><span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      0 7<span style="text-decoration: underline;">226</span>303 7<span style="text-decoration: underline;">226</span>303 hare… https://a… https:/… <span style="color: #BB0000;">NA</span>              13         6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      1 7<span style="text-decoration: underline;">226</span>303    <span style="text-decoration: underline;">4</span>196 hadl… https://a… https:/… Hadl…          176     <span style="text-decoration: underline;">22</span>465</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">86</span>978 wch   https://a… https:/… Wins…          125      <span style="text-decoration: underline;">1</span>326</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      1 7<span style="text-decoration: underline;">226</span>303   <span style="text-decoration: underline;">93</span>231 schl… https://a… https:/… Barr…          186       221</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">104</span>391 jjal… https://a… https:/… J j …          138      <span style="text-decoration: underline;">1</span>498</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">129</span>551 jche… https://a… https:/… Joe …          159      <span style="text-decoration: underline;">1</span>780</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">205</span>275 jimh… https://a… https:/… Jim …          454      <span style="text-decoration: underline;">1</span>481</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">216</span>319 jero… https://a… https:/… Jero…          303      <span style="text-decoration: underline;">1</span>550</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">227</span>097 kohs… https://a… https:/… Kohs…           43        61</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      1 7<span style="text-decoration: underline;">226</span>303  <span style="text-decoration: underline;">470</span>418 jmcp… https://a… https:/… Jona…           39       389</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 46 more rows, and 10 more variables: following &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   r_followers &lt;dbl&gt;, r_following &lt;dbl&gt;, r_contributor_count &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   r_stargazer_count &lt;dbl&gt;, r_watcher_count &lt;dbl&gt;, created_at &lt;date&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   updated_at &lt;date&gt;, queried_at &lt;date&gt;, processed_at &lt;date&gt;</span></span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="query-package-stats">Query Package Stats<a class="anchor" aria-label="anchor" href="#query-package-stats"></a>
+</h3>
+<div class="section level4">
+<h4 id="monthly-downloads">Monthly Downloads<a class="anchor" aria-label="anchor" href="#monthly-downloads"></a>
+</h4>
+<ol style="list-style-type: decimal">
+<li>Find how many times <code>dplyr</code> was downloaded every month</li>
+</ol>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">package_downloads</span> <span class="op">&lt;-</span> <span class="va">agent</span><span class="op">$</span><span class="fu">query_package_stats</span><span class="op">(</span><span class="st">"dplyr"</span>, statistic <span class="op">=</span> <span class="st">"monthly downloads"</span><span class="op">)</span></span>
+<span><span class="va">package_downloads</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 3</span></span></span>
+<span><span class="co">#&gt;    date       package downloads</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2021-07-01 dplyr     1<span style="text-decoration: underline;">453</span>335</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2021-08-01 dplyr     1<span style="text-decoration: underline;">483</span>396</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2021-09-01 dplyr     1<span style="text-decoration: underline;">630</span>109</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2021-10-01 dplyr     1<span style="text-decoration: underline;">821</span>037</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2021-11-01 dplyr     1<span style="text-decoration: underline;">680</span>463</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2021-12-01 dplyr     1<span style="text-decoration: underline;">438</span>504</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2022-01-01 dplyr     1<span style="text-decoration: underline;">411</span>385</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2022-02-01 dplyr     1<span style="text-decoration: underline;">552</span>862</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2022-03-01 dplyr     1<span style="text-decoration: underline;">764</span>950</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2022-04-01 dplyr     1<span style="text-decoration: underline;">791</span>634</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> 2022-05-01 dplyr     2<span style="text-decoration: underline;">132</span>210</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> 2022-06-01 dplyr     1<span style="text-decoration: underline;">855</span>881</span></span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Plot the monthly downloads</li>
+</ol>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>    <span class="va">package_downloads</span><span class="op">$</span><span class="va">date</span>, <span class="va">package_downloads</span><span class="op">$</span><span class="va">downloads</span>, </span>
+<span>    main <span class="op">=</span> <span class="st">"Monthly downloads of `dplyr` from RStudio CRAN mirror"</span>,</span>
+<span>    type <span class="op">=</span> <span class="st">"b"</span>, xlab <span class="op">=</span> <span class="st">"Date"</span>, ylab <span class="op">=</span> <span class="st">"Monthly Downloads"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="github-observatory_files/figure-html/unnamed-chunk-23-1.png" width="70%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
@@ -510,113 +554,113 @@
 <h3 id="ecosystem-tables-overview">Ecosystem Tables Overview<a class="anchor" aria-label="anchor" href="#ecosystem-tables-overview"></a>
 </h3>
 <p><img src="https://imgur.com/i6eN9td.png" width="100%" style="display: block; margin: auto;"></p>
-<pre><code><span class="co">#&gt; </span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; ##                                                             ##</span>
-<span class="co">#&gt; ##                          SPECTATOR                          ##</span>
-<span class="co">#&gt; ##                                                             ##</span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 540,922</span>
-<span class="co">#&gt; Columns: 3</span>
-<span class="co">#&gt; $ repo_id   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 229300588, 229300588, 229300588, 229300588, 229300588, 22930…</span>
-<span class="co">#&gt; $ user_id   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1295691, 22343390, 5751387, 129519, 330744, 872262, 1295691,…</span>
-<span class="co">#&gt; $ user_role <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "contributor", "contributor", "stargazer", "watcher", "watch…</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; ##                                                             ##</span>
-<span class="co">#&gt; ##                          FOLLOWING                          ##</span>
-<span class="co">#&gt; ##                                                             ##</span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 851,860</span>
-<span class="co">#&gt; Columns: 2</span>
-<span class="co">#&gt; $ from <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 20690573, 64336901, 64336901, 64336901, 64336901, 64336901, 64336…</span>
-<span class="co">#&gt; $ to   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 747110, 315403, 1395960, 1448326, 3877631, 4693889, 5847527, 7598…</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; ##                                                              ##</span>
-<span class="co">#&gt; ##                          DEPENDENCY                          ##</span>
-<span class="co">#&gt; ##                                                              ##</span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 93,563</span>
-<span class="co">#&gt; Columns: 2</span>
-<span class="co">#&gt; $ from <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "A3", "A3", "aaSEA", "aaSEA", "aaSEA", "aaSEA", "aaSEA", "aaSEA",…</span>
-<span class="co">#&gt; $ to   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "pbapply", "xtable", "Bios2cor", "DT", "Hmisc", "magrittr", "netw…</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; ##                                                             ##</span>
-<span class="co">#&gt; ##                           PACKAGE                           ##</span>
-<span class="co">#&gt; ##                                                             ##</span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; #################################################################</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 18,432</span>
-<span class="co">#&gt; Columns: 2</span>
-<span class="co">#&gt; $ package   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "A3", "aaSEA", "AATtools", "ABACUS", "abbreviate", "abbyyR",…</span>
-<span class="co">#&gt; $ full_name <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "cran/A3", "cran/aaSEA", "spiritspeak/AATtools", "cran/ABACU…</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; ##                                                              ##</span>
-<span class="co">#&gt; ##                             REPO                             ##</span>
-<span class="co">#&gt; ##                                                              ##</span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 18,833</span>
-<span class="co">#&gt; Columns: 15</span>
-<span class="co">#&gt; $ id               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 229300588, 503421023, 147167467, 497172198, 368823136…</span>
-<span class="co">#&gt; $ package          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "dsims", "r3js", "itemanalysis", "concom", "PointedSD…</span>
-<span class="co">#&gt; $ full_name        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "distancedevelopment/dsims", "cran/r3js", "cran/itema…</span>
-<span class="co">#&gt; $ owner_type       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Organization", "Organization", "Organization", "User…</span>
-<span class="co">#&gt; $ owner_id         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4293301, 6899542, 6899542, 4466543, 81858712, 6899542…</span>
-<span class="co">#&gt; $ html_url         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://github.com/DistanceDevelopment/dsims", "http…</span>
-<span class="co">#&gt; $ stargazers_count <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1, 5, 0, 10, 25, 1, 0, 9, 0, 81, 0, 0, 0, 0,…</span>
-<span class="co">#&gt; $ watchers_count   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 7, 2, 2, 1, 4, 2, 2, 6, 2, 2, 3, 2, 4, 1, 2, 2, 2, 1,…</span>
-<span class="co">#&gt; $ forks_count      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0, 0, 0, 2, 7, 0, 0, 2, 0, 2, 0, 0, 0, 0, 1,…</span>
-<span class="co">#&gt; $ language         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "R", "JavaScript", "R", "R", "R", "R", "R", "R", "R",…</span>
-<span class="co">#&gt; $ homepage         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "https://robi…</span>
-<span class="co">#&gt; $ created_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2019-12-20, 2022-06-14, 2018-09-03, 2022-05-28, 2021…</span>
-<span class="co">#&gt; $ updated_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2021-11-02, 2022-06-14, 2022-06-14, 2022-05-28, 2022…</span>
-<span class="co">#&gt; $ queried_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 2022…</span>
-<span class="co">#&gt; $ processed_at     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 2022…</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; ##                                                              ##</span>
-<span class="co">#&gt; ##                             USER                             ##</span>
-<span class="co">#&gt; ##                                                              ##</span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; ##################################################################</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Rows: 141,306</span>
-<span class="co">#&gt; Columns: 17</span>
-<span class="co">#&gt; $ id                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 20690573, 64336901, 5138911, 44448349, 25771971, 6…</span>
-<span class="co">#&gt; $ login               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "ZLoverty", "johannelemaire", "adamdennett", "Aman…</span>
-<span class="co">#&gt; $ avatar_url          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://avatars.githubusercontent.com/u/20690573?…</span>
-<span class="co">#&gt; $ html_url            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://github.com/ZLoverty", "https://github.com…</span>
-<span class="co">#&gt; $ name                <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Zhengyang Liu", "Johanne Lemaire", "Adam Dennett"…</span>
-<span class="co">#&gt; $ public_repos        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 13, 1, 18, 7, 7, 2, 14, 4, 4, 9, 2, 5, 19, 6, 6, 3…</span>
-<span class="co">#&gt; $ followers           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4, 0, 21, 7, 12, 4, 13, 1, 50, 3, 0, 0, 89, 15, 0,…</span>
-<span class="co">#&gt; $ following           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 23, 5, 11, 5, 4, 4, 3, 86, 6, 0, 0, 197, 15, 4,…</span>
-<span class="co">#&gt; $ r_followers         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 8, 1, 6, 0, 3, 0, 3, 0, 0, 0, 5, 3, 0, 0, 0,…</span>
-<span class="co">#&gt; $ r_following         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 9, 3, 1, 5, 0, 1, 2, 5, 0, 0, 0, 4, 2, 2, 1, 0,…</span>
-<span class="co">#&gt; $ r_contributor_count <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0,…</span>
-<span class="co">#&gt; $ r_stargazer_count   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1,…</span>
-<span class="co">#&gt; $ r_watcher_count     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0,…</span>
-<span class="co">#&gt; $ created_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2016-07-27, 2020-04-25, 2013-08-01, 2018-10-24, 2…</span>
-<span class="co">#&gt; $ updated_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-13, 2022-06-04, 2022-06-14, 2022-06-12, 2…</span>
-<span class="co">#&gt; $ queried_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 2…</span>
-<span class="co">#&gt; $ processed_at        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-15, 2022-06-15, 2022-06-15, 2022-06-15, 2…</span></code></pre>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; ##                                                             ##</span></span>
+<span><span class="co">#&gt; ##                          SPECTATOR                          ##</span></span>
+<span><span class="co">#&gt; ##                                                             ##</span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Rows: 542,539</span></span>
+<span><span class="co">#&gt; Columns: 3</span></span>
+<span><span class="co">#&gt; $ repo_id   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 67653106, 67653106, 67653106, 67653106, 67653106, 448951406,…</span></span>
+<span><span class="co">#&gt; $ user_id   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 8006079, 51136278, 19329684, 18320033, 7294692, 26721915, 66…</span></span>
+<span><span class="co">#&gt; $ user_role <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "contributor", "contributor", "stargazer", "stargazer", "sta…</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; ##                                                             ##</span></span>
+<span><span class="co">#&gt; ##                          FOLLOWING                          ##</span></span>
+<span><span class="co">#&gt; ##                                                             ##</span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Rows: 853,570</span></span>
+<span><span class="co">#&gt; Columns: 2</span></span>
+<span><span class="co">#&gt; $ from <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 77842766, 10402611, 10402611, 10402611, 10871423, 10871423, 10871…</span></span>
+<span><span class="co">#&gt; $ to   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 31471783, 2195485, 5862184, 9460245, 303932, 994718, 2592761, 900…</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; ##                                                              ##</span></span>
+<span><span class="co">#&gt; ##                          DEPENDENCY                          ##</span></span>
+<span><span class="co">#&gt; ##                                                              ##</span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Rows: 93,835</span></span>
+<span><span class="co">#&gt; Columns: 2</span></span>
+<span><span class="co">#&gt; $ from <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "A3", "A3", "aaSEA", "aaSEA", "aaSEA", "aaSEA", "aaSEA", "aaSEA",…</span></span>
+<span><span class="co">#&gt; $ to   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "pbapply", "xtable", "Bios2cor", "DT", "Hmisc", "magrittr", "netw…</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; ##                                                             ##</span></span>
+<span><span class="co">#&gt; ##                           PACKAGE                           ##</span></span>
+<span><span class="co">#&gt; ##                                                             ##</span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; #################################################################</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Rows: 18,333</span></span>
+<span><span class="co">#&gt; Columns: 2</span></span>
+<span><span class="co">#&gt; $ package   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "A3", "AATtools", "ABACUS", "abbreviate", "abbyyR", "abc", "…</span></span>
+<span><span class="co">#&gt; $ full_name <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "cran/A3", "spiritspeak/AATtools", "cran/ABACUS", "cran/abbr…</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; ##                                                              ##</span></span>
+<span><span class="co">#&gt; ##                             REPO                             ##</span></span>
+<span><span class="co">#&gt; ##                                                              ##</span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Rows: 18,962</span></span>
+<span><span class="co">#&gt; Columns: 15</span></span>
+<span><span class="co">#&gt; $ id               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 67653106, 448951406, 506697777, 506873157, 503825817,…</span></span>
+<span><span class="co">#&gt; $ package          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "IAPWS95", "datelife", "Rgff", "shinyCohortBuilder", …</span></span>
+<span><span class="co">#&gt; $ full_name        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "cran/iapws95", "cran/datelife", "cran/rgff", "cran/s…</span></span>
+<span><span class="co">#&gt; $ owner_type       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Organization", "Organization", "Organization", "Orga…</span></span>
+<span><span class="co">#&gt; $ owner_id         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 6899542, 6899542, 6899542, 6899542, 6899542, 6899542,…</span></span>
+<span><span class="co">#&gt; $ html_url         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://github.com/cran/IAPWS95", "https://github.co…</span></span>
+<span><span class="co">#&gt; $ stargazers_count <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 3, 0, 0, 0, 0, 0, 0, 7, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ watchers_count   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 2, 2, 2, 2, 2, 1, 1, 1, 4, 2, 2, 3, 2, 1, 2, 2, 2,…</span></span>
+<span><span class="co">#&gt; $ forks_count      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ language         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Fortran", "R", "R", "R", "R", "R", "R", "R", "R", "R…</span></span>
+<span><span class="co">#&gt; $ homepage         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, "https://oddsapir.sportsdatav…</span></span>
+<span><span class="co">#&gt; $ created_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2016-09-08, 2022-01-17, 2022-06-23, 2022-06-24, 2022…</span></span>
+<span><span class="co">#&gt; $ updated_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-06-24, 2022-06-21, 2022-06-25, 2022-06-24, 2022…</span></span>
+<span><span class="co">#&gt; $ queried_at       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-07-02, 2022-07-02, 2022-07-02, 2022-07-02, 2022…</span></span>
+<span><span class="co">#&gt; $ processed_at     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-07-02, 2022-07-02, 2022-07-02, 2022-07-02, 2022…</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; ##                                                              ##</span></span>
+<span><span class="co">#&gt; ##                             USER                             ##</span></span>
+<span><span class="co">#&gt; ##                                                              ##</span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; ##################################################################</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Rows: 141,575</span></span>
+<span><span class="co">#&gt; Columns: 17</span></span>
+<span><span class="co">#&gt; $ id                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 59861096, 1708790, 3229354, 72283538, 77842766, 48…</span></span>
+<span><span class="co">#&gt; $ login               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "moksedulmomin", "iangow", "xlirate", "spaul2000",…</span></span>
+<span><span class="co">#&gt; $ avatar_url          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://avatars.githubusercontent.com/u/59861096?…</span></span>
+<span><span class="co">#&gt; $ html_url            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://github.com/moksedulmomin", "https://githu…</span></span>
+<span><span class="co">#&gt; $ name                <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Md Moksedul Momin", "Ian Gow", "Griffin Barrett",…</span></span>
+<span><span class="co">#&gt; $ public_repos        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 72, 18, 1, 0, 2, 0, 22, 32, 3, 5, 2, 3, 3, 15, …</span></span>
+<span><span class="co">#&gt; $ followers           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 55, 5, 0, 0, 0, 0, 28, 28, 0, 0, 2, 4, 0, 181, …</span></span>
+<span><span class="co">#&gt; $ following           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 4, 2, 3, 1, 0, 0, 7, 19, 1, 0, 0, 11, 2, 30, 3,…</span></span>
+<span><span class="co">#&gt; $ r_followers         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 21, 12, 0, 0, 0, 2, 0, 45, 0,…</span></span>
+<span><span class="co">#&gt; $ r_following         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 1, 0, 0, 3, 8, 0, 0, 0, 5, 0, 6, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ r_contributor_count <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,…</span></span>
+<span><span class="co">#&gt; $ r_stargazer_count   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0,…</span></span>
+<span><span class="co">#&gt; $ r_watcher_count     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ created_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-14, 2012-05-05, 2013-01-09, 2020-10-02, 2…</span></span>
+<span><span class="co">#&gt; $ updated_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-20, 2022-06-27, 2022-06-22, 2022-05-17, 2…</span></span>
+<span><span class="co">#&gt; $ queried_at          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-07-02, 2022-07-02, 2022-07-02, 2022-07-02, 2…</span></span>
+<span><span class="co">#&gt; $ processed_at        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-07-02, 2022-07-02, 2022-07-02, 2022-07-02, 2…</span></span></code></pre>
 </div>
 </div>
   </div>
@@ -638,7 +682,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer>
