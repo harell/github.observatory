@@ -108,17 +108,21 @@ Agent$set(which = "private", name = ".query_package_stats", overwrite = TRUE, va
 
     method <- match.arg(tolower(statistic), c("monthly downloads"))
 
-    stats <- cranlogs::cran_downloads(package, from = "2017-01-01", to = "last-day")
-    return(
-        stats
-        |> dplyr::transmute(
-            date = lubridate::floor_date(date, "1 month"),
-            downloads = count,
-            package = package
-        )
-        |> dplyr::count(date, package, wt = downloads, name = "downloads")
-        |> dplyr::filter(date != lubridate::floor_date(Sys.Date(), "1 month"))
-        |> tibble::as_tibble()
+    null_table <- tibble::tibble(date = as.Date(NA), package = NA_character_, downloads = NA_real_)[0, ]
+    tryCatch({
+        stats <- cranlogs::cran_downloads(package, from = "2017-01-01", to = "last-day")
+        return(
+            stats
+            |> dplyr::transmute(
+                date = lubridate::floor_date(date, "1 month"),
+                downloads = count,
+                package = package
+            )
+            |> dplyr::count(date, package, wt = downloads, name = "downloads")
+            |> dplyr::filter(date != lubridate::floor_date(Sys.Date(), "1 month"))
+            |> tibble::as_tibble()
+        )},
+        error = function(e) return(null_table)
     )
 })
 
