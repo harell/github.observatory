@@ -4,6 +4,7 @@
 #'
 #' @param user_id (`integer`) Github User ID.
 #' @param repo_id (`integer`) Github Repo ID.
+#' @param package (`charcter`) CRAN package name.
 #' @param n (`integer`) How many recommendation should the function return.
 #' @param degrees (`integer`) How many degrees of separation should be included? `1` are only the closest nodes. `Inf` returns all the graph.
 #'
@@ -35,7 +36,11 @@ Agent <- R6::R6Class(
         #' @param method (`character`) The link type to employ. Either
         #' (1) `followers` What users are following `user_id`?; or
         #' (2) `following` What users is `user_id` following?.
-        query_users_graph = function(user_id, degrees = 1, method) { return(private$.query_users_graph(user_id, degrees, method)) }
+        query_users_graph = function(user_id, degrees = 1, method) { return(private$.query_users_graph(user_id, degrees, method)) },
+        #' @description Given a CRAN `package` name, and a particular `statistic` (a function of the data sample), return the value of the requested attribute.
+        #' @param statistic (`character`) The information value to calculate
+        #' (1) `monthly downloads` The number of downloads from the RStudio CRAN mirror
+        query_package_stats = function(package, statistic) { return(private$.query_package_stats(package, statistic)) }
     ), private = list(
         # Private Fields ----------------------------------------------------------
         ecos = new.env(),
@@ -87,7 +92,6 @@ Agent$set(which = "private", name = ".query_repos_graph", overwrite = TRUE, valu
     }
 })
 
-
 Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, value = function(user_id, degrees = 1, method) {
     assert_that(assertthat::is.count(user_id), assertthat::is.count(degrees))
     method <- match.arg(tolower(method), c("followers", "following"))
@@ -97,6 +101,25 @@ Agent$set(which = "private", name = ".query_users_graph", overwrite = TRUE, valu
     } else if (method == "following") {
         return(.recommenders$users_graph$following(private$ecos, user_id, degrees))
     }
+})
+
+Agent$set(which = "private", name = ".query_package_stats", overwrite = TRUE, value = function(package, statistic) {
+    assert_that(assertthat::is.string(package), assertthat::is.string(statistic))
+
+    method <- match.arg(tolower(statistic), c("monthly downloads"))
+
+    stats <- cranlogs::cran_downloads(package, from = "2017-01-01", to = "last-day")
+    return(
+        stats
+        |> dplyr::transmute(
+            date = lubridate::floor_date(date, "1 month"),
+            downloads = count,
+            package = package
+        )
+        |> dplyr::count(date, package, wt = downloads, name = "downloads")
+        |> dplyr::filter(date != lubridate::floor_date(Sys.Date(), "1 month"))
+        |> tibble::as_tibble()
+    )
 })
 
 

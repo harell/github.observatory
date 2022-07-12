@@ -106,12 +106,13 @@ cran_package <- "dplyr"
 
 ## Agent Functions
 
-The Recommendation Agent has four functions:
+The Recommendation Agent has five functions:
 
 1.  `recommend_repos_to_user` Given a `user_id` suggests `n` repos the user might like;
 2.  `recommend_users_to_user` Given a `user_id` suggests `n` users the user might like;
-3.  `query_repos_graph` Given a `repo_id` and a `method`, find all linked packages in `degrees` degrees of separation. and
-4.  `query_users_graph` Given a `user_id` and a `method`, find all linked users in `degrees` degrees of separation.
+3.  `query_repos_graph` Given a `repo_id` and a `method`, find all linked packages in `degrees` degrees of separation;
+4.  `query_users_graph` Given a `user_id` and a `method`, find all linked users in `degrees` degrees of separation; and
+5.  `query_package_stats` Given a CRAN `package` name, and a particular `statistic` (a function of the data sample), return the value of the requested attribute.
 
 ### Recommend Repos to a User
 
@@ -240,6 +241,28 @@ print(user_following)
     |> dplyr::left_join(ecos$read_USER(), by = c("to" = "id"))
 )
 ```
+
+### Query Package Stats
+
+#### Monthly Downloads
+
+1. Find how many times `dplyr` was downloaded every month
+
+```{r, echo=TRUE, cache=TRUE}
+package_downloads <- agent$query_package_stats("dplyr", statistic = "monthly downloads")
+package_downloads |> tail(n = 12) |> print()
+```
+
+2. Plot the monthly downloads
+
+```{r, echo=TRUE, cache=TRUE}
+plot(
+    package_downloads$date, package_downloads$downloads, 
+    main = "Monthly downloads of `dplyr` from RStudio CRAN mirror",
+    type = "b", xlab = "Date", ylab = "Monthly Downloads"
+)
+```
+
 
 ## Appendix
 

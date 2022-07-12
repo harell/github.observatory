@@ -44,4 +44,12 @@ test_that("query_users_graph works", {
     )
 })
 
+test_that("query_package_stats works", {
+    package <- "dplyr"
+
+    expect_s3_class(
+        agent$query_package_stats(package = package, statistic = "monthly downloads"),
+        "data.frame"
+    )
+})
 
