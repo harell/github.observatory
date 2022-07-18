@@ -7,6 +7,7 @@ Ecosystem <- R6::R6Class(
         #' @description Instantiate a Repository object
         #' @param local_path (`character`) A local dir path where files will be stored.
         #' @param remote_path (`character`) A remote dir path on AWS S3 where files will be stored.
+        #'   when you call it again it returns the data from internal meomery.
         initialize = function(
         local_path = fs::path_wd("_cache", "tables"),
         remote_path = "s3://tidylab/github.observatory/tables/"
@@ -51,6 +52,7 @@ Ecosystem <- R6::R6Class(
         local_path = ".",
         remote_path = ".",
         null_table = tibble::tibble(),
+        cache_mem = collections::Dict(),
         # Private Methods ---------------------------------------------------------
         read_csv = function(...) { stop() },
         write_csv = function(...) { stop() },
@@ -72,7 +74,13 @@ Ecosystem$set(which = "private", name = "read", overwrite = TRUE, value = functi
     local_file <- fs::path(local_path, file_name)
 
     # Read file
-    tbl <- private$read_csv(bzfile(local_file))
+    if(private$cache_mem$has(key)){
+        tbl <- private$cache_mem$get(key)
+    } else {
+        tbl <- private$read_csv(bzfile(local_file))
+        private$cache_mem$set(key, tbl)
+    }
+
     return(tbl)
 })
 

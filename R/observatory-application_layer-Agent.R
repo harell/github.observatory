@@ -143,11 +143,16 @@ Agent$set(which = "private", name = ".query_package_stats", overwrite = TRUE, va
     tryCatch(return(
         repos <- ecos$read_REPO()
         |> dplyr::filter(id %not_in% repos_to_exclude)
-        |> dplyr::slice_sample(n = n)
+        |> dplyr::filter(stargazers_count >= 81)
         |> dplyr::transmute(
-            rank    = as.integer(1:dplyr::n()),
-            repo_id = as.integer(id)
+            id = id,
+            p = logb(stargazers_count, base = 2),
+            flag = as.logical(rmultinom(n = 1, size = n, p))
         )
+        |> dplyr::filter(flag == TRUE)
+        |> dplyr::arrange(-p)
+        |> dplyr::transmute(repo_id = as.integer(id))
+        |> tibble::rowid_to_column(var = "rank")
     ), error = function(e) return(null_table))
 }
 
@@ -163,11 +168,18 @@ Agent$set(which = "private", name = ".query_package_stats", overwrite = TRUE, va
     tryCatch(return(
         users <- ecos$read_USER()
         |> dplyr::filter(id %not_in% users_to_exclude)
-        |> dplyr::slice_sample(n = n)
+        |> dplyr::filter(r_followers >= 25)
         |> dplyr::transmute(
-            rank    = as.integer(1:dplyr::n()),
-            user_id = as.integer(id)
+            id = id,
+            login = login,
+            r_followers = r_followers,
+            p = logb(r_followers, base = 2),
+            flag = as.logical(rmultinom(n = 1, size = n, p))
         )
+        |> dplyr::filter(flag == TRUE)
+        |> dplyr::arrange(-r_followers)
+        |> dplyr::transmute(user_id = as.integer(id))
+        |> tibble::rowid_to_column(var = "rank")
     ), error = function(e) return(null_table))
 }
 
