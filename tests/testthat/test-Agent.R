@@ -4,16 +4,12 @@ test_that("Agent constructor works", {
 })
 
 test_that("recommend_repos_to_user works", {
-    n <- 2
     user_id <- 7226303 # harell
-    expect_s3_class(recommend_packages <- agent$recommend_repos_to_user(user_id = user_id, n = n, method = "random"), "data.frame")
-    expect_equal(nrow(recommend_packages), n)
+    expect_s3_class(agent$recommend_repos_to_user(user_id = user_id, n = 2, method = "random"), "data.frame")
 })
 
 test_that("recommend_users_to_user works", {
-    n <- 2
-    expect_s3_class(recommend_users <- agent$recommend_users_to_user(user_id = user_id, n = n, method = "random"), "data.frame")
-    expect_equal(nrow(recommend_users), n)
+    expect_s3_class(agent$recommend_users_to_user(user_id = user_id, n = 2, method = "random"), "data.frame")
 })
 
 test_that("query_repos_graph works", {
@@ -47,9 +43,6 @@ test_that("query_users_graph works", {
 test_that("query_package_stats works", {
     package <- "dplyr"
 
-    expect_s3_class(
-        agent$query_package_stats(package = package, statistic = "monthly downloads"),
-        "data.frame"
-    )
+    expect_non_empty_data.frame(agent$query_package_stats(package = package, statistic = "monthly downloads"))
 })
 
