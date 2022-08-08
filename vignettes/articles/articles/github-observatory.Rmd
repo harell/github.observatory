@@ -1,0 +1,283 @@
+---
+title: "Get Started"
+---
+
+```{r, include = FALSE}
+source(file.path(usethis::proj_get(), "vignettes",  "_common.R"))
+print_banner <- function(msg) print(bannerCommenter::banner(msg, numLines = 2))
+```
+
+## Setup
+
+1.  Install `github.observatory` by using:
+
+```{r, eval=FALSE, echo=TRUE}
+install.packages("remotes")
+remotes::install_github("harell/github.observatory")
+```
+
+2.  Set AWS credentials in order to get access to the curated data
+
+```{r, eval=FALSE, echo=TRUE}
+Sys.setenv(
+    AWS_ACCESS_KEY_ID = "<your-access-key-id>",
+    AWS_SECRET_ACCESS_KEY= "<your-secret>",
+    AWS_REGION = "ap-southeast-2"
+)
+```
+
+3.  `github.observatory` gives easy access to the project database through a [**Repository** object](https://tidylab.github.io/R6P/reference/Repository.html) named ***Ecosystem***. To access the database, instantiate a **Ecosystem** object.
+
+```{r, eval=TRUE, echo=TRUE}
+ecos <- Ecosystem$new()
+```
+
+4.  Instantiate a Recommendation ***Agent***. See *Agent Functions* for details.
+
+```{r, eval=TRUE, echo=TRUE}
+agent <- Agent$new(ecos)
+```
+
+## Terminology
+
+### Entities
+
+-   ***Package:*** An R package that is available on [CRAN](https://cran.r-project.org/web/packages/available_packages_by_name.html). For example, `dplyr`.
+-   ***Repo**:* A Github reposetory that corresponds to a **Package**. For example, [tidyverse/dplyr](https://github.com/tidyverse/dplyr).
+-   ***User***: A Github user. There are two ways to identify a **User**:
+    -   `user_login` this is a mutable name of the Github account chosen by the **User**. It is apparent in the Github URL. For example, <https://github.com/harell> corresponds to `user_login` = `harell`; and
+    -   `user_id` this is an immutable number assign by Github when the **User** creates an account. `user_id` is not readily available and has to be deduced from an API call. For example, `user_id` = `7226303`, corresponds to `user_login` = `harell` , and the respective API call is <https://api.github.com/user/7226303>.
+
+```{r, message=TRUE}
+message("Among the two options to identify a **User**, `user_id` is preferable as it stays the same throughout the life of GitHub. See the *Mapping Entities* section for how to locate `user_id` with `user_login`.")
+```
+
+### Roles
+
+-   ***Stargazer***: A **User** that give a ★ (star) to a **Repo**.
+
+## Ecosystem Overview
+
+```{r get_available_tables}
+invisible(
+    available_tables <- ls(ecos, sorted = FALSE)
+    |> setdiff(c("finalize", "initialize"))
+    |> purrr::keep(~stringr::str_detect(.x, "^read_"))
+    |> stringr::str_remove("^read_")
+)
+
+print_tables <- function() glue::glue_collapse(
+  paste0("`", available_tables, "`"), 
+  sep = ", ", last = " and "
+)
+```
+
+The **Ecosystem** gives access to `r print_tables()` tables.
+
+```{r, message=TRUE}
+message("See the tables content at the Appendix")
+```
+
+## Mapping Entities
+
+### `user_id` to `user_login`
+
+Finding a `user_id` with `user_login`
+
+```{r, echo=TRUE, cache=TRUE}
+user_login <- "harell"
+(
+    user_id <- ecos$read_USER()
+    |> dplyr::filter(login %in% user_login)
+    |> dplyr::pull(id)
+)
+```
+
+### `package` (CRAN package name) to `repo_id`
+
+```{r, echo=TRUE, cache=TRUE}
+cran_package <- "dplyr"
+(
+    repo_id <- ecos$read_REPO()
+    |> dplyr::filter(package %in% cran_package)
+    |> dplyr::pull(id)
+)
+```
+
+## Agent Functions
+
+The Recommendation Agent has five functions:
+
+1.  `recommend_repos_to_user` Given a `user_id` suggests `n` repos the user might like;
+2.  `recommend_users_to_user` Given a `user_id` suggests `n` users the user might like;
+3.  `query_repos_graph` Given a `repo_id` and a `method`, find all linked packages in `degrees` degrees of separation;
+4.  `query_users_graph` Given a `user_id` and a `method`, find all linked users in `degrees` degrees of separation; and
+5.  `query_package_stats` Given a CRAN `package` name, and a particular `statistic` (a function of the data sample), return the value of the requested attribute.
+
+### Recommend Repos to a User
+
+1.  Recommend 5 **Repo**s to a user (see `Agent` help file for supported methods)
+
+```{r, echo=TRUE, cache=TRUE}
+suggested_repos <- agent$recommend_repos_to_user(user_id, n = 5, method = "random")
+print(suggested_repos)
+```
+
+2.  Add details to the recommended **Repo**s
+
+```{r, echo=TRUE, cache=TRUE}
+(
+    suggested_repos
+    |> dplyr::left_join(ecos$read_REPO(), by = c("repo_id" = "id"))
+)
+```
+
+### Recommend Users to a User
+
+1.  Recommend 5 **User**s to a user (see `Agent` help file for supported methods)
+
+```{r, echo=TRUE, cache=TRUE}
+suggested_users <- agent$recommend_users_to_user(user_id, n = 5, method = "random")
+print(suggested_users)
+```
+
+2.  Add details to the recommended **User**s
+
+```{r, echo=TRUE, cache=TRUE}
+(
+    suggested_users
+    |> dplyr::left_join(ecos$read_USER(), by = c("user_id" = "id"))
+)
+```
+
+### Query Repos Graph
+
+To query the repo graph, you need to supply three input arguments:
+
+* `repo_id`: See *Mapping Entities* for how to map a package name to repo_id);
+* `degree`: How many [neighbourhood](https://en.wikipedia.org/wiki/Neighbourhood_(graph_theory)) to retrieve?
+* `method`: Either `depends` or `reverse depends`
+    * `depends` returns the package dependencies (as appears in its DESCRIPTION file);
+    * `reverse depends` returns packages that are dependent on `repo_id`.
+
+#### Query package dependencies
+
+1. Find the dependencies of a package
+
+```{r, echo=TRUE, cache=TRUE}
+repo_dep <- agent$query_repos_graph(repo_id, degrees = 1, method = "depends")
+print(repo_dep)
+```
+
+2.  Add details to the **Package** dependencies
+
+```{r, echo=TRUE, cache=TRUE}
+(
+    repo_dep
+    |> dplyr::left_join(ecos$read_REPO(), by = c("to" = "id"))
+)
+```
+
+#### Query package reverse dependencies
+
+1. Find the reverse dependencies of a package
+
+```{r, echo=TRUE, cache=TRUE}
+repo_rev_dep <- agent$query_repos_graph(repo_id, degrees = 1, method = "reverse")
+print(repo_rev_dep)
+```
+
+2.  Add details to the **Package** dependencies
+
+```{r, echo=TRUE, cache=TRUE}
+(
+    repo_rev_dep
+    |> dplyr::left_join(ecos$read_REPO(), by = c("from" = "id"))
+)
+```
+
+### Query Users Graph
+
+To query the repo graph, you need to supply three input arguments:
+
+* `repo_id`: See *Mapping Entities* for how to map a package name to repo_id);
+* `degree`: How many [neighbourhood](https://en.wikipedia.org/wiki/Neighbourhood_(graph_theory)) to retrieve?
+* `method`: Either `followers` or `following`
+    * `followers` What users are following `user_id`?; or
+    * `following` What users is `user_id` following?
+
+#### Query user followers
+
+1. Find who is following `user_id`
+
+```{r, echo=TRUE, cache=TRUE}
+user_followers <- agent$query_users_graph(user_id, degrees = 1, method = "followers")
+print(user_followers)
+```
+
+2. Add details to `user_id` followers
+
+```{r, echo=TRUE, cache=TRUE}
+(
+    user_followers
+    |> dplyr::left_join(ecos$read_USER(), by = c("from" = "id"))
+)
+```
+
+#### Query user following
+
+1. Find who is `user_id` following 
+
+```{r, echo=TRUE, cache=TRUE}
+user_following <- agent$query_users_graph(user_id, degrees = 1, method = "following")
+print(user_following)
+```
+
+2. Add details to those who `user_id` is following
+
+```{r, echo=TRUE, cache=TRUE}
+(
+    user_following
+    |> dplyr::left_join(ecos$read_USER(), by = c("to" = "id"))
+)
+```
+
+### Query Package Stats
+
+#### Monthly Downloads
+
+1. Find how many times `dplyr` was downloaded every month
+
+```{r, echo=TRUE, cache=TRUE}
+package_downloads <- agent$query_package_stats("dplyr", statistic = "monthly downloads")
+package_downloads |> tail(n = 12) |> print()
+```
+
+2. Plot the monthly downloads
+
+```{r, echo=TRUE, cache=TRUE}
+plot(
+    package_downloads$date, package_downloads$downloads, 
+    main = "Monthly downloads of `dplyr` from RStudio CRAN mirror",
+    type = "b", xlab = "Date", ylab = "Monthly Downloads"
+)
+```
+
+
+## Appendix
+
+### Ecosystem Tables Overview
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("https://imgur.com/i6eN9td.png")
+```
+
+```{r render-remote-tables-data-glimpse, results='markup', cache=TRUE}
+for(tbl_name in available_tables){
+  print_banner(tbl_name)
+  invisible(
+    ecos[[paste0("read_", tbl_name)]]()
+    |> dplyr::glimpse()
+  )
+}
+```
