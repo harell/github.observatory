@@ -18,8 +18,9 @@ Depends:
     R (>= 4.2)
 Imports: 
     assertthat,
-    cranlogs,
+    cli,
     collections,
+    cranlogs,
     dplyr,
     fs,
     gh,
