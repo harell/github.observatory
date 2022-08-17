@@ -18,7 +18,6 @@ Depends:
     R (>= 4.2)
 Imports: 
     assertthat,
-    cli,
     collections,
     cranlogs,
     dplyr,
@@ -35,7 +34,7 @@ Imports:
     tibble,
     tidyr
 Suggests: 
-    bannerCommenter,
+    cli,
     httr,
     Matrix,
     progress,
