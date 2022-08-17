@@ -91,7 +91,7 @@ jobs:
       # - name: Collate Packages Information From CRAN
       #   run: |
       #     pkgload::load_all(usethis::proj_get())
-      #     print(bannerCommenter::banner("Collate Packages Information From CRAN", numLines = 2, maxChar = 40))
+      #     cli::cli_h1("Collate Packages Information From CRAN")
       #     source(system.file("scripts", "collate-cran-desc.R", package = "github.observatory", mustWork = TRUE))
       #   shell: Rscript {0}
 
