@@ -81,11 +81,17 @@ jobs:
           remotes::install_cran(c("devtools", "rcmdcheck", "rmarkdown"))
         shell: Rscript {0}
 
+      - name: Dev ZONE
+        run: |
+          print(getwd())
+          print(path.expand("~"))
+        shell: Rscript {0}
+
       - name: Cache Queries
         uses: actions/cache@v3
         with:
           path: ~/inst
-          key: 'spiderCacheQueries'
+          key: ${{ runner.os }}-$'spiderCacheQueries'
 
       - name: Collate Packages Information From Github
         run: |
