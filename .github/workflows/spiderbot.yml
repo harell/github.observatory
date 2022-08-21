@@ -88,13 +88,6 @@ jobs:
           path: ~/_cache
           key: ${{ runner.os }}-${{ hashFiles('~/_cache/**/') }}
 
-      # - name: Collate Packages Information From CRAN
-      #   run: |
-      #     pkgload::load_all(usethis::proj_get())
-      #     cli::cli_h1("Collate Packages Information From CRAN")
-      #     source(system.file("scripts", "collate-cran-desc.R", package = "github.observatory", mustWork = TRUE))
-      #   shell: Rscript {0}
-
       - name: Collate Packages Information From Github
         run: |
           pkgload::load_all(usethis::proj_get())
