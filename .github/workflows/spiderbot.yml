@@ -85,8 +85,8 @@ jobs:
         uses: actions/cache@v3
         with:
           # path: ${{ github.GITHUB_WORKSPACE }}/_cache
-          path: /home/runner/work/github.observatory/github.observatory
-          key: ${{ runner.os }}-${{ hashFiles('_cache/crawler/repo', '_cache/crawler/user') }}
+          path: /home/runner/work/github.observatory/github.observatory/_cache
+          key: ${{ runner.os }}-${{ hashFiles('_cache') }}
 
       - name: Collate Packages Information From Github
         run: |
