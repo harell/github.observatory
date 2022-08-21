@@ -82,15 +82,13 @@ jobs:
         shell: Rscript {0}
 
       - name: Cache Queries
-        id: cacheTables
-        if: runner.os != 'Windows'
         uses: actions/cache@v3
+        run: mkdir -p ~/_cache
         with:
           path: '~/_cache'
-          key: 'spiderCacheTables'
+          key: 'spiderCacheQueries'
 
       - name: Collate Packages Information From Github
-        # if: steps.cacheTables.outputs.cache-hit != 'true'
         run: |
           pkgload::load_all(usethis::proj_get())
           cli::cli_h1("Collate Packages Information From Github")
