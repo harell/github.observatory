@@ -83,9 +83,8 @@ jobs:
 
       - name: Cache Queries
         uses: actions/cache@v3
-        run: mkdir -p ~/_cache
         with:
-          path: '~/_cache'
+          path: ~/inst
           key: 'spiderCacheQueries'
 
       - name: Collate Packages Information From Github
