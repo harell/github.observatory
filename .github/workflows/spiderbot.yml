@@ -86,7 +86,7 @@ jobs:
         with:
           # path: ${{ github.GITHUB_WORKSPACE }}/_cache
           path: /home/runner/work/github.observatory/github.observatory
-          key: ${{ runner.os }}-${{ hashFiles('_cache/crawler/repo/db.csv', '_cache/crawler/user/db.csv') }}
+          key: ${{ runner.os }}-${{ hashFiles('_cache/crawler/repo', '_cache/crawler/user') }}
 
       - name: Collate Packages Information From Github
         run: |
