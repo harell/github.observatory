@@ -85,6 +85,7 @@ jobs:
         run: |
           print(getwd())
           print(path.expand("~"))
+          print(Sys.getenv())
         shell: Rscript {0}
 
       - name: Cache Queries
