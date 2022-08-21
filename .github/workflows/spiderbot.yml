@@ -86,7 +86,7 @@ jobs:
         with:
           # path: ${{$github.GITHUB_WORKSPACE}}/_cache
           path: /home/runner/work/github.observatory/github.observatory
-          key: ${{ runner.os }}-spiderCacheQueries
+          key: ${{ runner.os }}-$${ hashFiles(**/*.csv) }
 
       - name: Collate Packages Information From Github
         run: |
