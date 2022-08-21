@@ -2,7 +2,7 @@ Type: Package
 Package: github.observatory
 Title: Discover and Explore the Relationships Between R Packages and R
     Users
-Version: 1.0.2
+Version: 1.0.3
 Date: 2022-04-22
 Authors@R: 
     person("Harel", "Lustiger", , "tidylab@gmail.com", role = c("aut", "cre"),
@@ -15,11 +15,11 @@ URL: https://harell.github.io/github.observatory/,
     https://github.com/harell/github.observatory
 BugReports: https://github.com/harell/github.observatory/issues
 Depends: 
-    R (>= 4.1)
+    R (>= 4.2)
 Imports: 
     assertthat,
-    cranlogs,
     collections,
+    cranlogs,
     dplyr,
     fs,
     gh,
@@ -34,7 +34,7 @@ Imports:
     tibble,
     tidyr
 Suggests: 
-    bannerCommenter,
+    cli,
     httr,
     Matrix,
     progress,

@@ -1,7 +1,7 @@
 # For help debugging build failures open an issue on the RStudio community with the 'github-actions' tag.
 # https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
 on:
-#  push:
+  push:
   schedule:
     - cron: "0 * * * *"
 
@@ -31,7 +31,7 @@ jobs:
       AWS_REGION: ${{ secrets.AWS_REGION }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: r-lib/actions/setup-r@v1
         with:
@@ -82,28 +82,15 @@ jobs:
         shell: Rscript {0}
 
       - name: Cache Queries
-        if: runner.os != 'Windows'
         uses: actions/cache@v3
         with:
-          path: ~/_cache/**/
-          key: ${{ runner.os }}-${{ hashFiles('~/_cache/**/') }}
-
-      - name: Collate Packages Information From CRAN
-        run: |
-          pkgload::load_all(usethis::proj_get())
-          print(bannerCommenter::banner("Collate Packages Information From CRAN", numLines = 2, maxChar = 40))
-          source(system.file("scripts", "collate-cran-desc.R", package = "github.observatory", mustWork = TRUE))
-        shell: Rscript {0}
+          # path: ${{ github.GITHUB_WORKSPACE }}/_cache
+          path: /home/runner/work/github.observatory/github.observatory/_cache
+          key: ${{ runner.os }}
 
       - name: Collate Packages Information From Github
         run: |
           pkgload::load_all(usethis::proj_get())
-          print(bannerCommenter::banner("Collate Packages Information From Github", numLines = 2, maxChar = 40))
-          source(system.file("scripts", "collate-repo-desc.R", package = "github.observatory", mustWork = TRUE))
+          cli::cli_h1("Collate Packages Information From Github")
+          source(system.file("scripts", "crawler-collate-repos.R", package = "github.observatory", mustWork = TRUE))
         shell: Rscript {0}
-      # - name: Upload check results
-      #   if: failure()
-      #   uses: actions/upload-artifact@main
-      #   with:
-      #     name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-      #     path: check
