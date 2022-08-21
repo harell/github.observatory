@@ -85,7 +85,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ github.GITHUB_WORKSPACE }}/_cache
-          key: ${{ runner.os }}-$'spiderCacheQueries'
+          key: ${{ runner.os }}-'spiderCacheQueries'
 
       - name: Collate Packages Information From Github
         run: |
