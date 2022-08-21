@@ -2,8 +2,8 @@
 # https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
 on:
   push:
-  # schedule:
-  #   - cron: "0 * * * *"
+  schedule:
+    - cron: "0 * * * *"
 
 name: Spiderbot
 
@@ -86,7 +86,7 @@ jobs:
         with:
           # path: ${{ github.GITHUB_WORKSPACE }}/_cache
           path: /home/runner/work/github.observatory/github.observatory/_cache
-          key: ${{ runner.os }}-${{ hashFiles('_cache') }}
+          key: ${{ runner.os }}
 
       - name: Collate Packages Information From Github
         run: |
