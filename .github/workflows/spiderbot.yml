@@ -39,13 +39,6 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v1
 
-      - name: Dev ZONE
-        run: |
-          print(getwd())
-          print(path.expand("~"))
-          print(Sys.getenv())
-        shell: Rscript {0}
-
       - name: Prepare
         run: |
           echo "utils::chooseCRANmirror(graphics=FALSE, ind = 1)" > .Rprofile
@@ -91,7 +84,7 @@ jobs:
       - name: Cache Queries
         uses: actions/cache@v3
         with:
-          path: ~/work/github.observatory/github.observatory
+          path: ${{ GITHUB_WORKSPACE }}$/_cache
           key: ${{ runner.os }}-$'spiderCacheQueries'
 
       - name: Collate Packages Information From Github
