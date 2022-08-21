@@ -4,7 +4,6 @@ title: "Get Started"
 
 ```{r, include = FALSE}
 source(file.path(usethis::proj_get(), "vignettes",  "_common.R"))
-print_banner <- function(msg) print(bannerCommenter::banner(msg, numLines = 2))
 ```
 
 ## Setup
@@ -274,7 +273,7 @@ knitr::include_graphics("https://imgur.com/i6eN9td.png")
 
 ```{r render-remote-tables-data-glimpse, results='markup', cache=TRUE}
 for(tbl_name in available_tables){
-  print_banner(tbl_name)
+  cat("\n\n##", tbl_name,"\n")
   invisible(
     ecos[[paste0("read_", tbl_name)]]()
     |> dplyr::glimpse()

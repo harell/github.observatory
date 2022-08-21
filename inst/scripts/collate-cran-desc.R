@@ -3,6 +3,16 @@ pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("ecos")) ecos <- Ecosystem$new()
 
 
+# Helpers -----------------------------------------------------------------
+extract_date <- function(x){ suppressWarnings(
+    x
+    |> substr(1, 10)
+    |> lubridate::ymd()
+    |> lubridate::format_ISO8601()
+    |> tidyr::replace_na("1970-01-01")
+) }
+
+
 # Download CRAN packages list ---------------------------------------------
 pkg_desc <- tools::CRAN_package_db()
 
@@ -16,7 +26,14 @@ invisible(
             github$extract$full_name(bug_reports),
             github$compose$slug(owner = "cran", repo = package)
         ),
-        full_name = tolower(full_name)
+        cran_version = version,
+        cran_date = packaged,
+        title = title,
+        description = description
+    )
+    |> dplyr::mutate(
+        full_name = tolower(full_name),
+        cran_date = extract_date(cran_date)
     )
     |> dplyr::distinct(package, .keep_all = TRUE)
 )
