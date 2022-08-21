@@ -84,9 +84,9 @@ jobs:
       - name: Cache Queries
         uses: actions/cache@v3
         with:
-          # path: ${{$github.GITHUB_WORKSPACE}}/_cache
+          # path: ${{ github.GITHUB_WORKSPACE }}/_cache
           path: /home/runner/work/github.observatory/github.observatory
-          key: ${{ runner.os }}-$${ hashFiles(**/*.csv) }
+          key: ${{ runner.os }}-$${ github.GITHUB_RUN_ID }
 
       - name: Collate Packages Information From Github
         run: |
