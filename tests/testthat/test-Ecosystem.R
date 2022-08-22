@@ -18,6 +18,7 @@ test_that("Ecosystem read functions work", {
     expect_s3_class(ecos$read_REPO(), "data.frame")
     expect_s3_class(ecos$read_PACKAGE(), "data.frame")
     expect_s3_class(ecos$read_DEPENDENCY(), "data.frame")
+    expect_s3_class(ecos$read_TASK_VIEW(), "data.frame")
     expect_s3_class(ecos$read_FOLLOWING(), "data.frame")
     expect_s3_class(ecos$read_SPECTATOR(), "data.frame")
 })
