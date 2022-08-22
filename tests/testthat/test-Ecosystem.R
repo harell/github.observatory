@@ -7,6 +7,7 @@ test_that("Ecosystem write functions work", {
     expect_s3_class(ecos$overwrite_USER(USER), "R6")
     expect_s3_class(ecos$overwrite_REPO(REPO), "R6")
     expect_s3_class(ecos$overwrite_PACKAGE(PACKAGE), "R6")
+    expect_s3_class(ecos$overwrite_TASK_VIEW(TASK_VIEW), "R6")
     expect_s3_class(ecos$overwrite_DEPENDENCY(mtcars), "R6")
     expect_s3_class(ecos$overwrite_FOLLOWING(FOLLOWING), "R6")
     expect_s3_class(ecos$overwrite_SPECTATOR(mtcars), "R6")

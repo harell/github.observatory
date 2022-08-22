@@ -45,3 +45,11 @@ FOLLOWING <- tibble::tribble(
     7226303, 4196
 )
 
+TASK_VIEW <- tibble::tribble(
+    ~package,    ~task_view,
+    "A3",        "Spatial",
+    "A3",        "SpatioTemporal",
+    "aaSEA",     "SpatioTemporal",
+    "AATtools",  "Spatial",
+    "ADGofTest", "Tracking"
+)
