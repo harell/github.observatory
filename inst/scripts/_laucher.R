@@ -10,6 +10,9 @@ source(system.file("scripts", "collate-cran-desc.R", package = "github.observato
 cli::cli_h1("Collate packages dependencies from CRAN")
 source(system.file("scripts", "collate-cran-dependencies.R", package = "github.observatory", mustWork = TRUE))
 
+cli::cli_h1("Collate packages task views from CRAN")
+source(system.file("scripts", "collate-cran-task_views.R", package = "github.observatory", mustWork = TRUE))
+
 cli::cli_h1("Collate packages information from GitHub")
 source(system.file("scripts", "collate-repo-desc.R", package = "github.observatory", mustWork = TRUE))
 
