@@ -1,3 +1,9 @@
+# github.observatory 1.0.4
+
+## Improvments
+
+* `collate-cran-desc` also stores [CRAN task views](https://cran.r-project.org/web/views/)
+
 # github.observatory 1.0.3
 
 ## Improvments
