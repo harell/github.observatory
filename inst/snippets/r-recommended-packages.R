@@ -1,6 +1,5 @@
 # Setup -------------------------------------------------------------------
 # remotes::install_cran("ggraph")
-
 library(ggraph)
 pkgload::load_all(usethis::proj_get(), quiet = TRUE)
 if(does_not_exist("ecos")) ecos <- Ecosystem$new()
@@ -13,9 +12,9 @@ selected_repo_id <- ecos$read_REPO() |> dplyr::filter(package == selected_packag
 
 
 # Query Linked Packages ---------------------------------------------------
-graph <- agent$query_repos_graph(
+result <- agent$query_repos_graph(
     selected_repo_id,
-    degrees = 1,
+    degrees = 2,
     method = c("depends", "reverse depends")[1]
 )
 
@@ -23,16 +22,17 @@ graph <- agent$query_repos_graph(
 # Process Graph Data ------------------------------------------------------
 (
     tbl_nodes <- ecos$read_REPO()
-    |> dplyr::filter(id %in% graph$to)
+    |> dplyr::filter(id %in% result$to)
     |> dplyr::left_join(ecos$read_PACKAGE() |> dplyr::select(-full_name), by = "package")
     |> dplyr::rename(name = id)
 )
 
 (
-    tbl_links <- graph
+    tbl_links <- result
     |> dplyr::transmute(
         from = from,
         to = to,
+        # degree = degree,
         weight = 1
     )
 )
@@ -45,8 +45,10 @@ graph <- igraph::graph_from_data_frame(tbl_links, vertices = tbl_nodes, directed
     graph
     |> ggraph(layout = 'kk', weights = weight)
     + geom_edge_link2()
-    + geom_node_point()
-    + geom_node_label(aes(label = package))
-    + theme_graph(background = "white")
+    # + geom_edge_diagonal()
+    + geom_node_point(aes(size = stargazers_count), alpha = 0.4, show.legend = FALSE)
+    + geom_node_text(aes(label = package), repel = TRUE)
+    + scale_color_brewer(palette = "Set1")
+    + theme_void()
 )
 
