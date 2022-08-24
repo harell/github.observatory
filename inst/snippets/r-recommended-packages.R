@@ -44,9 +44,9 @@ graph <- igraph::graph_from_data_frame(tbl_links, vertices = tbl_nodes, directed
 (
     graph
     |> ggraph(layout = 'kk', weights = weight)
-    + geom_edge_link2()
+    + geom_edge_link2(arrow = grid::arrow(type = "closed", length = grid::unit(0.02, "npc")), alpha = 1, colour = "#808080")
     # + geom_edge_diagonal()
-    + geom_node_point(aes(size = stargazers_count), alpha = 0.4, show.legend = FALSE)
+    + geom_node_point(aes(size = stargazers_count), alpha = 0.7, show.legend = FALSE, colour = "black")
     + geom_node_text(aes(label = package), repel = TRUE)
     + scale_color_brewer(palette = "Set1")
     + theme_void()
